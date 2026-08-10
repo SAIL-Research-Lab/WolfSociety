@@ -1,4 +1,4 @@
-import { FileText, Paperclip } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { site } from '../config/site'
 
 function GithubMark() {
@@ -44,10 +44,6 @@ export function Hero() {
           <a href={site.links.code} target="_blank" rel="noreferrer">
             <GithubMark />
             <span>Code</span>
-          </a>
-          <a href={site.links.supplement} target="_blank" rel="noreferrer">
-            <Paperclip aria-hidden="true" />
-            <span>Supplement</span>
           </a>
         </div>
       </div>

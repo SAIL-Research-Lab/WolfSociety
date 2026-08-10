@@ -2,7 +2,7 @@
 
 **Social Dynamics of Nonlinear Collapse in Financial Agent Societies**
 
-[Project Page](https://zhanglejun02.github.io/when-harm-scales/) · [Paper](https://zhanglejun02.github.io/when-harm-scales/papers/when-harm-scales.pdf) · [Supplement](https://zhanglejun02.github.io/when-harm-scales/papers/when-harm-scales-supplement.pdf)
+[Project Page](https://zhanglejun02.github.io/when-harm-scales/) · [Paper](https://zhanglejun02.github.io/when-harm-scales/papers/when-harm-scales.pdf)
 
 <p align="center">
   <a href="https://zhanglejun02.github.io/when-harm-scales/">

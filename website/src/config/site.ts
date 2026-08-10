@@ -22,7 +22,6 @@ export const site = {
   authorAffiliations: [1, 1, 2, 2, 1, 2],
   links: {
     paper: './papers/when-harm-scales.pdf',
-    supplement: './papers/when-harm-scales-supplement.pdf',
     code: 'https://github.com/zhanglejun02/when-harm-scales',
   },
 }
