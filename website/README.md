@@ -2,7 +2,7 @@
 
 Interactive academic project page for **When Harm Scales: Social Dynamics of Nonlinear Collapse in Financial Agent Societies**.
 
-The page follows a compact paper-first structure: title and authors, two conceptual animations, abstract, the Agent Society Dynamics framework, three core findings, future work, and a final citation section. The animations communicate nonlinear transition and finite-size fragility without presenting themselves as simulations or statistical charts.
+The page follows a classic paper-first project-page structure: title and authors, Paper/Code/Supplement resources, the paper teaser, two small conceptual animations, abstract, Agent Society Dynamics, scaling and intervention figures, WolfBench future work, and BibTeX. The research figures carry most of the visual identity; the surrounding interface stays quiet and academic.
 
 The name **WolfBench** is intentionally reserved for the final future-work section. It describes the working goal of turning the current controlled environment into a broader, better validated evaluation environment; the page does not present it as a finished benchmark.
 
@@ -31,9 +31,13 @@ The mathematical framework displays the manuscript relation $\alpha_c(N)\propto 
 
 ## Paper assets
 
-Before public deployment, place the final paper at the path configured by the site module:
+The public project-page assets are:
 
+- `public/teaser.png`
+- `public/finite-size-scaling.png`
+- `public/intervention-effects.png`
 - `public/papers/when-harm-scales.pdf`
+- `public/papers/when-harm-scales-supplement.pdf`
 
 ## GitHub Pages
 

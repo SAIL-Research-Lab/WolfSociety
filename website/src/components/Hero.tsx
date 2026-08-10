@@ -1,4 +1,4 @@
-import { FileText } from 'lucide-react'
+import { FileText, Paperclip } from 'lucide-react'
 import { site } from '../config/site'
 
 function GithubMark() {
@@ -14,14 +14,19 @@ export function Hero() {
     <header className="academic-hero" id="top">
       <div className="academic-hero__inner">
         <h1>
-          {site.title}: <span>{site.subtitle}</span>
+          {site.title}:<br /><span>{site.subtitle}</span>
         </h1>
 
         <div className="academic-authors" aria-label="Authors">
           {site.authors.map((author, index) => (
-            <span key={author}>
+            <a
+              key={author}
+              href={`https://scholar.google.com/scholar?q=${encodeURIComponent(author)}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               {author}<sup>{site.authorAffiliations[index]}</sup>
-            </span>
+            </a>
           ))}
         </div>
 
@@ -32,7 +37,7 @@ export function Hero() {
         </div>
 
         <div className="academic-actions" aria-label="Project resources">
-          <a href={site.links.paper}>
+          <a href={site.links.paper} target="_blank" rel="noreferrer">
             <FileText aria-hidden="true" />
             <span>Paper</span>
           </a>
@@ -40,15 +45,11 @@ export function Hero() {
             <GithubMark />
             <span>Code</span>
           </a>
+          <a href={site.links.supplement} target="_blank" rel="noreferrer">
+            <Paperclip aria-hidden="true" />
+            <span>Supplement</span>
+          </a>
         </div>
-
-        <nav className="section-links" aria-label="Page sections">
-          <a href="#abstract">Abstract</a>
-          <a href="#framework">Framework</a>
-          <a href="#findings">Findings</a>
-          <a href="#future">Future Work</a>
-          <a href="#paper">Citation</a>
-        </nav>
       </div>
     </header>
   )

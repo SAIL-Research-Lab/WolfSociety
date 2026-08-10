@@ -6,6 +6,7 @@ import { Hero } from './components/Hero'
 import { PaperSection } from './components/PaperSection'
 import { ScalingStory } from './components/ScalingStory'
 import { SocialDynamics } from './components/SocialDynamics'
+import { TeaserFigure } from './components/TeaserFigure'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <a className="skip-link" href="#abstract">Skip to abstract</a>
       <main>
         <Hero />
+        <TeaserFigure />
         <AnimatedTeasers />
         <Abstract />
         <SocialDynamics />

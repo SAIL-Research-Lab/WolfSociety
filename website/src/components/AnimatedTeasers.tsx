@@ -124,8 +124,8 @@ export function AnimatedTeasers() {
   return (
     <section className="motion-section" aria-labelledby="motion-title">
       <div className="compact-heading">
-        <p className="section-label">The idea in motion</p>
-        <h2 id="motion-title">Two visual intuitions.</h2>
+        <h2 id="motion-title">Two intuitions in motion</h2>
+        <p>Small conceptual animations—not simulator output.</p>
       </div>
       <div className="motion-grid">
         <TippingScene />

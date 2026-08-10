@@ -3,8 +3,10 @@ export const site = {
   subtitle: 'Social Dynamics of Nonlinear Collapse in Financial Agent Societies',
   description:
     'This work studies how harmful-agent scaling, social diffusion, and shared-state feedback shape critical transitions in interacting agent societies.',
-  abstract:
-    'Safety evaluations typically assess agents in isolation, yet interacting agents exchange messages and reshape shared environments, allowing local harm to escalate into society-level failure. We study how collapse varies with harmful-agent fraction and society size N. We introduce Agent Society Dynamics, a framework that relates the collapse boundary to size-dependent harmful pressure and shared-state feedback, and evaluate it through fixed-count analyses and controlled interventions in a case-inspired hybrid social–market simulation. Across society sizes, collapse is rare at low harmful fractions, rises sharply near a size-dependent boundary, and then saturates. As N increases from 100 to 2,000, the 50% collapse boundary falls from 4.7% to 2.2%, while the effective harmful count rises from 4.7 to 44. A power-law fit yields a boundary exponent of 0.222; bootstrap estimates remain between 0 and 1, implying sublinear growth in the effective harmful count. At fixed harmful counts, the maximum joint severity of harmful diffusion and market disruption decreases with society size, revealing subcritical dilution. Weakening feedback shifts the boundary toward higher harmful fractions, whereas stronger feedback or greater network reach shifts it toward lower fractions. Together, these results show that society size and shared-state feedback jointly shape collective failure under the tested protocol.',
+  abstract: [
+    'Safety evaluations typically assess agents in isolation. Interacting agents, however, exchange messages and reshape shared environments, allowing local harmful behavior to propagate through social evidence, collective action, and market feedback. We study how society-level collapse varies with the harmful-agent fraction and population size in a controlled hybrid social–market environment.',
+    'We introduce Agent Society Dynamics, which separates size-dependent harmful pressure from amplification through shared-state feedback. Collapse is rare below a size-dependent boundary and rises sharply near it. As society size grows from 100 to 2,000, the measured 50% collapse boundary falls from 4.7% to 2.2%, while the effective harmful count rises from 4.7 to 44. Fixed-count analyses and matched interventions further show subcritical dilution and identify feedback and network reach as mechanisms that move the boundary.',
+  ],
   authors: [
     'Lejun Zhang',
     'Muning Wen',
@@ -20,6 +22,7 @@ export const site = {
   authorAffiliations: [1, 1, 2, 2, 1, 2],
   links: {
     paper: './papers/when-harm-scales.pdf',
+    supplement: './papers/when-harm-scales-supplement.pdf',
     code: 'https://github.com/zhanglejun02/when-harm-scales',
   },
 }

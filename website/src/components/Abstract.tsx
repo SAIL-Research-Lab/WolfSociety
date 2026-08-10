@@ -5,7 +5,7 @@ export function Abstract() {
     <section className="abstract-section" id="abstract">
       <div className="academic-content">
         <h2>Abstract</h2>
-        <p>{site.abstract}</p>
+        {site.abstract.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
       </div>
     </section>
   )

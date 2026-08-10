@@ -12,17 +12,15 @@ export function PaperSection() {
   }
 
   return (
-    <section className="section paper-section" id="paper">
-      <div className="paper-kicker">Reference</div>
-      <h2>Citation</h2>
+    <section className="paper-section-block citation-section" id="paper">
+      <h2>BibTeX</h2>
       <p className="citation-note">If this work is useful in your research, please cite the paper.</p>
       <div className="bibtex-panel">
         <div><span>BibTeX</span><button type="button" onClick={copyBibtex}>{copied ? <Check size={16} /> : <Clipboard size={16} />}{copied ? 'Copied' : 'Copy'}</button></div>
         <pre>{bibtex}</pre>
       </div>
       <footer>
-        <span>When Harm Scales</span>
-        <p>A study of harmful-agent scaling and collective failure.</p>
+        <p>When Harm Scales · Academic project page</p>
       </footer>
     </section>
   )
