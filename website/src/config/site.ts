@@ -18,8 +18,9 @@ export const site = {
   affiliations: [
     'Shanghai Jiao Tong University',
     'University of California, Berkeley',
+    'University of Toronto, Canada',
   ],
-  authorAffiliations: [1, 1, 2, 2, 1, 2],
+  authorAffiliations: [1, 1, '2,3', 2, 1, 2],
   links: {
     paper: './papers/when-harm-scales.pdf',
     code: 'https://github.com/zhanglejun02/when-harm-scales',
