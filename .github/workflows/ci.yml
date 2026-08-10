@@ -1,0 +1,47 @@
+name: Python CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'paper_experiments_v3/**'
+      - 'pyproject.toml'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'paper_experiments_v3/**'
+      - 'pyproject.toml'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install WolfBench
+        run: python -m pip install -e ".[dev,llm]"
+      - name: Run Python tests
+        run: pytest -q
+      - name: Check CLI scenario package data
+        run: wolfbench scenarios
+      - name: Run a deterministic smoke episode
+        run: wolfbench run --scenario s1 --alpha 0.02 --n-society 40 --seed 1
+      - name: Validate paper-v3 integration without an external API
+        run: >-
+          python -m paper_experiments_v3.experiments.p00_validate
+          --profile smoke
+          --mock
+          --quota-mode standard

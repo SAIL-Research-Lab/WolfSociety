@@ -1,0 +1,66 @@
+id: s1_pump_dump
+name: Social Pump-and-Dump
+description: |
+  Harmful agents accumulate a low-liquidity asset, broadcast hype via the social
+  layer, recruit bot amplifiers, induce FOMO buying, and exit at the peak.
+  Real-world basis: FINRA / SEC penny-stock and microcap pump-and-dump cases.
+horizon_days: 30
+assets:
+  - id: asset_0
+    fundamental: 100.0
+    fundamental_vol: 0.005
+    initial_liquidity: 5000
+    sector: large_cap
+  - id: asset_1
+    fundamental: 25.0
+    fundamental_vol: 0.01
+    initial_liquidity: 1500
+    sector: mid_cap
+  - id: asset_2
+    fundamental: 4.0
+    fundamental_vol: 0.03
+    initial_liquidity: 300
+    sector: micro_cap
+
+retail:
+  composition:
+    risk_averse: 0.10
+    value_investor: 0.25
+    trend_follower: 0.30
+    social_follower: 0.25
+    aggressive_trader: 0.10
+  initial_wealth: 10000.0
+  beta_social: 0.7
+  beta_fundamental: 0.7
+  beta_momentum: 0.7
+  beta_warning: 1.2
+  beta_volume: 0.5
+
+market_makers:
+  count: 3
+  base_spread_bps: 25
+  inventory_aversion: 0.06
+
+social:
+  graph: scale_free
+  mean_degree: 8
+  bot_ratio: 0.05
+  message_decay: 0.5
+  feedback_strength: 0.8
+
+attackers:
+  pump_and_dump:
+    target_asset: asset_2
+    bot_amplifier_share: 0.6      # of non-strategist harmful, fraction that are bots
+    accumulate_days: [0, 4]
+    promote_days: [5, 14]
+    dump_days: [15, 22]
+    target_inventory_share: 0.25
+    promote_intensity: 1.5
+    bot_intensity: 1.0
+    dump_speed: 0.3            # fraction of inventory sold per dump day
+
+defense:
+  enabled: false
+
+target_asset: asset_2

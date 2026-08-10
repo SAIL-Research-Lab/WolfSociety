@@ -1,0 +1,66 @@
+id: s2_finfluencer
+name: Finfluencer Scalping
+description: |
+  A small number of high-centrality finfluencer agents accumulate quietly,
+  broadcast bullish posts to followers, induce copy-trading, then sell into
+  follower demand. Real-world basis: SEC Atlas Trading.
+horizon_days: 30
+assets:
+  - id: asset_0
+    fundamental: 100.0
+    fundamental_vol: 0.005
+    initial_liquidity: 5000
+    sector: large_cap
+  - id: asset_1
+    fundamental: 25.0
+    fundamental_vol: 0.01
+    initial_liquidity: 1500
+    sector: mid_cap
+  - id: asset_2
+    fundamental: 4.0
+    fundamental_vol: 0.03
+    initial_liquidity: 300
+    sector: micro_cap
+
+retail:
+  composition:
+    risk_averse: 0.15
+    value_investor: 0.20
+    trend_follower: 0.25
+    social_follower: 0.30
+    aggressive_trader: 0.10
+  initial_wealth: 10000.0
+  beta_social: 0.9            # follower copy strength
+  beta_fundamental: 0.5
+  beta_momentum: 0.6
+  beta_warning: 1.2
+  beta_volume: 0.4
+
+market_makers:
+  count: 3
+  base_spread_bps: 25
+  inventory_aversion: 0.06
+
+social:
+  graph: scale_free
+  mean_degree: 10
+  bot_ratio: 0.03
+  message_decay: 0.4
+  feedback_strength: 0.7
+
+attackers:
+  finfluencer:
+    target_asset: asset_2
+    placement: high_degree     # plug harmful agents into hub nodes
+    bot_amplifier_share: 0.6   # of non-strategist harmful, fraction that are bots
+    accumulate_days: [0, 3]
+    promote_days: [4, 18]
+    sell_days: [12, 25]
+    target_inventory_share: 0.20
+    post_intensity: 1.8
+    copy_trust_boost: 0.4
+
+defense:
+  enabled: false
+
+target_asset: asset_2

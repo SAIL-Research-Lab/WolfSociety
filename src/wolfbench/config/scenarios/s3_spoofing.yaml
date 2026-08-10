@@ -1,0 +1,64 @@
+id: s3_spoofing
+name: Spoofing / Layering
+description: |
+  Harmful agents place large non-bona-fide orders on one side, induce other
+  traders to mis-read depth imbalance, then trade on the opposite side and
+  cancel quickly. Real-world basis: JPMorgan spoofing settlement.
+horizon_days: 30
+assets:
+  - id: asset_0
+    fundamental: 100.0
+    fundamental_vol: 0.005
+    initial_liquidity: 5000
+    sector: large_cap
+  - id: asset_1
+    fundamental: 25.0
+    fundamental_vol: 0.01
+    initial_liquidity: 1500
+    sector: mid_cap
+  - id: asset_2
+    fundamental: 4.0
+    fundamental_vol: 0.03
+    initial_liquidity: 300
+    sector: micro_cap
+
+retail:
+  composition:
+    risk_averse: 0.10
+    value_investor: 0.30
+    trend_follower: 0.35
+    social_follower: 0.15
+    aggressive_trader: 0.10
+  initial_wealth: 10000.0
+  beta_social: 0.4
+  beta_fundamental: 0.7
+  beta_momentum: 0.9          # microstructure scenario: momentum heavier
+  beta_warning: 1.2
+  beta_volume: 0.6
+  beta_imbalance: 0.7         # depth-imbalance read-through
+
+market_makers:
+  count: 3
+  base_spread_bps: 15
+  inventory_aversion: 0.05
+  intraday_steps: 12
+
+social:
+  graph: scale_free
+  mean_degree: 6
+  bot_ratio: 0.02
+  message_decay: 0.6
+  feedback_strength: 0.4
+
+attackers:
+  spoofing:
+    target_asset: asset_1
+    spoof_size_mult: 6.0       # vs clean median size
+    spoof_side_alternation: true
+    cancel_latency_steps: 1
+    daily_cycles: 4
+
+defense:
+  enabled: false
+
+target_asset: asset_1

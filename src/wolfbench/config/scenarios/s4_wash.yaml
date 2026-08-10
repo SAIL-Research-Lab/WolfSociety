@@ -1,0 +1,63 @@
+id: s4_wash
+name: Wash Trading / Fake Liquidity
+description: |
+  Harmful agents trade among accounts they control to manufacture volume and
+  apparent liquidity, attract retail, then withdraw liquidity and let price
+  collapse. Real-world basis: DOJ crypto wash-trading cases.
+horizon_days: 30
+assets:
+  - id: asset_0
+    fundamental: 100.0
+    fundamental_vol: 0.005
+    initial_liquidity: 5000
+    sector: large_cap
+  - id: asset_1
+    fundamental: 25.0
+    fundamental_vol: 0.01
+    initial_liquidity: 1500
+    sector: mid_cap
+  - id: asset_2
+    fundamental: 4.0
+    fundamental_vol: 0.03
+    initial_liquidity: 300
+    sector: micro_cap
+
+retail:
+  composition:
+    risk_averse: 0.10
+    value_investor: 0.20
+    trend_follower: 0.30
+    social_follower: 0.25
+    aggressive_trader: 0.15
+  initial_wealth: 10000.0
+  beta_social: 0.5
+  beta_fundamental: 0.6
+  beta_momentum: 0.7
+  beta_warning: 1.2
+  beta_volume: 0.9            # volume-as-signal vulnerability
+
+market_makers:
+  count: 2
+  base_spread_bps: 30
+  inventory_aversion: 0.07
+
+social:
+  graph: scale_free
+  mean_degree: 6
+  bot_ratio: 0.05
+  message_decay: 0.5
+  feedback_strength: 0.6
+
+attackers:
+  wash_trading:
+    target_asset: asset_2
+    wash_volume_multiplier: 4.0
+    accumulate_days: [0, 4]
+    wash_days: [5, 18]
+    withdraw_days: [19, 25]
+    cluster_size: 4             # number of colluding accounts per ring
+
+defense:
+  enabled: false
+
+target_asset: asset_2
