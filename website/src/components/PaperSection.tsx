@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Clipboard } from 'lucide-react'
+import { BookOpen, Check, Clipboard, Sparkles } from 'lucide-react'
 import { bibtex } from '../config/site'
 
 export function PaperSection() {
@@ -13,11 +13,23 @@ export function PaperSection() {
 
   return (
     <section className="paper-section-block citation-section" id="paper">
-      <h2>BibTeX</h2>
-      <p className="citation-note">If this work is useful in your research, please cite the paper.</p>
-      <div className="bibtex-panel">
-        <div><span>BibTeX</span><button type="button" onClick={copyBibtex}>{copied ? <Check size={16} /> : <Clipboard size={16} />}{copied ? 'Copied' : 'Copy'}</button></div>
-        <pre>{bibtex}</pre>
+      <div className="citation-heading">
+        <span className="citation-heading__icon" aria-hidden="true"><BookOpen /></span>
+        <div>
+          <span className="citation-kicker"><Sparkles size={13} /> Cite this work</span>
+          <h2>BibTeX</h2>
+          <p className="citation-note">If this work is useful in your research, please cite the paper.</p>
+        </div>
+      </div>
+      <div className={`bibtex-panel${copied ? ' bibtex-panel--copied' : ''}`}>
+        <div className="bibtex-toolbar">
+          <span><i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" /> when-harm-scales.bib</span>
+          <button type="button" onClick={copyBibtex} aria-label="Copy BibTeX citation">
+            {copied ? <Check size={16} /> : <Clipboard size={16} />}
+            {copied ? 'Copied!' : 'Copy citation'}
+          </button>
+        </div>
+        <pre><code>{bibtex}</code></pre>
       </div>
       <footer>
         <p>When Harm Scales · Academic project page</p>
