@@ -187,10 +187,8 @@ The browser animations are conceptual illustrations, not online simulator
 runs. The website keeps a small set of paper-facing summary values in source;
 raw experimental CSV files and generated figures are not bundled.
 
-Pushes that change the website always run its checks and production build. To
-publish it, configure Pages to use GitHub Actions and set the repository Actions
-variable `ENABLE_PAGES=true`; the same workflow then uploads and deploys the
-build.
+Pushes that change the website run its checks, production build, and GitHub
+Pages deployment after Pages is configured to use GitHub Actions.
 
 ## Repository layout
 
