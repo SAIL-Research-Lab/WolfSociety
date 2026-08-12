@@ -1,4 +1,5 @@
-import type { CSSProperties } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
+import { scalingPoints } from '../data/results'
 
 type AgentFaceProps = {
   kind: 'normal' | 'devil'
@@ -61,8 +62,7 @@ function TippingScene() {
     <article className="motion-card">
       <div className="motion-copy">
         <span>01 · Nonlinear transition</span>
-        <h3>More harmful agents, then sudden collapse.</h3>
-        <p>Pressure can accumulate quietly before shared social and market state fails abruptly.</p>
+        <h3>Harm accumulates, then collapse.</h3>
       </div>
       <div className="tipping-scene" aria-label="Conceptual animation in which normal agents progressively become harmful and the shared state suddenly collapses">
         <div className="tipping-agents">
@@ -76,7 +76,7 @@ function TippingScene() {
           <strong>shared state</strong>
         </div>
       </div>
-      <small className="motion-note">Conceptual animation · the transition is abrupt, not frame-by-frame probability.</small>
+      <small className="motion-note">Illustrative transition</small>
     </article>
   )
 }
@@ -96,8 +96,7 @@ function SizeScene() {
     <article className="motion-card">
       <div className="motion-copy">
         <span>02 · Finite-size fragility</span>
-        <h3>A larger society can tip at a smaller share.</h3>
-        <p>The harmful fraction required for collapse falls with society size, even as the absolute critical count grows.</p>
+        <h3>Larger societies tip at a smaller share.</h3>
       </div>
       <div className="size-scene" aria-label="Conceptual comparison showing a small society and a larger society with a visually smaller harmful share">
         <div className="society-row society-row--small">
@@ -115,7 +114,94 @@ function SizeScene() {
           <SharedState compact />
         </div>
       </div>
-      <small className="motion-note">Conceptual animation · icon counts are illustrative, not experimental measurements.</small>
+      <small className="motion-note">Illustrative agent counts</small>
+    </article>
+  )
+}
+
+const curveSizes = [100, 500, 2000] as const
+const curveColors: Record<(typeof curveSizes)[number], string> = {
+  100: '#d6365c',
+  500: '#b58bdd',
+  2000: '#4d3ca3',
+}
+
+function criticalFraction(n: (typeof curveSizes)[number]) {
+  return scalingPoints.find((point) => point.n === n)?.alphaC ?? 0
+}
+
+function curvePath(alphaC: number) {
+  return Array.from({ length: 51 }, (_, index) => {
+    const alpha = index * 0.0014
+    const probability = 1 / (1 + Math.exp(-(alpha - alphaC) / 0.0055))
+    const x = 22 + (alpha / 0.07) * 210
+    const y = 91 - probability * 70
+    return `${index === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
+  }).join(' ')
+}
+
+function CollapseCurveScene() {
+  const [activeSize, setActiveSize] = useState<(typeof curveSizes)[number]>(2000)
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const timer = window.setInterval(() => {
+      setActiveSize((current) => curveSizes[(curveSizes.indexOf(current) + 1) % curveSizes.length])
+    }, 2200)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  const activeAlpha = criticalFraction(activeSize)
+  const activeX = 22 + (activeAlpha / 0.07) * 210
+
+  return (
+    <article className="motion-card motion-card--curves">
+      <div className="motion-copy">
+        <span>03 · Boundary shift</span>
+        <h3>As N grows, collapse shifts left.</h3>
+      </div>
+      <div className="curve-scene">
+        <svg viewBox="0 0 250 112" role="img" aria-label="Interactive collapse curves shifting toward a lower harmful fraction as society size increases">
+          <line className="curve-axis" x1="22" y1="12" x2="22" y2="91" />
+          <line className="curve-axis" x1="22" y1="91" x2="238" y2="91" />
+          <line className="curve-midline" x1="22" y1="56" x2="238" y2="56" />
+          <text className="curve-axis-label" x="4" y="58">.5</text>
+          <text className="curve-axis-label" x="191" y="106">harmful share</text>
+          {curveSizes.map((n) => (
+            <path
+              key={n}
+              className={`collapse-curve${activeSize === n ? ' collapse-curve--active' : ''}`}
+              d={curvePath(criticalFraction(n))}
+              style={{ '--curve-color': curveColors[n] } as CSSProperties}
+            />
+          ))}
+          <line
+            className="curve-threshold"
+            x1={activeX}
+            y1="56"
+            x2={activeX}
+            y2="91"
+            style={{ '--curve-color': curveColors[activeSize] } as CSSProperties}
+          />
+          <circle className="curve-marker" cx={activeX} cy="56" r="3.2" style={{ '--curve-color': curveColors[activeSize] } as CSSProperties} />
+        </svg>
+        <div className="curve-controls" aria-label="Select society size">
+          {curveSizes.map((n) => (
+            <button
+              key={n}
+              type="button"
+              className={activeSize === n ? 'is-active' : ''}
+              style={{ '--curve-color': curveColors[n] } as CSSProperties}
+              aria-pressed={activeSize === n}
+              onClick={() => setActiveSize(n)}
+            >
+              N={n}
+            </button>
+          ))}
+          <output>α<sub>c</sub> ≈ {(activeAlpha * 100).toFixed(1)}%</output>
+        </div>
+      </div>
+      <small className="motion-note">Measured midpoint</small>
     </article>
   )
 }
@@ -124,12 +210,13 @@ export function AnimatedTeasers() {
   return (
     <section className="motion-section" aria-labelledby="motion-title">
       <div className="compact-heading">
-        <h2 id="motion-title">Two intuitions in motion</h2>
-        <p>Small conceptual animations—not simulator output.</p>
+        <h2 id="motion-title">Three intuitions in motion</h2>
+        <p>Conceptual—not simulator output.</p>
       </div>
       <div className="motion-grid">
         <TippingScene />
         <SizeScene />
+        <CollapseCurveScene />
       </div>
     </section>
   )

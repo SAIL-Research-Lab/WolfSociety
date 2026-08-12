@@ -160,25 +160,23 @@
 .motion-section h2 { margin: 0; font-size: 19px; }
 .motion-section .compact-heading p { margin: 0; color: #777; font-size: 12px; }
 
-.motion-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.motion-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 .motion-card {
   display: grid;
-  grid-template-columns: minmax(145px, .9fr) minmax(190px, 1.1fr);
-  grid-template-rows: auto auto;
+  grid-template-rows: auto 1fr auto;
   align-items: center;
-  gap: 5px 16px;
+  gap: 5px;
   min-width: 0;
-  padding: 3px 22px;
+  padding: 3px 18px;
 }
 
 .motion-card:first-child { padding-left: 0; }
 .motion-card + .motion-card { border-left: 1px solid #e1e1e1; }
 .motion-card:last-child { padding-right: 0; }
 .motion-copy > span { color: #777; font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-.motion-copy h3 { margin: 6px 0 5px; color: #29252d; font-size: 15px; line-height: 1.28; }
-.motion-copy p { margin: 0; color: #666; font-size: 11px; line-height: 1.48; }
-.motion-note { grid-column: 1 / -1; color: #909090; font-size: 8px; line-height: 1.4; }
+.motion-copy h3 { margin: 5px 0 1px; color: #29252d; font-size: 14px; line-height: 1.25; }
+.motion-note { color: #9a959b; font-size: 8px; line-height: 1.4; }
 
 .tipping-scene {
   position: relative;
@@ -244,6 +242,43 @@
 @keyframes society-focus { 0%, 45%, 100% { opacity: .58; } 12%, 34% { opacity: 1; } }
 .fixed-society { display: grid; grid-template-columns: repeat(var(--agent-count), 10px); gap: 1px; }
 .fixed-society .agent-face { width: 10px; height: 10px; }
+
+.curve-scene { display: grid; min-height: 104px; align-content: center; }
+.curve-scene svg { display: block; width: 100%; height: 88px; overflow: visible; }
+.curve-axis { stroke: #3d3940; stroke-width: 1.4; stroke-linecap: round; }
+.curve-midline { stroke: #d9d5da; stroke-width: 1; stroke-dasharray: 4 4; }
+.curve-axis-label { fill: #777078; font-size: 7px; font-weight: 600; }
+.collapse-curve {
+  fill: none;
+  stroke: var(--curve-color);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  opacity: .28;
+  vector-effect: non-scaling-stroke;
+  transition: opacity .35s ease, stroke-width .35s ease;
+  animation: curve-draw 2.4s ease both;
+}
+.collapse-curve:nth-of-type(2) { animation-delay: .18s; }
+.collapse-curve:nth-of-type(3) { animation-delay: .36s; }
+.collapse-curve--active { stroke-width: 3; opacity: 1; }
+@keyframes curve-draw { from { stroke-dasharray: 320; stroke-dashoffset: 320; } to { stroke-dasharray: 320; stroke-dashoffset: 0; } }
+.curve-threshold { stroke: var(--curve-color); stroke-width: 1; stroke-dasharray: 2 2; transition: all .4s ease; }
+.curve-marker { fill: #fff; stroke: var(--curve-color); stroke-width: 2; transition: all .4s ease; }
+.curve-controls { display: flex; align-items: center; gap: 4px; margin-top: -1px; }
+.curve-controls button {
+  padding: 3px 5px;
+  color: #777078;
+  background: #fff;
+  border: 1px solid #ded9df;
+  border-radius: 4px;
+  font-size: 7px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
+}
+.curve-controls button:hover,
+.curve-controls button.is-active { color: var(--curve-color); background: #faf8fb; border-color: var(--curve-color); }
+.curve-controls output { margin-left: auto; color: #5d5360; font-size: 8px; font-weight: 700; white-space: nowrap; }
 
 .theory-figure {
   max-width: 900px;
