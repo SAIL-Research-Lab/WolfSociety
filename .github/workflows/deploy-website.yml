@@ -1,4 +1,4 @@
-name: Deploy WolfBench website
+name: Deploy project website
 
 on:
   push:
@@ -19,6 +19,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.repository == 'zhanglejun02/when-harm-scales'
     runs-on: ubuntu-latest
     defaults:
       run:
