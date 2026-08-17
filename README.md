@@ -176,7 +176,6 @@ pytest -q
 src/wolfbench/               simulator, scenarios, metrics, and CLI
 paper_experiments_v3/        experiment runners and analysis code
 tests/                       regression and integration tests
-docs/                        theory and calibration notes
 website/                     academic project page
 ```
 

@@ -43,8 +43,7 @@ archive2/
 AuthorKit27/
 paperoutputs/
 reinforcement_experiments/
-docs/aaai_freeze_2026-07-08.md
-docs/iclr_evidence_package.md
+docs/
 
 # Paper-v3 generated artifacts; keep runners, analyses, theory, and configs
 paper_experiments_v3/outputs/
