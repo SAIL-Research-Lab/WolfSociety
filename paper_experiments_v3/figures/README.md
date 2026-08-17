@@ -5,7 +5,7 @@ This directory builds the main-paper figures for the v3 rewrite.
 Run after the relevant paper-profile experiments and analyses finish:
 
 ```bash
-cd /Users/zhangyuejun/Documents/aaai/WolfBench-main
+cd Harm-Scale
 ./paper_experiments_v3/scripts/run_figures_venv.sh
 ```
 

@@ -33,4 +33,4 @@ def merge_social_baseline(baseline: dict[str, dict[str, float]],
         if asset not in baseline:
             baseline[asset] = {}
         baseline[asset]["msg_volume_mu"] = float(vols.mean()) if len(vols) else 0.0
-        baseline[asset]["msg_volume_sd"] = float(vols.std() + 1e-6)
+        baseline[asset]["msg_volume_sd"] = float(vols.std() + 1e-6) if len(vols) else 1.0

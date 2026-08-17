@@ -23,7 +23,7 @@ export const site = {
   authorAffiliations: [1, 1, '2,3', 2, 1, 2],
   links: {
     paper: './papers/when-harm-scales.pdf',
-    code: 'https://github.com/zhanglejun02/when-harm-scales',
+    code: 'https://github.com/SafeRL-Lab/Harm-Scale',
   },
 }
 

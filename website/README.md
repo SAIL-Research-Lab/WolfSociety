@@ -19,7 +19,7 @@ The name **WolfBench** is intentionally reserved for the final future-work secti
 
 ## Content configuration
 
-Project title, authors, affiliations, Paper/Code links, and BibTeX are centralized in the site configuration under the source config directory. Replace the temporary code URL before public deployment.
+Project title, authors, affiliations, Paper/Code links, and BibTeX are centralized in the site configuration under the source config directory.
 
 The findings values are centralized in the results module and currently mirror:
 

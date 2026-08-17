@@ -36,3 +36,4 @@ wolfbench = ["config/*.yaml", "config/scenarios/*.yaml"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--strict-markers"
+pythonpath = ["src", "."]

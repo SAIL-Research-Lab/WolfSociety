@@ -47,8 +47,8 @@ wolfbench scaling \
 Python 3.10 or newer is required.
 
 ```bash
-git clone https://github.com/zhanglejun02/when-harm-scales.git
-cd when-harm-scales
+git clone https://github.com/SafeRL-Lab/Harm-Scale.git
+cd Harm-Scale
 
 python3 -m venv .venv
 source .venv/bin/activate
@@ -65,7 +65,8 @@ export OPENROUTER_API_KEY="your-api-key"
 ```
 
 The deterministic simulator and all commands using `--mock` run without an API
-key.
+key. Mock runs validate the pipeline and artifact contract; they do not
+reproduce the paper's LLM-derived numerical results.
 
 ## Run the project
 

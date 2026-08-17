@@ -86,7 +86,6 @@ checkpoints/
 !website/public/finite-size-scaling.png
 !website/public/intervention-effects.png
 !website/public/papers/when-harm-scales.pdf
-!website/public/papers/when-harm-scales-supplement.pdf
 
 # LaTeX build products
 *.aux
