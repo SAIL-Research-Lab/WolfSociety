@@ -61,8 +61,9 @@ function TippingScene() {
   return (
     <article className="motion-card">
       <div className="motion-copy">
-        <span>01 · Nonlinear transition</span>
-        <h3>Harm accumulates, then collapse.</h3>
+        <span>01 · Sudden collapse</span>
+        <h3>Collapse can arrive suddenly.</h3>
+        <p>Paper finding: harm stays limited at first, then rises sharply after only a small increase in harmful agents.</p>
       </div>
       <div className="tipping-scene" aria-label="Conceptual animation in which normal agents progressively become harmful and the shared state suddenly collapses">
         <div className="tipping-agents">
@@ -73,10 +74,10 @@ function TippingScene() {
         <div className="pressure-flow" aria-hidden="true"><span /></div>
         <div className="collapsing-state">
           <SharedState />
-          <strong>shared state</strong>
+          <strong>market</strong>
         </div>
       </div>
-      <small className="motion-note">Illustrative transition</small>
+      <small className="motion-note">Conceptual illustration</small>
     </article>
   )
 }
@@ -95,8 +96,9 @@ function SizeScene() {
   return (
     <article className="motion-card">
       <div className="motion-copy">
-        <span>02 · Finite-size fragility</span>
-        <h3>Larger societies tip at a smaller share.</h3>
+        <span>02 · Society size</span>
+        <h3>A larger society can fail at a smaller harmful share.</h3>
+        <p>Paper finding: the harmful share needed for collapse falls as the number of agents grows, even though the harmful headcount increases.</p>
       </div>
       <div className="size-scene" aria-label="Conceptual comparison showing a small society and a larger society with a visually smaller harmful share">
         <div className="society-row society-row--small">
@@ -114,7 +116,7 @@ function SizeScene() {
           <SharedState compact />
         </div>
       </div>
-      <small className="motion-note">Illustrative agent counts</small>
+      <small className="motion-note">Conceptual comparison</small>
     </article>
   )
 }
@@ -157,8 +159,9 @@ function CollapseCurveScene() {
   return (
     <article className="motion-card motion-card--curves">
       <div className="motion-copy">
-        <span>03 · Boundary shift</span>
-        <h3>As N grows, collapse shifts left.</h3>
+        <span>03 · Measured curves</span>
+        <h3>The collapse curve moves left as society size grows.</h3>
+        <p>Paper finding: the 50% collapse point falls from 4.7% at 100 agents to 2.2% at 2,000 agents.</p>
       </div>
       <div className="curve-scene">
         <svg viewBox="0 0 250 112" role="img" aria-label="Interactive collapse curves shifting toward a lower harmful fraction as society size increases">
@@ -195,13 +198,13 @@ function CollapseCurveScene() {
               aria-pressed={activeSize === n}
               onClick={() => setActiveSize(n)}
             >
-              N={n}
+              {n.toLocaleString()} agents
             </button>
           ))}
-          <output>α<sub>c</sub> ≈ {(activeAlpha * 100).toFixed(1)}%</output>
+          <output>50% collapse at <strong>{(activeAlpha * 100).toFixed(1)}%</strong> harmful</output>
         </div>
       </div>
-      <small className="motion-note">Measured midpoint</small>
+      <small className="motion-note">Values shown are measured results</small>
     </article>
   )
 }
@@ -210,8 +213,8 @@ export function AnimatedTeasers() {
   return (
     <section className="motion-section" aria-labelledby="motion-title">
       <div className="compact-heading">
-        <h2 id="motion-title">Three intuitions in motion</h2>
-        <p>Conceptual—not simulator output.</p>
+        <h2 id="motion-title">Three findings in motion</h2>
+        <p>Simple illustrations of the paper's main results.</p>
       </div>
       <div className="motion-grid">
         <TippingScene />
