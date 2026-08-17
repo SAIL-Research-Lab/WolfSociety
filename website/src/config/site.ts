@@ -9,9 +9,9 @@ export const site = {
   ],
   authors: [
     'Lejun Zhang',
-    'Muning Wen',
     'Sarah Lu-Liang',
     'Xin Jiang',
+    'Muning Wen',
     'Weinan Zhang',
     'Shangding Gu',
   ],
@@ -20,7 +20,7 @@ export const site = {
     'University of California, Berkeley',
     'University of Toronto, Canada',
   ],
-  authorAffiliations: [1, 1, '2,3', 2, 1, 2],
+  authorAffiliations: [1, '2,3', 2, 1, 1, 2],
   links: {
     paper: './papers/when-harm-scales.pdf',
     code: 'https://github.com/SafeRL-Lab/Harm-Scale',
