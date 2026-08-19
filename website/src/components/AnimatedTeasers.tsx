@@ -97,7 +97,7 @@ function SizeScene() {
           </div>
           <div className="count-measure">
             <span>Harmful agents</span>
-            <strong><span className="count-devil" aria-hidden="true">😈</span>44</strong>
+            <strong><span className="count-devil" aria-hidden="true">😈</span>≈44</strong>
           </div>
         </div>
         <div className="size-summary" aria-label="A smaller harmful share but a larger harmful headcount">
