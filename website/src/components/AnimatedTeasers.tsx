@@ -1,122 +1,99 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { scalingPoints } from '../data/results'
 
-type AgentFaceProps = {
-  kind: 'normal' | 'devil'
-  className?: string
-}
-
-function AgentFace({ kind, className = '' }: AgentFaceProps) {
-  if (kind === 'devil') {
-    return (
-      <svg className={`agent-face devil-face ${className}`} viewBox="0 0 36 36" aria-hidden="true">
-        <path className="devil-horn" d="M8 10 5 2l9 6M28 10l3-8-9 6" />
-        <circle className="devil-head" cx="18" cy="19" r="13" />
-        <path className="devil-eye" d="m11 16 4 2m10-2-4 2" />
-        <path className="devil-smile" d="M12 23c3 3 9 3 12 0" />
-      </svg>
-    )
-  }
-
-  return (
-    <svg className={`agent-face normal-face ${className}`} viewBox="0 0 36 36" aria-hidden="true">
-      <circle className="normal-head" cx="18" cy="18" r="13" />
-      <circle className="normal-eye" cx="13" cy="16" r="1.4" />
-      <circle className="normal-eye" cx="23" cy="16" r="1.4" />
-      <path className="normal-smile" d="M13 22c3 2 7 2 10 0" />
-    </svg>
-  )
-}
-
-function SwitchingAgent({ stage }: { stage?: number }) {
-  return (
-    <span className={stage === undefined ? 'agent-cell' : `agent-cell agent-cell--switch agent-cell--stage-${stage}`}>
-      <AgentFace kind="normal" />
-      {stage !== undefined && <AgentFace kind="devil" />}
-    </span>
-  )
-}
-
-function SharedState({ compact = false }: { compact?: boolean }) {
-  return (
-    <div className={compact ? 'shared-state shared-state--compact' : 'shared-state'} aria-hidden="true">
-      <span />
-      <span />
-      <span />
-      <i />
-    </div>
-  )
-}
-
-const tippingStages = new Map([
-  [2, 1],
-  [7, 2],
-  [10, 3],
-  [13, 4],
-  [16, 5],
-  [19, 6],
-])
+const tippingStages = [
+  { share: 2, harm: 7, outcome: 'Limited harm', state: 'stable' },
+  { share: 3, harm: 11, outcome: 'Limited harm', state: 'stable' },
+  { share: 4, harm: 24, outcome: 'Harm rising', state: 'warning' },
+  { share: 5, harm: 92, outcome: 'Collapse', state: 'collapse' },
+] as const
 
 function TippingScene() {
+  const [activeStage, setActiveStage] = useState(0)
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const timer = window.setInterval(() => {
+      setActiveStage((current) => (current + 1) % tippingStages.length)
+    }, 1700)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  const stage = tippingStages[activeStage]
+
   return (
     <article className="motion-card">
-      <div className="motion-copy">
-        <span>01 · Sudden collapse</span>
-        <h3>Collapse can arrive suddenly.</h3>
-        <p>Paper finding: harm stays limited at first, then rises sharply after only a small increase in harmful agents.</p>
-      </div>
-      <div className="tipping-scene" aria-label="Conceptual animation in which normal agents progressively become harmful and the shared state suddenly collapses">
-        <div className="tipping-agents">
-          {Array.from({ length: 20 }, (_, index) => (
-            <SwitchingAgent key={index} stage={tippingStages.get(index)} />
+      <div className="finding-demo tipping-demo" aria-label="Illustration showing collective harm jumping after a small increase in harmful-agent share">
+        <span className="demo-badge">Illustrative progression</span>
+        <div className="demo-readout">
+          <span>Harmful-agent share</span>
+          <strong>{stage.share.toFixed(1)}%</strong>
+          <div className="harm-share-track" aria-hidden="true">
+            <i style={{ width: `${stage.share * 12}%` }} />
+          </div>
+        </div>
+        <span className="demo-arrow" aria-hidden="true">→</span>
+        <div className={`outcome-readout outcome-readout--${stage.state}`}>
+          <span>Collective outcome</span>
+          <strong>{stage.outcome}</strong>
+          <div className="collective-harm-track" aria-hidden="true">
+            <i style={{ width: `${stage.harm}%` }} />
+          </div>
+          <small>collective harm</small>
+        </div>
+        <div className="stage-controls" aria-label="Select illustrative harmful-agent share">
+          {tippingStages.map((item, index) => (
+            <button
+              key={item.share}
+              type="button"
+              className={activeStage === index ? 'is-active' : ''}
+              aria-pressed={activeStage === index}
+              onClick={() => setActiveStage(index)}
+            >
+              {item.share}%
+            </button>
           ))}
         </div>
-        <div className="pressure-flow" aria-hidden="true"><span /></div>
-        <div className="collapsing-state">
-          <SharedState />
-          <strong>market</strong>
-        </div>
       </div>
-      <small className="motion-note">Conceptual illustration</small>
+      <p className="motion-explanation"><strong>Finding 1.</strong> Harm remains limited at first, then jumps after only a small increase in the harmful-agent share.</p>
     </article>
-  )
-}
-
-function FixedSociety({ count, harmful }: { count: number; harmful: number[] }) {
-  return (
-    <div className="fixed-society" style={{ '--agent-count': count > 12 ? 10 : 5 } as CSSProperties}>
-      {Array.from({ length: count }, (_, index) => (
-        <AgentFace key={index} kind={harmful.includes(index) ? 'devil' : 'normal'} />
-      ))}
-    </div>
   )
 }
 
 function SizeScene() {
   return (
     <article className="motion-card">
-      <div className="motion-copy">
-        <span>02 · Society size</span>
-        <h3>A larger society can fail at a smaller harmful share.</h3>
-        <p>Paper finding: the harmful share needed for collapse falls as the number of agents grows, even though the harmful headcount increases.</p>
-      </div>
-      <div className="size-scene" aria-label="Conceptual comparison showing a small society and a larger society with a visually smaller harmful share">
-        <div className="society-row society-row--small">
-          <div>
-            <span>smaller society</span>
-            <FixedSociety count={10} harmful={[1, 7]} />
+      <div className="finding-demo size-demo" aria-label="Measured comparison of collapse points for societies of 100 and 2,000 agents">
+        <div className="size-comparison-row size-comparison-row--small">
+          <div className="size-name">
+            <span>Small society</span>
+            <strong>100 agents</strong>
           </div>
-          <SharedState compact />
-        </div>
-        <div className="society-row society-row--large">
-          <div>
-            <span>larger society · lower share</span>
-            <FixedSociety count={30} harmful={[2, 11, 20, 27]} />
+          <div className="share-measure">
+            <span>Harmful share at 50% collapse</span>
+            <div><i style={{ width: '94%' }} /></div>
+            <strong>4.7%</strong>
           </div>
-          <SharedState compact />
+          <div className="count-measure"><span>Harmful agents</span><strong>≈5</strong></div>
+        </div>
+        <div className="size-comparison-row size-comparison-row--large">
+          <div className="size-name">
+            <span>Large society</span>
+            <strong>2,000 agents</strong>
+          </div>
+          <div className="share-measure">
+            <span>Harmful share at 50% collapse</span>
+            <div><i style={{ width: '44%' }} /></div>
+            <strong>2.2%</strong>
+          </div>
+          <div className="count-measure"><span>Harmful agents</span><strong>44</strong></div>
+        </div>
+        <div className="size-summary" aria-label="A smaller harmful share but a larger harmful headcount">
+          <span>Harmful share <strong>↓ 53%</strong></span>
+          <span>Harmful headcount <strong>↑ about 9×</strong></span>
         </div>
       </div>
-      <small className="motion-note">Conceptual comparison</small>
+      <p className="motion-explanation"><strong>Finding 2.</strong> Larger societies collapse at a smaller harmful percentage, even though more harmful agents are needed in total.</p>
     </article>
   )
 }
@@ -158,12 +135,7 @@ function CollapseCurveScene() {
 
   return (
     <article className="motion-card motion-card--curves">
-      <div className="motion-copy">
-        <span>03 · Measured curves</span>
-        <h3>The collapse curve moves left as society size grows.</h3>
-        <p>Paper finding: the 50% collapse point falls from 4.7% at 100 agents to 2.2% at 2,000 agents.</p>
-      </div>
-      <div className="curve-scene">
+      <div className="finding-demo curve-scene">
         <svg viewBox="0 0 250 112" role="img" aria-label="Interactive collapse curves shifting toward a lower harmful fraction as society size increases">
           <line className="curve-axis" x1="22" y1="12" x2="22" y2="91" />
           <line className="curve-axis" x1="22" y1="91" x2="238" y2="91" />
@@ -204,7 +176,7 @@ function CollapseCurveScene() {
           <output>50% collapse at <strong>{(activeAlpha * 100).toFixed(1)}%</strong> harmful</output>
         </div>
       </div>
-      <small className="motion-note">Values shown are measured results</small>
+      <p className="motion-explanation"><strong>Finding 3.</strong> The measured collapse curve moves left as society size grows: from 4.7% at 100 agents to 2.2% at 2,000 agents.</p>
     </article>
   )
 }
