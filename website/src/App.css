@@ -205,9 +205,36 @@
 .demo-arrow { color: #a39ca5; font-size: 28px; text-align: center; }
 .harm-share-track,
 .collective-harm-track { height: 10px; overflow: hidden; background: #ece8ed; border-radius: 999px; }
+.harm-share-visual { position: relative; padding: 5px 0; }
+.harm-share-visual .harm-share-track { overflow: visible; }
 .harm-share-track i,
 .collective-harm-track i { display: block; height: 100%; border-radius: inherit; transition: width .55s ease, background .35s ease; }
 .harm-share-track i { background: #a78ab2; }
+.harm-devil {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  font-size: 20px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 3px rgba(91, 48, 105, .18));
+  transform: translate(-50%, -50%);
+  transition: left .55s ease;
+  animation: devil-float 1.35s ease-in-out infinite;
+}
+.harm-devil--warning { animation: devil-wiggle .55s ease-in-out infinite; }
+.harm-devil--collapse { animation: devil-collapse .7s ease-in-out infinite; }
+@keyframes devil-float {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-3deg); }
+  50% { transform: translate(-50%, calc(-50% - 3px)) rotate(3deg); }
+}
+@keyframes devil-wiggle {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-7deg); }
+  50% { transform: translate(-50%, -50%) rotate(7deg) scale(1.05); }
+}
+@keyframes devil-collapse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 0 rgba(214, 54, 92, 0)); }
+  50% { transform: translate(-50%, -50%) scale(1.18); filter: drop-shadow(0 0 7px rgba(214, 54, 92, .55)); }
+}
 .collective-harm-track i { background: #b4a6b8; }
 .outcome-readout--warning .collective-harm-track i { background: #dc8b72; }
 .outcome-readout--collapse > strong { color: #c9315b; }
@@ -227,7 +254,13 @@
 .share-measure > span { color: #827b83; font-size: 10px; font-weight: 650; }
 .size-name strong { color: #373139; font-size: 18px; }
 .count-measure { text-align: right; }
-.count-measure strong { color: #6c4777; font-size: 24px; }
+.count-measure strong { display: flex; align-items: center; justify-content: flex-end; gap: 6px; color: #6c4777; font-size: 24px; }
+.count-devil { display: inline-block; font-size: 22px; filter: drop-shadow(0 2px 2px rgba(91, 48, 105, .14)); animation: count-devil-float 2.2s ease-in-out infinite; }
+.size-comparison-row--large .count-devil { animation-delay: .45s; }
+@keyframes count-devil-float {
+  0%, 100% { transform: translateY(1px) rotate(-4deg); }
+  50% { transform: translateY(-3px) rotate(4deg); }
+}
 .share-measure { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 7px 10px; }
 .share-measure > span { grid-column: 1 / -1; }
 .share-measure > div { height: 11px; overflow: hidden; background: #ece8ed; border-radius: 999px; }
@@ -448,4 +481,12 @@
   .bibtex-toolbar > span { padding-top: 8px; font-size: 0; }
   .bibtex-toolbar i:nth-child(3) { margin-right: 0; }
   .bibtex-panel pre { padding: 19px 17px 22px; font-size: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .harm-devil,
+  .count-devil,
+  .share-measure i,
+  .collapse-curve,
+  .theory-step--feedback .theory-icon { animation: none; }
 }

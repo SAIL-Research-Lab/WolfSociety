@@ -28,8 +28,14 @@ function TippingScene() {
         <div className="demo-readout">
           <span>Harmful-agent share</span>
           <strong>{stage.share.toFixed(1)}%</strong>
-          <div className="harm-share-track" aria-hidden="true">
-            <i style={{ width: `${stage.share * 12}%` }} />
+          <div className="harm-share-visual" aria-hidden="true">
+            <div className="harm-share-track">
+              <i style={{ width: `${stage.share * 12}%` }} />
+            </div>
+            <span
+              className={`harm-devil harm-devil--${stage.state}`}
+              style={{ left: `${stage.share * 12}%` }}
+            >😈</span>
           </div>
         </div>
         <span className="demo-arrow" aria-hidden="true">→</span>
@@ -74,7 +80,10 @@ function SizeScene() {
             <div><i style={{ width: '94%' }} /></div>
             <strong>4.7%</strong>
           </div>
-          <div className="count-measure"><span>Harmful agents</span><strong>≈5</strong></div>
+          <div className="count-measure">
+            <span>Harmful agents</span>
+            <strong><span className="count-devil" aria-hidden="true">😈</span>≈5</strong>
+          </div>
         </div>
         <div className="size-comparison-row size-comparison-row--large">
           <div className="size-name">
@@ -86,7 +95,10 @@ function SizeScene() {
             <div><i style={{ width: '44%' }} /></div>
             <strong>2.2%</strong>
           </div>
-          <div className="count-measure"><span>Harmful agents</span><strong>44</strong></div>
+          <div className="count-measure">
+            <span>Harmful agents</span>
+            <strong><span className="count-devil" aria-hidden="true">😈</span>44</strong>
+          </div>
         </div>
         <div className="size-summary" aria-label="A smaller harmful share but a larger harmful headcount">
           <span>Harmful share <strong>↓ 53%</strong></span>
