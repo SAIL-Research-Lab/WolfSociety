@@ -152,7 +152,7 @@ function CollapseCurveScene() {
           <line className="curve-axis" x1="22" y1="12" x2="22" y2="91" />
           <line className="curve-axis" x1="22" y1="91" x2="238" y2="91" />
           <line className="curve-midline" x1="22" y1="56" x2="238" y2="56" />
-          <text className="curve-axis-label" x="4" y="58">.5</text>
+          <text className="curve-axis-label" x="1" y="58">0.5</text>
           <text className="curve-axis-label" x="191" y="106">harmful share</text>
           {curveSizes.map((n) => (
             <path

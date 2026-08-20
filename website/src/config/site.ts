@@ -27,8 +27,9 @@ export const site = {
   },
 }
 
-export const bibtex = `@article{zhang2027whenharm,
-  title={When Harm Scales: Social Dynamics of Nonlinear Collapse in Financial Agent Societies},
-  author={Zhang, Lejun and Wen, Muning and Lu-Liang, Sarah and Jiang, Xin and Zhang, Weinan and Gu, Shangding},
+export const bibtex = `@unpublished{zhang2027whenharm,
+  title={{When Harm Scales}: Social Dynamics of Nonlinear Collapse in Financial Agent Societies},
+  author={Zhang, Lejun and Lu-Liang, Sarah and Jiang, Xin and Wen, Muning and Zhang, Weinan and Gu, Shangding},
+  note={Manuscript under review},
   year={2027}
 }`
