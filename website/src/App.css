@@ -272,8 +272,8 @@
 .size-summary strong { color: #724c7c; }
 
 .motion-card--curves { width: min(100%, 900px); }
-.curve-scene { display: grid; width: min(100%, 860px); min-height: 255px; margin: 0 auto; align-content: center; }
-.curve-scene svg { display: block; width: 100%; height: auto; overflow: visible; }
+.curve-scene { display: grid; grid-template-columns: 145px minmax(0, 1fr); align-items: center; gap: 24px; width: min(100%, 860px); min-height: 255px; margin: 0 auto; }
+.curve-scene svg { grid-column: 2; grid-row: 1; display: block; width: 100%; height: auto; overflow: visible; }
 .curve-axis { stroke: #3d3940; stroke-width: 1.4; stroke-linecap: round; }
 .curve-midline { stroke: #d9d5da; stroke-width: 1; stroke-dasharray: 4 4; }
 .curve-axis-label { fill: #777078; font-size: 7px; font-weight: 600; }
@@ -293,8 +293,9 @@
 @keyframes curve-draw { from { stroke-dasharray: 600; stroke-dashoffset: 600; } to { stroke-dasharray: 600; stroke-dashoffset: 0; } }
 .curve-threshold { stroke: var(--curve-color); stroke-width: 1; stroke-dasharray: 2 2; transition: all .4s ease; }
 .curve-marker { fill: #fff; stroke: var(--curve-color); stroke-width: 2; transition: all .4s ease; }
-.curve-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 7px; margin-top: 10px; }
+.curve-controls { grid-column: 1; grid-row: 1; display: grid; align-content: center; gap: 7px; min-width: 0; }
 .curve-controls button {
+  width: 100%;
   padding: 6px 9px;
   color: #777078;
   background: #fff;
@@ -307,7 +308,7 @@
 }
 .curve-controls button:hover,
 .curve-controls button.is-active { color: var(--curve-color); background: #faf8fb; border-color: var(--curve-color); }
-.curve-controls output { flex: 0 1 auto; margin-left: 9px; color: #5d5360; font-size: 11px; white-space: nowrap; }
+.curve-controls output { margin-top: 8px; color: #5d5360; font-size: 11px; line-height: 1.45; }
 .curve-controls output strong { color: #342a38; }
 
 .theory-figure {
@@ -444,7 +445,7 @@
 @media (max-width: 820px) {
   .academic-hero { padding-top: 46px; }
   .motion-card { padding: 28px 0; }
-  .curve-controls output { flex-basis: 100%; width: 100%; margin: 4px 0 0; text-align: left; }
+  .curve-scene { grid-template-columns: 122px minmax(0, 1fr); gap: 16px; }
   .theory-flow { grid-template-columns: 1fr; gap: 7px; }
   .theory-arrow { transform: rotate(90deg); }
 }
@@ -474,7 +475,9 @@
   .share-measure { grid-column: 1 / -1; }
   .count-measure { grid-column: 2; grid-row: 1; }
   .size-summary { display: grid; gap: 5px; }
-  .curve-controls output { width: 100%; margin-left: 0; }
+  .curve-scene { grid-template-columns: 104px minmax(0, 1fr); gap: 12px; }
+  .curve-controls button { padding: 6px 5px; font-size: 9px; }
+  .curve-controls output { font-size: 10px; }
   .theory-equation { display: grid; gap: 8px; text-align: center; }
   .paper-figure figcaption { font-size: 13px; }
   .citation-heading { gap: 12px; }
