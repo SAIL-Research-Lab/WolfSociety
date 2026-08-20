@@ -255,7 +255,7 @@
 .size-name strong { color: #373139; font-size: 18px; }
 .count-measure { text-align: right; }
 .count-measure strong { display: flex; align-items: center; justify-content: flex-end; gap: 7px; color: #6c4777; font-size: 24px; }
-.count-measure .count-devil { display: inline-block; font-size: 30px; line-height: 1; filter: drop-shadow(0 2px 3px rgba(91, 48, 105, .2)); animation: count-devil-float 2.2s ease-in-out infinite; }
+.count-measure .count-devil { display: inline-block; font-size: 20px; line-height: 1; filter: drop-shadow(0 2px 3px rgba(91, 48, 105, .2)); animation: count-devil-float 2.2s ease-in-out infinite; }
 .size-comparison-row--large .count-devil { animation-delay: .45s; }
 @keyframes count-devil-float {
   0%, 100% { transform: translateY(1px) rotate(-4deg); }
