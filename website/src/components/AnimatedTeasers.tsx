@@ -125,7 +125,7 @@ function curvePath(alphaC: number) {
   return Array.from({ length: 51 }, (_, index) => {
     const alpha = index * 0.0014
     const probability = 1 / (1 + Math.exp(-(alpha - alphaC) / 0.0055))
-    const x = 22 + (alpha / 0.07) * 210
+    const x = 26 + (alpha / 0.07) * 314
     const y = 91 - probability * 70
     return `${index === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
   }).join(' ')
@@ -143,17 +143,17 @@ function CollapseCurveScene() {
   }, [])
 
   const activeAlpha = criticalFraction(activeSize)
-  const activeX = 22 + (activeAlpha / 0.07) * 210
+  const activeX = 26 + (activeAlpha / 0.07) * 314
 
   return (
     <article className="motion-card motion-card--curves">
       <div className="finding-demo curve-scene">
-        <svg viewBox="0 0 250 112" role="img" aria-label="Interactive collapse curves shifting toward a lower harmful fraction as society size increases">
-          <line className="curve-axis" x1="22" y1="12" x2="22" y2="91" />
-          <line className="curve-axis" x1="22" y1="91" x2="238" y2="91" />
-          <line className="curve-midline" x1="22" y1="56" x2="238" y2="56" />
-          <text className="curve-axis-label" x="1" y="58">0.5</text>
-          <text className="curve-axis-label" x="191" y="106">harmful share</text>
+        <svg viewBox="0 0 360 112" role="img" aria-label="Interactive collapse curves shifting toward a lower harmful fraction as society size increases">
+          <line className="curve-axis" x1="26" y1="12" x2="26" y2="91" />
+          <line className="curve-axis" x1="26" y1="91" x2="348" y2="91" />
+          <line className="curve-midline" x1="26" y1="56" x2="348" y2="56" />
+          <text className="curve-axis-label" x="2" y="58">0.5</text>
+          <text className="curve-axis-label" x="287" y="106">harmful share</text>
           {curveSizes.map((n) => (
             <path
               key={n}
