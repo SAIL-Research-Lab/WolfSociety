@@ -18,7 +18,7 @@ export function PaperSection() {
         <div>
           <span className="citation-kicker"><Sparkles size={13} /> Cite this work</span>
           <h2>BibTeX</h2>
-          <p className="citation-note">If this work is useful in your research, please cite the paper.</p>
+          <p className="citation-note">If you find this work useful, please cite the manuscript.</p>
         </div>
       </div>
       <div className={`bibtex-panel${copied ? ' bibtex-panel--copied' : ''}`}>

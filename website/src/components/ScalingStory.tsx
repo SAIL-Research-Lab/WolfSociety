@@ -12,7 +12,7 @@ export function ScalingStory() {
             Across six measured society sizes, collapse remains rare at low harmful fractions and rises sharply near a size-dependent boundary. Increasing the population from 100 to 2,000 moves the measured midpoint from 4.7% to 2.2%.
           </p>
           <p>
-            The corresponding harmful count nevertheless grows from 4.7 to 44. This combination—a decreasing fraction and an increasing count—is consistent with sublinear finite-size fragility rather than either a constant harmful fraction or a constant harmful count.
+            The corresponding effective critical harmful count nevertheless grows from 4.7 to 44. Over the tested size range, this combination—a decreasing fraction and an increasing count—indicates sublinear growth in the effective critical count and is inconsistent with both constant-fraction and constant-count boundaries.
           </p>
         </div>
 
@@ -22,7 +22,7 @@ export function ScalingStory() {
             alt="Measured critical fraction decreases with society size while the effective harmful count grows sublinearly."
           />
           <figcaption>
-            <strong>Figure 3.</strong> The critical fraction follows α<sub>c</sub>(N) ∝ N<sup>−0.222</sup>, while the effective count follows K<sub>c</sub>(N) ∝ N<sup>0.778</sup>. The conditional bootstrap interval for the boundary exponent is [{exponent.confidenceInterval[0].toFixed(3)}, {exponent.confidenceInterval[1].toFixed(3)}].
+            <strong>Figure 3.</strong> The critical fraction follows α<sub>c</sub>(N) ∝ N<sup>−0.222</sup>, while the effective count follows K<sub>c</sub>(N) ∝ N<sup>0.778</sup>. The conditional 95% bootstrap confidence interval for the boundary exponent is [{exponent.confidenceInterval[0].toFixed(3)}, {exponent.confidenceInterval[1].toFixed(3)}].
           </figcaption>
         </figure>
       </section>
@@ -31,10 +31,10 @@ export function ScalingStory() {
         <div className="academic-content">
           <h2>Why Does the Boundary Shift?</h2>
           <p>
-            Matched interventions test whether the observed size effect is connected to the closed feedback loop rather than population size alone. Weakening feedback moves the collapse boundary toward a larger harmful fraction, whereas stronger coupling and broader network reach move it toward a smaller fraction.
+            Matched interventions probe whether feedback structure contributes to the observed size effect, rather than treating population size alone as explanatory. Weakening feedback moves the collapse boundary toward a larger harmful fraction, whereas stronger coupling and broader network reach move it toward a smaller fraction.
           </p>
           <p>
-            The fixed-count analysis provides a complementary check below the transition: when the harmful count is held fixed, peak joint social–market severity decreases with population size. Harm is diluted below the boundary, but feedback can amplify it once the society approaches the critical regime.
+            The fixed-count analysis provides a complementary check below the transition: when the harmful count is held fixed, the maximum joint severity of harmful diffusion and market disruption decreases with population size. This supports subcritical dilution, while the intervention results show that changing feedback strength shifts the critical boundary.
           </p>
         </div>
 

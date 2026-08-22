@@ -23,10 +23,10 @@ function TippingScene() {
 
   return (
     <article className="motion-card">
-      <div className="finding-demo tipping-demo" aria-label="Illustration showing collective harm jumping after a small increase in harmful-agent share">
-        <span className="demo-badge">Illustrative progression</span>
+      <div className="finding-demo tipping-demo" aria-label="Illustration showing collective harm jumping after a small increase in harmful-agent fraction">
+        <span className="demo-badge">Illustrative progression—not measured data</span>
         <div className="demo-readout">
-          <span>Harmful-agent share</span>
+          <span>Harmful-agent fraction</span>
           <strong>{stage.share.toFixed(1)}%</strong>
           <div className="harm-share-visual" aria-hidden="true">
             <div className="harm-share-track">
@@ -47,7 +47,7 @@ function TippingScene() {
           </div>
           <small>collective harm</small>
         </div>
-        <div className="stage-controls" aria-label="Select illustrative harmful-agent share">
+        <div className="stage-controls" aria-label="Select an illustrative harmful-agent fraction">
           {tippingStages.map((item, index) => (
             <button
               key={item.share}
@@ -61,7 +61,7 @@ function TippingScene() {
           ))}
         </div>
       </div>
-      <p className="motion-explanation"><strong>Finding 1.</strong> Harm remains limited at first, then jumps after only a small increase in the harmful-agent share.</p>
+      <p className="motion-explanation"><strong>Finding 1.</strong> Harm remains limited at first, then jumps after only a small increase in the harmful-agent fraction.</p>
     </article>
   )
 }
@@ -76,7 +76,7 @@ function SizeScene() {
             <strong>100 agents</strong>
           </div>
           <div className="share-measure">
-            <span>Harmful share at 50% collapse</span>
+            <span>Harmful-agent fraction at the 50% collapse boundary</span>
             <div><i style={{ width: '94%' }} /></div>
             <strong>4.7%</strong>
           </div>
@@ -91,7 +91,7 @@ function SizeScene() {
             <strong>2,000 agents</strong>
           </div>
           <div className="share-measure">
-            <span>Harmful share at 50% collapse</span>
+            <span>Harmful-agent fraction at the 50% collapse boundary</span>
             <div><i style={{ width: '44%' }} /></div>
             <strong>2.2%</strong>
           </div>
@@ -100,12 +100,12 @@ function SizeScene() {
             <strong><span className="count-devil" aria-hidden="true">😈</span>≈44</strong>
           </div>
         </div>
-        <div className="size-summary" aria-label="A smaller harmful share but a larger harmful headcount">
-          <span>Harmful share <strong>↓ 53%</strong></span>
-          <span>Harmful headcount <strong>↑ about 9×</strong></span>
+        <div className="size-summary" aria-label="A smaller harmful-agent fraction but a larger harmful-agent count">
+          <span>Harmful-agent fraction <strong>↓ 53%</strong></span>
+          <span>Harmful-agent count <strong>↑ about 9×</strong></span>
         </div>
       </div>
-      <p className="motion-explanation"><strong>Finding 2.</strong> Larger societies collapse at a smaller harmful percentage, even though more harmful agents are needed in total.</p>
+      <p className="motion-explanation"><strong>Finding 2.</strong> Larger societies reach the 50% collapse boundary at a smaller harmful-agent fraction, even though the corresponding effective harmful count is larger.</p>
     </article>
   )
 }
@@ -148,12 +148,12 @@ function CollapseCurveScene() {
   return (
     <article className="motion-card motion-card--curves">
       <div className="finding-demo curve-scene">
-        <svg viewBox="0 0 360 112" role="img" aria-label="Interactive collapse curves shifting toward a lower harmful fraction as society size increases">
+        <svg viewBox="0 0 360 112" role="img" aria-label="Interactive collapse curves shifting toward a lower harmful-agent fraction as society size increases">
           <line className="curve-axis" x1="26" y1="12" x2="26" y2="91" />
           <line className="curve-axis" x1="26" y1="91" x2="348" y2="91" />
           <line className="curve-midline" x1="26" y1="56" x2="348" y2="56" />
           <text className="curve-axis-label" x="2" y="58">0.5</text>
-          <text className="curve-axis-label" x="287" y="106">harmful share</text>
+          <text className="curve-axis-label" x="346" y="106" textAnchor="end">harmful-agent fraction</text>
           {curveSizes.map((n) => (
             <path
               key={n}
@@ -185,10 +185,10 @@ function CollapseCurveScene() {
               {n.toLocaleString()} agents
             </button>
           ))}
-          <output>50% collapse at <strong>{(activeAlpha * 100).toFixed(1)}%</strong> harmful</output>
+          <output>50% collapse boundary: <strong>{(activeAlpha * 100).toFixed(1)}%</strong> harmful-agent fraction</output>
         </div>
       </div>
-      <p className="motion-explanation"><strong>Finding 3.</strong> The measured collapse curve moves left as society size grows: from 4.7% at 100 agents to 2.2% at 2,000 agents.</p>
+      <p className="motion-explanation"><strong>Finding 3.</strong> Illustrative curves anchored at the measured 50% collapse boundaries shift left as society size grows: from 4.7% at 100 agents to 2.2% at 2,000 agents.</p>
     </article>
   )
 }
@@ -198,7 +198,7 @@ export function AnimatedTeasers() {
     <section className="motion-section" aria-labelledby="motion-title">
       <div className="compact-heading">
         <h2 id="motion-title">Three findings in motion</h2>
-        <p>Simple illustrations of the paper's main results.</p>
+        <p>Illustrations and measured summaries of the paper's main results.</p>
       </div>
       <div className="motion-grid">
         <TippingScene />

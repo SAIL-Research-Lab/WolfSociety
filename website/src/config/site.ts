@@ -5,7 +5,7 @@ export const site = {
     'This work studies how harmful-agent scaling, social diffusion, and shared-state feedback shape critical transitions in interacting agent societies.',
   abstract: [
     'Safety evaluations typically assess agents in isolation. Interacting agents, however, exchange messages and reshape shared environments, allowing local harmful behavior to propagate through social evidence, collective action, and market feedback. We study how society-level collapse varies with the harmful-agent fraction and population size in a controlled hybrid social–market environment.',
-    'We introduce Agent Society Dynamics, which separates size-dependent harmful pressure from amplification through shared-state feedback. Collapse is rare below a size-dependent boundary and rises sharply near it. As society size grows from 100 to 2,000, the measured 50% collapse boundary falls from 4.7% to 2.2%, while the effective harmful count rises from 4.7 to 44. Fixed-count analyses and matched interventions further show subcritical dilution and identify feedback and network reach as mechanisms that move the boundary.',
+    'We introduce Agent Society Dynamics, which separates size-dependent harmful pressure from amplification through shared-state feedback. Collapse is rare below a size-dependent boundary and rises sharply near it. As society size grows from 100 to 2,000, the measured 50% collapse boundary falls from 4.7% to 2.2%, while the corresponding effective harmful count, derived from the interpolated boundary, rises from 4.7 to 44. Fixed-count analyses show subcritical dilution, while matched interventions indicate that feedback strength and network reach shift the boundary under the tested protocol.',
   ],
   authors: [
     'Lejun Zhang',
