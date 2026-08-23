@@ -1,19 +1,27 @@
-# When Harm Scales
+# WolfSociety
 
-**Social Dynamics of Nonlinear Collapse in Financial Agent Societies**
+**Harmful-Agent Scaling and Collective Collapse in Financial Agent Societies**
 
 [Project Page](https://zhanglejun02.github.io/when-harm-scales/) · [Paper](https://zhanglejun02.github.io/when-harm-scales/papers/when-harm-scales.pdf)
 
 <p align="center">
   <a href="https://zhanglejun02.github.io/when-harm-scales/">
-    <img src="website/public/teaser.png" width="820" alt="When Harm Scales project overview">
+    <img src="website/public/teaser.png" width="820" alt="WolfSociety project overview">
   </a>
 </p>
 
-This project studies how a harmful minority can trigger nonlinear collapse in
-interacting financial-agent societies. The environment closes the loop between
-agent behavior, social propagation, and shared market state, making it possible
-to measure how the collapse boundary changes with society size.
+WolfSociety studies how harmful-agent composition and society size shape
+collective collapse in a controlled financial agent society. In the primary
+scenario, the harmful fraction associated with a 50% failure probability falls
+from 4.7% at 100 agents to 2.2% at 2,000 agents, while the corresponding harmful
+count rises from approximately 5 to 44.
+
+At a fixed harmful count, larger societies experience less severe disruption
+under fixed, square-root, and per-capita liquidity scaling. Controlled
+interventions further distinguish joint changes to the interaction setting
+from individual components: broader network reach shifts the collapse boundary
+toward lower harmful fractions, whereas stronger conformity alone has little
+effect.
 
 The repository contains the simulator, command-line tools, controlled scenarios,
 and the experiment runners used for scaling, mechanism, and robustness studies.
@@ -136,10 +144,10 @@ The principal experiment runners are:
 | --- | --- |
 | `p00_validate` | integration and clean-state sanity checks |
 | `p01_nonlinear_scaling` | nonlinear response and finite-size scaling |
-| `p02_size_decomposition` | fixed-count social and liquidity decomposition |
+| `p02_size_decomposition` | fixed-count response and liquidity-scaling analysis |
 | `p03_cross_scenario` | cross-scenario scope checks |
-| `p04_game_phase` | coupling phase diagram |
-| `p05_information_cascade` | private-to-social information cascade |
+| `p04_game_phase` | interaction-condition and network-reach interventions |
+| `p05_information_cascade` | private-to-social information balance |
 | `p06_role_robustness` | role and behavioral-diversity robustness |
 
 Every runner supports three execution scales:
@@ -185,4 +193,4 @@ not versioned.
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Released under the [Apache License 2.0](LICENSE).

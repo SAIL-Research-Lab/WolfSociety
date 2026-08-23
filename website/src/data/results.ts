@@ -20,8 +20,8 @@ export const exponent = {
 }
 
 export const interventions = {
-  weakFeedback: 0.046,
-  strongFeedback: -0.018,
+  jointDecrease: 0.046,
+  jointIncrease: -0.018,
   increasedReach: -0.017,
 }
 

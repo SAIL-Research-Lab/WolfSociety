@@ -7,15 +7,15 @@ export function SocialDynamics() {
           We model collective failure as a closed-loop process. A harmful minority contributes pressure through communication and action; heterogeneous agents combine that pressure with private and social evidence; their responses then alter the shared social and market state observed by the rest of the population.
         </p>
         <p>
-          The framework separates attack aggregation, which describes how harmful pressure scales with society size, from feedback amplification, which captures amplification through shared-state feedback. Under a size-invariant collapse criterion, the sum of their scaling exponents determines how the critical harmful fraction changes with population size.
+          The framework connects the collapse boundary to two size-dependent components: initial harmful input, represented by αN<sup>δ</sup>, and the response that develops through subsequent interactions, represented by N<sup>ζ</sup>. Under a comparable collapse criterion across society sizes, their combined scaling gives ν = δ + ζ. We use this relation as a conceptual description; the experiments estimate the overall boundary exponent rather than identify δ and ζ as separate causal effects.
         </p>
       </div>
 
       <figure className="paper-figure theory-figure">
-        <div className="theory-flow" aria-label="Harmful pressure passes through heterogeneous decisions and shared-state feedback to create a collective response">
+        <div className="theory-flow" aria-label="Harmful input passes through heterogeneous decisions and repeated interaction to create a collective response">
           <div className="theory-step">
             <span className="theory-icon theory-icon--harm" aria-hidden="true">♠</span>
-            <strong>Harmful pressure</strong>
+            <strong>Harmful input</strong>
             <small>αN<sup>δ</sup></small>
           </div>
           <span className="theory-arrow" aria-hidden="true">→</span>
@@ -27,7 +27,7 @@ export function SocialDynamics() {
           <span className="theory-arrow" aria-hidden="true">→</span>
           <div className="theory-step theory-step--feedback">
             <span className="theory-icon" aria-hidden="true">↻</span>
-            <strong>Shared-state feedback</strong>
+            <strong>Repeated interaction</strong>
             <small>N<sup>ζ</sup></small>
           </div>
           <span className="theory-arrow" aria-hidden="true">→</span>
@@ -43,7 +43,7 @@ export function SocialDynamics() {
           <span>ν = δ + ζ</span>
         </div>
         <figcaption>
-          <strong>Figure 2.</strong> Agent Society Dynamics models the finite-size response through harmful-pressure aggregation (<em>δ</em>) and amplification by shared-state feedback (<em>ζ</em>). Under a size-invariant collapse criterion, their combined scaling determines how the critical harmful fraction changes with society size.
+          <strong>Figure 2.</strong> Agent Society Dynamics relates the collapse boundary to the scaling of initial harmful input (<em>δ</em>) and the response that develops through subsequent interactions (<em>ζ</em>). Under a comparable collapse criterion across society sizes, their combined scaling determines how the critical harmful fraction changes with society size.
         </figcaption>
       </figure>
     </section>

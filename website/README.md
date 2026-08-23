@@ -1,10 +1,10 @@
-# When Harm Scales project website
+# WolfSociety project website
 
-Interactive academic project page for **When Harm Scales: Social Dynamics of Nonlinear Collapse in Financial Agent Societies**.
+Interactive academic project page for **WolfSociety: Harmful-Agent Scaling and Collective Collapse in Financial Agent Societies**.
 
-The page follows a classic paper-first project-page structure: title and authors, Paper/Code resources, the paper teaser, two small conceptual animations, abstract, Agent Society Dynamics, scaling and intervention figures, WolfBench future work, and BibTeX. The research figures carry most of the visual identity; the surrounding interface stays quiet and academic.
+The page follows a classic paper-first project-page structure: title and authors, Paper/Code resources, the paper teaser, three compact animations, abstract, Agent Society Dynamics, scaling and intervention figures, the WolfBench release scope, and BibTeX. The research figures carry most of the visual identity; the surrounding interface stays quiet and academic.
 
-The name **WolfBench** is intentionally reserved for the final future-work section. It describes the working goal of turning the current controlled environment into a broader, better validated evaluation environment; the page does not present it as a finished benchmark.
+**WolfSociety** is the paper title. **WolfBench** names the released simulator, scenarios, evaluation interfaces, Python package, and CLI. The page presents WolfBench as a controlled research environment rather than a production market model.
 
 ## Development
 
@@ -25,7 +25,7 @@ The findings values are centralized in the results module and currently mirror:
 
 - `paper_experiments_v3/figures/generated/table2_scaling_results.csv`
 - `paper_experiments_v3/figures/generated/table3_scaling_exponent_bootstrap.csv`
-- the P04 intervention summary in the final manuscript
+- the interaction-condition intervention summary in the final manuscript
 
 The mathematical framework displays the manuscript relation $\alpha_c(N)\propto N^{-\nu}$, $K_c(N)\propto N^{1-\nu}$, and $\nu=\delta+\zeta$ directly in HTML.
 

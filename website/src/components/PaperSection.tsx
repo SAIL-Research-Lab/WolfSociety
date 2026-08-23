@@ -23,7 +23,7 @@ export function PaperSection() {
       </div>
       <div className={`bibtex-panel${copied ? ' bibtex-panel--copied' : ''}`}>
         <div className="bibtex-toolbar">
-          <span><i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" /> when-harm-scales.bib</span>
+          <span><i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" /> wolfsociety.bib</span>
           <button type="button" onClick={copyBibtex} aria-label="Copy BibTeX citation">
             {copied ? <Check size={16} /> : <Clipboard size={16} />}
             {copied ? 'Copied!' : 'Copy citation'}
@@ -32,7 +32,7 @@ export function PaperSection() {
         <pre><code>{bibtex}</code></pre>
       </div>
       <footer>
-        <p>When Harm Scales · Academic project page</p>
+        <p>WolfSociety · Academic project page</p>
       </footer>
     </section>
   )

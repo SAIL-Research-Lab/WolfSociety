@@ -5,9 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "wolfbench"
 version = "0.1.0"
-description = "A controlled research prototype for harmful-agent scaling and defense evaluation"
+description = "A controlled financial agent society for harmful-agent scaling and collective-failure evaluation"
 readme = "README.md"
-license = "MIT"
+license = "Apache-2.0"
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.24",

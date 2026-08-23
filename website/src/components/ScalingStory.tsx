@@ -29,22 +29,22 @@ export function ScalingStory() {
 
       <section className="paper-section-block" id="mechanisms">
         <div className="academic-content">
-          <h2>Why Does the Boundary Shift?</h2>
+          <h2>Interaction Conditions and Network Reach</h2>
           <p>
-            Matched interventions probe whether feedback structure contributes to the observed size effect, rather than treating population size alone as explanatory. Weakening feedback moves the collapse boundary toward a larger harmful fraction, whereas stronger coupling and broader network reach move it toward a smaller fraction.
+            The largest boundary shifts occur when several interaction parameters change together and when network reach increases. Jointly decreasing response precision, conformity, attention capacity, and graph degree moves the boundary toward a larger harmful fraction; jointly increasing them and separately increasing network reach move it toward a smaller fraction.
           </p>
           <p>
-            The fixed-count analysis provides a complementary check below the transition: when the harmful count is held fixed, the maximum joint severity of harmful diffusion and market disruption decreases with population size. This supports subcritical dilution, while the intervention results show that changing feedback strength shifts the critical boundary.
+            At a fixed harmful count, the maximum joint severity of harmful diffusion and market disruption decreases with population size under fixed, square-root, and per-capita liquidity scaling. High conformity alone changes the collapse boundary little, whereas increased network reach produces a clear leftward shift.
           </p>
         </div>
 
         <figure className="paper-figure paper-figure--result paper-figure--mechanism">
           <img
             src={`${base}intervention-effects.png`}
-            alt="Weak feedback shifts the critical harmful fraction rightward, while strong feedback and increased reach shift it leftward."
+            alt="Jointly decreasing four interaction parameters shifts the critical harmful fraction rightward, while jointly increasing them and increasing network reach shift it leftward."
           />
           <figcaption>
-            <strong>Figure 4.</strong> Mean change in the critical fraction under matched interventions. Weak feedback increases α<sub>c</sub> by {interventions.weakFeedback.toFixed(3)}; strong feedback and increased reach decrease it by {Math.abs(interventions.strongFeedback).toFixed(3)} and {Math.abs(interventions.increasedReach).toFixed(3)}, respectively. Positive values indicate greater robustness.
+            <strong>Figure 4.</strong> Mean paired changes in the critical fraction under matched interventions. Joint decrease increases α<sub>c</sub> by {interventions.jointDecrease.toFixed(3)}; joint increase and increased reach decrease it by {Math.abs(interventions.jointIncrease).toFixed(3)} and {Math.abs(interventions.increasedReach).toFixed(3)}, respectively. The two joint conditions change response precision, conformity, attention capacity, and graph degree together. Error bars show paired-bootstrap 95% confidence intervals; positive values indicate greater robustness.
           </figcaption>
         </figure>
       </section>
