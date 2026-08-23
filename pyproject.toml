@@ -7,7 +7,7 @@ name = "wolfbench"
 version = "0.1.0"
 description = "A controlled financial agent society for harmful-agent scaling and collective-failure evaluation"
 readme = "README.md"
-license = "Apache-2.0"
+license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.24",
