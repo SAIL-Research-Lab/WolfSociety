@@ -14,6 +14,7 @@ export function Hero() {
     <header className="academic-hero" id="top">
       <div className="academic-hero__inner">
         <h1>
+          <span className="academic-hero__devil" aria-hidden="true">👿</span>{' '}
           {site.title}:<br /><span>{site.subtitle}</span>
         </h1>
 

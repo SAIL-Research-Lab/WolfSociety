@@ -34,6 +34,13 @@
 
 .academic-hero h1 span { font-weight: 500; }
 
+.academic-hero h1 .academic-hero__devil {
+  display: inline-block;
+  font-size: .82em;
+  line-height: 1;
+  vertical-align: .05em;
+}
+
 .academic-authors {
   display: flex;
   flex-wrap: wrap;
