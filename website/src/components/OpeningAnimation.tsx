@@ -45,8 +45,10 @@ export function OpeningAnimation() {
               const isHarmfulPosition = harmfulPositions.has(index)
               const harmfulRank = harmfulOrder.indexOf(index)
               const isHarmful = isHarmfulPosition && harmfulRank < stage.harmfulCount
+              const pose = index % 4
               const style = {
                 '--agent-index': index,
+                '--agent-delay': `${(index % 10) * -0.11}s`,
                 '--scatter-x': `${((index * 17) % 47) - 23}px`,
                 '--scatter-y': `${28 + ((index * 13) % 34)}px`,
                 '--scatter-angle': `${((index * 29) % 80) - 40}deg`,
@@ -55,13 +57,22 @@ export function OpeningAnimation() {
               return (
                 <span
                   key={index}
-                  className={`society-agent${isHarmful ? ' society-agent--harmful' : ''}`}
+                  className={`society-agent society-agent--pose-${pose}${isHarmful ? ' society-agent--harmful' : ''}`}
                   style={style}
                 >
                   <svg viewBox="0 0 24 38" focusable="false">
                     {isHarmful && <path className="agent-horns" d="M7.5 3 5 0.8l.3 5M16.5 3 19 .8l-.3 5" />}
-                    <circle cx="12" cy="6" r="4.3" />
-                    <path d="M12 11v12M4.8 15.5 12 19l7.2-3.5M12 23 6.2 34M12 23l5.8 11" />
+                    <circle className="agent-head" cx="12" cy="6" r="4.3" />
+                    {isHarmful ? (
+                      <path className="agent-face agent-face--harmful" d="m9 5 1.8 1M15 5l-1.8 1M9.6 8.2q2.4-1.7 4.8 0" />
+                    ) : (
+                      <path className="agent-face" d="M10 5.6h.1M13.9 5.6h.1M10.2 8q1.8 1.2 3.6 0" />
+                    )}
+                    <path className="agent-body" d="M12 11v12M12 23 6.2 34M12 23l5.8 11" />
+                    {pose === 0 && <path className="agent-arms" d="M12 17 5 21M12 17l7 4" />}
+                    {pose === 1 && <path className="agent-arms" d="M12 18 5.5 14 3 9M12 18l7 2" />}
+                    {pose === 2 && <path className="agent-arms" d="M12 17 6 13M12 17l6-4" />}
+                    {pose === 3 && <path className="agent-arms" d="M12 18 5 17M12 18l7-5 1-4" />}
                   </svg>
                 </span>
               )

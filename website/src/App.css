@@ -131,12 +131,20 @@
 
 .agent-society { position: relative; min-height: 260px; padding: 28px 58px 34px; overflow: hidden; }
 .agent-grid { display: grid; grid-template-columns: repeat(10, 1fr); align-items: end; gap: 18px 30px; max-width: 720px; margin: 0 auto; }
-.society-agent { display: grid; place-items: center; color: #78717a; transition: color .4s ease, opacity .4s ease, transform .65s cubic-bezier(.2, .75, .25, 1); }
-.society-agent svg { width: 23px; height: 37px; overflow: visible; fill: currentColor; }
-.society-agent svg > path:not(.agent-horns) { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.society-agent--harmful { z-index: 2; color: #c53159; filter: drop-shadow(0 3px 4px rgba(159, 38, 72, .2)); animation: harmful-agent-pulse 1.15s ease-in-out infinite; }
+.society-agent { position: relative; display: grid; place-items: center; color: #78717a; animation: society-agent-idle 2.8s ease-in-out var(--agent-delay) infinite; transition: color .4s ease, opacity .4s ease, transform .65s cubic-bezier(.2, .75, .25, 1); }
+.society-agent::after { position: absolute; right: 1px; bottom: -2px; left: 1px; height: 3px; background: rgba(81, 72, 84, .16); border-radius: 50%; content: ''; transform: scaleX(.8); transition: background .35s ease, transform .35s ease; }
+.society-agent svg { position: relative; z-index: 1; width: 23px; height: 37px; overflow: visible; }
+.agent-head { fill: currentColor; }
+.agent-body, .agent-arms { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.agent-face { fill: none; stroke: #fff; stroke-width: .75; stroke-linecap: round; stroke-linejoin: round; }
+.agent-face--harmful { stroke-width: .9; }
+.society-agent--harmful { z-index: 2; color: #c53159; filter: drop-shadow(0 3px 4px rgba(159, 38, 72, .2)); animation: harmful-agent-pulse 1.15s ease-in-out var(--agent-delay) infinite; }
+.society-agent--harmful::before { position: absolute; top: -5px; width: 30px; height: 30px; background: radial-gradient(circle, rgba(197, 49, 89, .18), rgba(197, 49, 89, 0) 70%); border-radius: 50%; content: ''; animation: harmful-aura 1.15s ease-in-out var(--agent-delay) infinite; }
+.society-agent--harmful::after { background: rgba(177, 40, 77, .28); transform: scaleX(1); }
 .agent-horns { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes society-agent-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
 @keyframes harmful-agent-pulse { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-2px) scale(1.08); } }
+@keyframes harmful-aura { 0%, 100% { opacity: .45; transform: scale(.82); } 50% { opacity: 1; transform: scale(1.16); } }
 
 .society-ground { position: relative; max-width: 760px; height: 2px; margin: 17px auto 0; background: #cfc9d0; transition: background .35s ease, transform .65s ease; }
 .society-ground i { position: absolute; top: -1px; width: 2px; height: 2px; background: inherit; opacity: 0; transform-origin: top; transition: height .35s ease, opacity .2s ease, transform .35s ease; }
@@ -146,6 +154,8 @@
 .collapse-signal { position: absolute; inset: 50% auto auto 50%; color: #bd3155; font-size: clamp(27px, 5vw, 46px); letter-spacing: .16em; opacity: 0; transform: translate(-50%, -40%) scale(.72); transition: opacity .35s ease, transform .5s cubic-bezier(.2, .8, .2, 1); }
 
 .opening-scene--collapse .society-agent { opacity: .3; transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-angle)); animation: none; }
+.opening-scene--collapse .society-agent::before { animation: none; opacity: 0; }
+.opening-scene--collapse .society-agent::after { transform: scaleX(.4); }
 .opening-scene--collapse .society-agent--harmful { opacity: .48; }
 .opening-scene--collapse .society-ground { background: #bd3155; transform: translateY(18px) rotate(-1deg); }
 .opening-scene--collapse .society-ground i { height: 44px; opacity: 1; }
@@ -571,6 +581,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .society-agent,
+  .society-agent::before,
   .collapse-signal,
   .harm-devil,
   .count-devil,
