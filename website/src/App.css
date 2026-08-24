@@ -95,6 +95,69 @@
 .academic-actions a:hover { background: #191919; transform: translateY(-1px); }
 .academic-actions svg { width: 17px; height: 17px; }
 
+.opening-animation {
+  max-width: 1000px;
+  margin: 18px auto 46px;
+  padding: 0 24px;
+}
+
+.opening-scene {
+  width: min(100%, 900px);
+  margin: 0 auto;
+  overflow: hidden;
+  background: #fcfbfc;
+  border: 1px solid #e7e3e8;
+  border-radius: 12px;
+  transition: background .45s ease, border-color .45s ease, box-shadow .45s ease;
+}
+
+.opening-scene--warning { border-color: #e8d4d9; }
+.opening-scene--collapse { background: #fff8fa; border-color: #dca8b5; box-shadow: 0 12px 34px rgba(129, 37, 63, .1); }
+
+.opening-scene__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 19px 24px 14px;
+  border-bottom: 1px solid #ebe8ec;
+}
+
+.opening-kicker { color: #8b818d; font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.opening-scene__header h2 { margin: 5px 0 0; color: #302c31; font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+.opening-scene__header output { color: #6f6571; font-size: 12px; font-weight: 700; text-align: right; transition: color .3s ease; }
+.opening-scene--warning .opening-scene__header output { color: #a35568; }
+.opening-scene--collapse .opening-scene__header output { color: #bd3155; }
+
+.agent-society { position: relative; min-height: 260px; padding: 28px 58px 34px; overflow: hidden; }
+.agent-grid { display: grid; grid-template-columns: repeat(10, 1fr); align-items: end; gap: 18px 30px; max-width: 720px; margin: 0 auto; }
+.society-agent { display: grid; place-items: center; color: #78717a; transition: color .4s ease, opacity .4s ease, transform .65s cubic-bezier(.2, .75, .25, 1); }
+.society-agent svg { width: 23px; height: 37px; overflow: visible; fill: currentColor; }
+.society-agent svg > path:not(.agent-horns) { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.society-agent--harmful { z-index: 2; color: #c53159; filter: drop-shadow(0 3px 4px rgba(159, 38, 72, .2)); animation: harmful-agent-pulse 1.15s ease-in-out infinite; }
+.agent-horns { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes harmful-agent-pulse { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-2px) scale(1.08); } }
+
+.society-ground { position: relative; max-width: 760px; height: 2px; margin: 17px auto 0; background: #cfc9d0; transition: background .35s ease, transform .65s ease; }
+.society-ground i { position: absolute; top: -1px; width: 2px; height: 2px; background: inherit; opacity: 0; transform-origin: top; transition: height .35s ease, opacity .2s ease, transform .35s ease; }
+.society-ground i:nth-child(1) { left: 31%; transform: rotate(31deg); }
+.society-ground i:nth-child(2) { left: 54%; transform: rotate(-38deg); }
+.society-ground i:nth-child(3) { left: 73%; transform: rotate(24deg); }
+.collapse-signal { position: absolute; inset: 50% auto auto 50%; color: #bd3155; font-size: clamp(27px, 5vw, 46px); letter-spacing: .16em; opacity: 0; transform: translate(-50%, -40%) scale(.72); transition: opacity .35s ease, transform .5s cubic-bezier(.2, .8, .2, 1); }
+
+.opening-scene--collapse .society-agent { opacity: .3; transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-angle)); animation: none; }
+.opening-scene--collapse .society-agent--harmful { opacity: .48; }
+.opening-scene--collapse .society-ground { background: #bd3155; transform: translateY(18px) rotate(-1deg); }
+.opening-scene--collapse .society-ground i { height: 44px; opacity: 1; }
+.opening-scene--collapse .collapse-signal { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+.opening-controls { display: flex; justify-content: center; gap: 22px; padding: 12px 18px 15px; background: #fff; border-top: 1px solid #ebe8ec; }
+.opening-controls button { display: inline-flex; align-items: center; gap: 7px; padding: 4px 0; color: #8a828c; background: none; border: 0; font-size: 10px; font-weight: 650; cursor: pointer; }
+.opening-controls button i { width: 7px; height: 7px; background: #d5d0d6; border-radius: 50%; transition: background .2s ease, box-shadow .2s ease, transform .2s ease; }
+.opening-controls button.is-active { color: #4d454f; }
+.opening-controls button.is-active i { background: #b14a67; box-shadow: 0 0 0 3px rgba(177, 74, 103, .13); transform: scale(1.08); }
+.opening-animation > p { max-width: 680px; margin: 13px auto 0; color: #5d565f; font-size: 15px; line-height: 1.55; text-align: center; }
+
 .teaser-section {
   max-width: 1000px;
   margin: 24px auto 50px;
@@ -451,6 +514,7 @@
 
 @media (max-width: 820px) {
   .academic-hero { padding-top: 46px; }
+  .agent-grid { column-gap: 18px; }
   .motion-card { padding: 28px 0; }
   .curve-scene { grid-template-columns: 122px minmax(0, 1fr); gap: 16px; }
   .theory-flow { grid-template-columns: 1fr; gap: 7px; }
@@ -461,6 +525,16 @@
   .academic-hero { padding: 38px 18px 16px; }
   .academic-hero h1 { font-size: 31px; }
   .academic-authors { font-size: 16px; }
+  .opening-animation { margin: 12px auto 38px; padding: 0 14px; }
+  .opening-scene__header { display: grid; gap: 7px; padding: 16px 17px 12px; }
+  .opening-scene__header h2 { font-size: 18px; }
+  .opening-scene__header output { text-align: left; }
+  .agent-society { min-height: 249px; padding: 24px 17px 30px; }
+  .agent-grid { gap: 15px 8px; }
+  .society-agent svg { width: 20px; height: 32px; }
+  .opening-controls { gap: 13px; overflow-x: auto; justify-content: flex-start; padding-inline: 17px; }
+  .opening-controls button { flex: 0 0 auto; }
+  .opening-animation > p { font-size: 14px; text-align: left; }
   .teaser-section { margin-top: 20px; margin-bottom: 38px; padding: 0 14px; }
   .paper-figure--teaser { overflow-x: auto; }
   .paper-figure--teaser img { width: 850px; max-width: none; }
@@ -496,6 +570,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .society-agent,
+  .collapse-signal,
   .harm-devil,
   .count-devil,
   .share-measure i,
