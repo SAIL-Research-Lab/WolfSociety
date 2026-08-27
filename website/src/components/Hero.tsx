@@ -31,6 +31,20 @@ export function Hero() {
   return (
     <header className="academic-hero" id="top">
       <div className="academic-hero__inner">
+        <div className="academic-masthead">
+          <span className="academic-masthead__wordmark">WolfSociety</span>
+          <div className="academic-institution-logos" aria-label="Affiliated institutions">
+            {institutionLogos.map((institution) => (
+              <div
+                className={`academic-institution-logo ${institution.className}`}
+                key={institution.name}
+              >
+                <img src={institution.src} alt={`${institution.name} logo`} />
+              </div>
+            ))}
+          </div>
+        </div>
+
         <h1>
           <span className="academic-hero__devil" aria-hidden="true">👿</span>{' '}
           {site.title}:<br /><span>{site.subtitle}</span>
@@ -52,17 +66,6 @@ export function Hero() {
         <div className="academic-affiliations">
           {site.affiliations.map((affiliation, index) => (
             <span key={affiliation}><sup>{index + 1}</sup>{affiliation}</span>
-          ))}
-        </div>
-
-        <div className="academic-institution-logos" aria-label="Affiliated institutions">
-          {institutionLogos.map((institution) => (
-            <div
-              className={`academic-institution-logo ${institution.className}`}
-              key={institution.name}
-            >
-              <img src={institution.src} alt={`${institution.name} logo`} />
-            </div>
           ))}
         </div>
 
