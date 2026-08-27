@@ -1,4 +1,10 @@
 <p align="center">
+  <a href="https://zhanglejun02.github.io/when-harm-scales/">
+    <img src="website/public/teaser.png" width="820" alt="WolfSociety project overview">
+  </a>
+</p>
+
+<p align="center">
   <img src="website/public/images/wolfsociety-logo.png" width="300" alt="WolfSociety logo">
 </p>
 
@@ -7,12 +13,6 @@
 **Harmful-Agent Scaling and Collective Collapse in Financial Agent Societies**
 
 [Project Page](https://zhanglejun02.github.io/when-harm-scales/) · [Paper](https://zhanglejun02.github.io/when-harm-scales/papers/when-harm-scales.pdf)
-
-<p align="center">
-  <a href="https://zhanglejun02.github.io/when-harm-scales/">
-    <img src="website/public/teaser.png" width="820" alt="WolfSociety project overview">
-  </a>
-</p>
 
 WolfSociety studies how harmful-agent composition and society size shape
 collective collapse in a controlled financial agent society. In the primary
