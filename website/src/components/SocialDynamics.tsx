@@ -1,4 +1,6 @@
 export function SocialDynamics() {
+  const base = import.meta.env.BASE_URL
+
   return (
     <section className="paper-section-block" id="framework">
       <div className="academic-content">
@@ -11,39 +13,13 @@ export function SocialDynamics() {
         </p>
       </div>
 
-      <figure className="paper-figure theory-figure">
-        <div className="theory-flow" aria-label="Harmful input passes through heterogeneous decisions and repeated interaction to create a collective response">
-          <div className="theory-step">
-            <span className="theory-icon theory-icon--harm" aria-hidden="true">♠</span>
-            <strong>Harmful input</strong>
-            <small>αN<sup>δ</sup></small>
-          </div>
-          <span className="theory-arrow" aria-hidden="true">→</span>
-          <div className="theory-step">
-            <span className="theory-icon" aria-hidden="true">◎</span>
-            <strong>Agent response</strong>
-            <small>private + social evidence</small>
-          </div>
-          <span className="theory-arrow" aria-hidden="true">→</span>
-          <div className="theory-step theory-step--feedback">
-            <span className="theory-icon" aria-hidden="true">↻</span>
-            <strong>Repeated interaction</strong>
-            <small>N<sup>ζ</sup></small>
-          </div>
-          <span className="theory-arrow" aria-hidden="true">→</span>
-          <div className="theory-step">
-            <span className="theory-icon theory-icon--society" aria-hidden="true">●●●</span>
-            <strong>Collective response</strong>
-            <small>ΔR<sub>N</sub></small>
-          </div>
-        </div>
-        <div className="theory-equation" aria-label="The critical fraction scales as society size raised to the power of negative nu">
-          <span>ΔR<sub>N</sub> ∼ αN<sup>δ+ζ</sup></span>
-          <span>α<sub>c</sub>(N) ∝ N<sup>−ν</sup></span>
-          <span>ν = δ + ζ</span>
-        </div>
+      <figure className="paper-figure paper-figure--result">
+        <img
+          src={`${base}nonlinear-response.png`}
+          alt="Collapse probability and episode severity rise with the harmful-agent fraction at size-dependent boundaries."
+        />
         <figcaption>
-          <strong>Figure 2.</strong> Agent Society Dynamics relates the collapse boundary to the scaling of initial harmful input (<em>δ</em>) and the response that develops through subsequent interactions (<em>ζ</em>). Under a comparable collapse criterion across society sizes, their combined scaling determines how the critical harmful fraction changes with society size.
+          <strong>Figure 2.</strong> Nonlinear collapse transition in the primary scenario. Collapse probability rises sharply around a size-dependent boundary, while episode severity <em>R</em><sub>S1</sub> provides a continuous view of the same transition.
         </figcaption>
       </figure>
     </section>

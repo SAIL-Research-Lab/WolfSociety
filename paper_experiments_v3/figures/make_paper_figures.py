@@ -130,7 +130,7 @@ VARIANT_LABELS = {
 }
 INTERVENTION_GROUPS = [
     (
-        "Feedback regimes",
+        "Interaction settings",
         ["qre_weak_coupling", "qre_strong_coupling", "qre_high_reach"],
     ),
     (
@@ -139,8 +139,8 @@ INTERVENTION_GROUPS = [
     ),
 ]
 FIG4_LABELS = {
-    "qre_weak_coupling": "Weak feedback",
-    "qre_strong_coupling": "Strong feedback",
+    "qre_weak_coupling": "Joint decrease",
+    "qre_strong_coupling": "Joint increase",
     "qre_high_reach": "Increased reach",
     "qre_high_attention": "High attention",
     "qre_high_conformity": "High conformity",
@@ -866,7 +866,7 @@ def figure2_p01_nonlinear_response(
     ax.set_xlim(-0.002, x_max)
     polish_science_axis(ax)
     ax = axes[1]
-    science_panel_title(ax, "(B)", "Peak risk", size_scale=1.06)
+    science_panel_title(ax, "(B)", "Episode severity", size_scale=1.06)
     max_y = 1.05
     for n in chosen:
         color, marker = styles[n]
@@ -901,9 +901,9 @@ def figure2_p01_nonlinear_response(
     max_y *= 1.05
     ax.axhspan(1.0, max_y, color=FIGURE_SCIENCE["failure"], alpha=0.055, linewidth=0, zorder=0)
     ax.axhline(1.0, color=FIGURE_SCIENCE["failure"], linestyle="--", linewidth=0.82, alpha=0.90)
-    ax.text(0.001, 1.022, "failure region", color=FIGURE_SCIENCE["failure"], fontsize=6.9, va="bottom")
+    ax.text(0.001, 1.022, "collapse region", color=FIGURE_SCIENCE["failure"], fontsize=6.9, va="bottom")
     ax.set_xlabel(r"harmful fraction $\alpha$")
-    ax.set_ylabel("episode-level peak risk")
+    ax.set_ylabel(r"episode severity $R_{\mathrm{S1}}$")
     ax.set_ylim(0, max_y)
     ax.set_xlim(-0.002, x_max)
     polish_science_axis(ax)
@@ -928,6 +928,9 @@ def figure3_p01_finite_size_scaling(
     out_dir: Path,
     p01_rows: list[dict[str, str]],
     p04_rows: list[dict[str, str]],
+    *,
+    horizontal: bool = False,
+    render_intervention: bool = True,
 ) -> None:
     summaries = p01_summaries(p01_rows)
     write_csv(summaries, out_dir / "table2_scaling_results.csv")
@@ -937,15 +940,26 @@ def figure3_p01_finite_size_scaling(
         handle.write("\n")
     write_csv([nu_stats], out_dir / "table3_scaling_exponent_bootstrap.csv")
 
-    fig = plt.figure(figsize=(3.35, 2.92), facecolor="white")
-    gs = fig.add_gridspec(2, 1, hspace=0.58)
-    axes = [fig.add_subplot(gs[idx, 0]) for idx in range(2)]
+    output_name = (
+        "fig3_finite_size_scaling_horizontal"
+        if horizontal
+        else "fig3_finite_size_scaling"
+    )
+    if horizontal:
+        fig = plt.figure(figsize=(7.0, 2.52), facecolor="white")
+        gs = fig.add_gridspec(1, 2, wspace=0.27)
+        axes = [fig.add_subplot(gs[0, idx]) for idx in range(2)]
+    else:
+        fig = plt.figure(figsize=(3.35, 2.92), facecolor="white")
+        gs = fig.add_gridspec(2, 1, hspace=0.58)
+        axes = [fig.add_subplot(gs[idx, 0]) for idx in range(2)]
     resolved = [row for row in summaries if row["alpha_c"] != ""]
     if not resolved:
-        for ax, title in zip(axes, ["Boundary decreases", "Effective count grows sublinearly"]):
+        for ax, title in zip(axes, ["Boundary decreases", "Harmful count grows sublinearly"]):
             missing(ax, title)
-        save_figure(fig, out_dir, "fig3_finite_size_scaling")
-        figure4_intervention_effects(out_dir, p04_rows)
+        save_figure(fig, out_dir, output_name)
+        if render_intervention:
+            figure4_intervention_effects(out_dir, p04_rows)
         return
 
     nvals = np.asarray([float(row["N"]) for row in resolved], dtype=float)
@@ -1001,7 +1015,7 @@ def figure3_p01_finite_size_scaling(
         linewidth=0.96,
         alpha=0.52,
     )
-    ax.set_xlabel("")
+    ax.set_xlabel(r"society size $N$" if horizontal else "", fontsize=7.1, labelpad=4.0)
     ax.set_ylabel(r"$\alpha_c(N)$", fontsize=7.2, labelpad=5.0)
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(max(0.012, float(np.nanmin(alpha_lo)) * 0.78), float(np.nanmax(alpha_hi)) * 1.35)
@@ -1009,7 +1023,16 @@ def figure3_p01_finite_size_scaling(
     ax.set_yticks(alpha_ticks)
     ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:.2f}"))
     ax.set_xticks([100, 200, 500, 1000, 2000])
-    ax.xaxis.set_major_formatter(FuncFormatter(lambda value, _: ""))
+    if horizontal:
+        ax.xaxis.set_major_formatter(
+            FuncFormatter(
+                lambda value, _: f"{int(value)}"
+                if value in {100, 200, 500, 1000, 2000}
+                else ""
+            )
+        )
+    else:
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda value, _: ""))
     polish_science_axis(ax)
     ax.tick_params(labelsize=6.75)
     ax.text(
@@ -1029,7 +1052,7 @@ def figure3_p01_finite_size_scaling(
     ax.annotate(f"{avals[-1]:.3f}", (nvals[-1], avals[-1]), xytext=(-4, -7), textcoords="offset points", ha="right", va="top", fontsize=6.0, color=FIGURE_SCIENCE["axis"], bbox=number_bbox)
 
     ax = axes[1]
-    science_panel_title(ax, "(B)", "Effective count grows sublinearly", size_scale=0.94)
+    science_panel_title(ax, "(B)", "Harmful count grows sublinearly", size_scale=0.94)
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.errorbar(
@@ -1085,8 +1108,8 @@ def figure3_p01_finite_size_scaling(
     ]
     fig.legend(
         handles=reference_handles,
-        loc="center",
-        bbox_to_anchor=(0.615, 0.545),
+        loc="lower center" if horizontal else "center",
+        bbox_to_anchor=(0.5, 0.01) if horizontal else (0.615, 0.545),
         ncol=3,
         fontsize=5.45,
         handlelength=1.65,
@@ -1099,9 +1122,13 @@ def figure3_p01_finite_size_scaling(
         borderpad=0.28,
     )
     fig.align_ylabels(axes)
-    fig.subplots_adjust(left=0.245, right=0.985, top=0.93, bottom=0.15)
-    save_figure(fig, out_dir, "fig3_finite_size_scaling")
-    figure4_intervention_effects(out_dir, p04_rows)
+    if horizontal:
+        fig.subplots_adjust(left=0.085, right=0.985, top=0.88, bottom=0.29)
+    else:
+        fig.subplots_adjust(left=0.245, right=0.985, top=0.93, bottom=0.15)
+    save_figure(fig, out_dir, output_name)
+    if render_intervention:
+        figure4_intervention_effects(out_dir, p04_rows)
 
 
 def figure4_intervention_effects(out_dir: Path, p04_rows: list[dict[str, str]]) -> None:
@@ -1666,7 +1693,11 @@ def figure4_mechanism(out_dir: Path, p04_rows: list[dict[str, str]], p05_rows: l
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", default=str(DEFAULT_OUT))
-    parser.add_argument("--figures", default="all", help="Comma list: fig1,fig2,fig3,fig4,p04,all")
+    parser.add_argument(
+        "--figures",
+        default="all",
+        help="Comma list: fig1,fig2,fig3,fig3h,fig4,p04,all",
+    )
     args = parser.parse_args()
     setup_style()
     out_dir = ensure_dir(Path(args.out_dir))
@@ -1684,6 +1715,14 @@ def main() -> None:
         figure2_p01(out_dir, p01, p01_display)
     if "fig3" in requested:
         figure3_p01_finite_size_scaling(out_dir, p01, p04)
+    if "fig3h" in requested:
+        figure3_p01_finite_size_scaling(
+            out_dir,
+            p01,
+            p04,
+            horizontal=True,
+            render_intervention=False,
+        )
     if "fig4" in requested:
         figure4_mechanism(out_dir, p04, p05)
     if "p04" in requested:

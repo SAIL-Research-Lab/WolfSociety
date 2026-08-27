@@ -34,6 +34,7 @@ The mathematical framework displays the manuscript relation $\alpha_c(N)\propto 
 The public project-page assets are:
 
 - `public/teaser.png`
+- `public/nonlinear-response.png`
 - `public/finite-size-scaling.png`
 - `public/intervention-effects.png`
 - `public/papers/when-harm-scales.pdf`

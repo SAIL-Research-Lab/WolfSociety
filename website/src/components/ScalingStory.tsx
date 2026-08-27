@@ -12,17 +12,17 @@ export function ScalingStory() {
             Across six measured society sizes, collapse remains rare at low harmful fractions and rises sharply near a size-dependent boundary. Increasing the population from 100 to 2,000 moves the measured midpoint from 4.7% to 2.2%.
           </p>
           <p>
-            The corresponding effective critical harmful count nevertheless grows from 4.7 to 44. Over the tested size range, this combination—a decreasing fraction and an increasing count—indicates sublinear growth in the effective critical count and is inconsistent with both constant-fraction and constant-count boundaries.
+            The corresponding critical harmful count nevertheless grows from 4.7 to 44. Over the tested size range, this combination—a decreasing fraction and an increasing count—indicates sublinear growth in the harmful count and is inconsistent with both constant-fraction and constant-count boundaries.
           </p>
         </div>
 
         <figure className="paper-figure paper-figure--result">
           <img
             src={`${base}finite-size-scaling.png`}
-            alt="Measured critical fraction decreases with society size while the effective harmful count grows sublinearly."
+            alt="Measured critical fraction decreases with society size while the harmful count grows sublinearly."
           />
           <figcaption>
-            <strong>Figure 3.</strong> The critical fraction follows α<sub>c</sub>(N) ∝ N<sup>−0.222</sup>, while the effective count follows K<sub>c</sub>(N) ∝ N<sup>0.778</sup>. The conditional 95% bootstrap confidence interval for the boundary exponent is [{exponent.confidenceInterval[0].toFixed(3)}, {exponent.confidenceInterval[1].toFixed(3)}].
+            <strong>Figure 3.</strong> The critical fraction follows α<sub>c</sub>(N) ∝ N<sup>−0.222</sup>, while the harmful count follows K<sub>c</sub>(N) ∝ N<sup>0.778</sup>. The conditional 95% bootstrap confidence interval for the boundary exponent is [{exponent.confidenceInterval[0].toFixed(3)}, {exponent.confidenceInterval[1].toFixed(3)}].
           </figcaption>
         </figure>
       </section>
