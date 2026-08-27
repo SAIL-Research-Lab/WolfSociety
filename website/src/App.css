@@ -68,6 +68,32 @@
   font-size: 15px;
 }
 
+.academic-institution-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(26px, 5vw, 48px);
+  margin: 20px auto 0;
+}
+
+.academic-institution-logo {
+  display: grid;
+  width: 82px;
+  height: 82px;
+  place-items: center;
+}
+
+.academic-institution-logo img {
+  display: block;
+  width: auto;
+  max-width: 78px;
+  height: auto;
+  max-height: 78px;
+  object-fit: contain;
+}
+
+.academic-institution-logo--toronto img { max-height: 88px; }
+
 .academic-actions {
   display: flex;
   flex-wrap: wrap;
@@ -535,6 +561,10 @@
   .academic-hero { padding: 38px 18px 16px; }
   .academic-hero h1 { font-size: 31px; }
   .academic-authors { font-size: 16px; }
+  .academic-institution-logos { gap: 20px; margin-top: 17px; }
+  .academic-institution-logo { width: 68px; height: 68px; }
+  .academic-institution-logo img { max-width: 64px; max-height: 64px; }
+  .academic-institution-logo--toronto img { max-height: 72px; }
   .opening-animation { margin: 12px auto 38px; padding: 0 14px; }
   .opening-scene__header { display: grid; gap: 7px; padding: 16px 17px 12px; }
   .opening-scene__header h2 { font-size: 18px; }

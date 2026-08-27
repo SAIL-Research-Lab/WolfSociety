@@ -1,6 +1,24 @@
 import { FileText } from 'lucide-react'
 import { site } from '../config/site'
 
+const institutionLogos = [
+  {
+    name: 'Shanghai Jiao Tong University',
+    src: `${import.meta.env.BASE_URL}images/institutions/sjtu-logo.png`,
+    className: 'academic-institution-logo--sjtu',
+  },
+  {
+    name: 'University of California, Berkeley',
+    src: `${import.meta.env.BASE_URL}images/institutions/berkeley-logo.png`,
+    className: 'academic-institution-logo--berkeley',
+  },
+  {
+    name: 'University of Toronto',
+    src: `${import.meta.env.BASE_URL}images/institutions/toronto-logo.png`,
+    className: 'academic-institution-logo--toronto',
+  },
+]
+
 function GithubMark() {
   return (
     <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
@@ -34,6 +52,17 @@ export function Hero() {
         <div className="academic-affiliations">
           {site.affiliations.map((affiliation, index) => (
             <span key={affiliation}><sup>{index + 1}</sup>{affiliation}</span>
+          ))}
+        </div>
+
+        <div className="academic-institution-logos" aria-label="Affiliated institutions">
+          {institutionLogos.map((institution) => (
+            <div
+              className={`academic-institution-logo ${institution.className}`}
+              key={institution.name}
+            >
+              <img src={institution.src} alt={`${institution.name} logo`} />
+            </div>
           ))}
         </div>
 

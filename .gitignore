@@ -104,3 +104,4 @@ website/playwright-report/
 website/test-results/
 website/src/assets/
 website/public/icons.svg
+!website/public/images/institutions/*.png
