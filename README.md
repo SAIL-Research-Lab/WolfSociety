@@ -55,8 +55,8 @@ wolfbench scaling \
 Python 3.10 or newer is required.
 
 ```bash
-git clone https://github.com/SafeRL-Lab/Harm-Scale.git
-cd Harm-Scale
+git clone https://github.com/SafeRL-Lab/WolfSociety.git
+cd WolfSociety
 
 python3 -m venv .venv
 source .venv/bin/activate
