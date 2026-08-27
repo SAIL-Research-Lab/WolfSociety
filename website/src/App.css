@@ -39,6 +39,13 @@
   line-height: 1;
 }
 
+.academic-project-logo {
+  display: block;
+  width: clamp(210px, 26vw, 270px);
+  height: auto;
+  margin: 0 auto 30px;
+}
+
 .academic-hero h1 {
   max-width: 940px;
   margin: 0 auto;
@@ -50,13 +57,6 @@
 }
 
 .academic-hero h1 span { font-weight: 500; }
-
-.academic-hero h1 .academic-hero__devil {
-  display: inline-block;
-  font-size: .82em;
-  line-height: 1;
-  vertical-align: .05em;
-}
 
 .academic-authors {
   display: flex;
@@ -577,6 +577,7 @@
   .academic-hero { padding: 38px 18px 16px; }
   .academic-masthead { gap: 14px; margin-bottom: 34px; padding-bottom: 11px; }
   .academic-masthead__wordmark { font-size: 19px; }
+  .academic-project-logo { width: 190px; margin-bottom: 24px; }
   .academic-hero h1 { font-size: 31px; }
   .academic-authors { font-size: 16px; }
   .academic-institution-logos { gap: 9px; }

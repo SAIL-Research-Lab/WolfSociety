@@ -45,8 +45,13 @@ export function Hero() {
           </div>
         </div>
 
+        <img
+          className="academic-project-logo"
+          src={`${import.meta.env.BASE_URL}images/wolfsociety-logo.png`}
+          alt="WolfSociety"
+        />
+
         <h1>
-          <span className="academic-hero__devil" aria-hidden="true">👿</span>{' '}
           {site.title}:<br /><span>{site.subtitle}</span>
         </h1>
 

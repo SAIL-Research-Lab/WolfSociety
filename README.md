@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="website/public/images/wolfsociety-logo.png" width="300" alt="WolfSociety logo">
+</p>
+
 # WolfSociety
 
 **Harmful-Agent Scaling and Collective Collapse in Financial Agent Societies**
