@@ -173,7 +173,14 @@
 .opening-scene--collapse .opening-scene__header output { color: #bd3155; }
 
 .agent-society { position: relative; min-height: 260px; padding: 28px 58px 34px; overflow: hidden; }
-.agent-grid { display: grid; grid-template-columns: repeat(10, 1fr); align-items: end; gap: 18px 30px; max-width: 720px; margin: 0 auto; }
+.agent-grid { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(10, 1fr); align-items: end; gap: 18px 30px; max-width: 720px; margin: 0 auto; }
+.communication-network { position: absolute; top: 28px; left: 50%; z-index: 3; width: min(calc(100% - 116px), 720px); height: 257px; pointer-events: none; transform: translateX(-50%); }
+.communication-route { position: absolute; top: var(--route-y); left: var(--route-x); width: var(--route-length); height: 2px; background: repeating-linear-gradient(90deg, rgba(197, 49, 89, .14) 0 5px, rgba(197, 49, 89, .55) 5px 9px); border-radius: 999px; opacity: .64; transform: rotate(var(--route-angle)); transform-origin: left center; animation: communication-route-enter .4s ease-out both; }
+.communication-route i { position: absolute; top: -5px; left: 0; display: grid; width: 15px; height: 10px; place-items: center; color: #fff; background: #c53159; border-radius: 5px; box-shadow: 0 2px 6px rgba(159, 38, 72, .32); animation: message-travel 1.35s linear var(--route-delay) infinite; }
+.communication-route i::before { color: #fff; font-size: 5px; font-style: normal; letter-spacing: -1px; content: '•••'; transform: translateX(-.5px); }
+.communication-route i::after { position: absolute; bottom: -3px; left: 3px; width: 0; height: 0; border-top: 4px solid #c53159; border-right: 4px solid transparent; content: ''; }
+@keyframes communication-route-enter { from { opacity: 0; } to { opacity: .64; } }
+@keyframes message-travel { 0% { left: 0; opacity: 0; transform: scale(.75); } 12% { opacity: 1; } 82% { opacity: 1; } 100% { left: calc(100% - 15px); opacity: 0; transform: scale(1); } }
 .society-agent { position: relative; display: grid; place-items: center; color: #78717a; animation: society-agent-idle 2.8s ease-in-out var(--agent-delay) infinite; transition: color .4s ease, opacity .4s ease, transform .65s cubic-bezier(.2, .75, .25, 1); }
 .society-agent::after { position: absolute; right: 1px; bottom: -2px; left: 1px; height: 3px; background: rgba(81, 72, 84, .16); border-radius: 50%; content: ''; transform: scaleX(.8); transition: background .35s ease, transform .35s ease; }
 .society-agent svg { position: relative; z-index: 1; width: 23px; height: 37px; overflow: visible; }
@@ -209,12 +216,16 @@
 .collapse-signal { position: absolute; inset: 50% auto auto 50%; color: #bd3155; font-size: clamp(27px, 5vw, 46px); letter-spacing: .16em; opacity: 0; transform: translate(-50%, -40%) scale(.72); transition: opacity .35s ease, transform .5s cubic-bezier(.2, .8, .2, 1); }
 
 .opening-scene--warning .society-ground { background: #c58093; animation: ground-strain .72s ease-in-out infinite alternate; }
+.opening-scene--warning .communication-route { opacity: .9; }
+.opening-scene--warning .communication-route i { animation-duration: 1.05s; }
 @keyframes ground-strain { from { box-shadow: 0 0 0 rgba(189, 49, 85, 0); transform: translateY(0); } to { box-shadow: 0 4px 12px rgba(189, 49, 85, .18); transform: translateY(2px); } }
 
 .opening-scene--collapse .society-agent { opacity: .3; transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-angle)); animation: none; }
 .opening-scene--collapse .society-agent::before { animation: none; opacity: 0; }
 .opening-scene--collapse .society-agent::after { transform: scaleX(.4); }
 .opening-scene--collapse .society-agent--harmful { opacity: .48; }
+.opening-scene--collapse .communication-route { opacity: .28; }
+.opening-scene--collapse .communication-route i { animation: none; opacity: 0; }
 .opening-scene--collapse .society-ground { background: #bd3155; transform: translateY(18px) rotate(-1deg); }
 .opening-scene--collapse .society-ground i { height: 44px; opacity: 1; }
 .opening-scene--collapse .collapse-signal { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -608,6 +619,9 @@
   .opening-scene__header output { text-align: left; }
   .agent-society { min-height: 249px; padding: 24px 17px 30px; }
   .agent-grid { gap: 15px 8px; }
+  .communication-network { top: 24px; width: calc(100% - 34px); height: 220px; }
+  .communication-route { height: 1px; }
+  .communication-route i { width: 12px; height: 9px; }
   .society-agent svg { width: 20px; height: 32px; }
   .society-readout { flex-wrap: wrap; gap: 7px 12px; }
   .opening-controls { gap: 13px; overflow-x: auto; justify-content: flex-start; padding-inline: 17px; }
@@ -650,6 +664,8 @@
 @media (prefers-reduced-motion: reduce) {
   .society-agent,
   .society-agent::before,
+  .communication-route,
+  .communication-route i,
   .society-readout,
   .opening-scene--warning .society-ground,
   .collapse-signal,

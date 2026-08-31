@@ -1,16 +1,40 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 
 const stages = [
-  { harmfulCount: 1, exposedCount: 0, label: 'A harmful minority appears', shortLabel: 'Few', reach: 'Local', stress: 'Low', state: 'stable' },
-  { harmfulCount: 3, exposedCount: 6, label: 'Social signals begin to spread', shortLabel: 'Spreading', reach: 'Growing', stress: 'Low', state: 'stable' },
-  { harmfulCount: 5, exposedCount: 16, label: 'The society nears a tipping point', shortLabel: 'Near tipping', reach: 'Broad', stress: 'Rising', state: 'warning' },
-  { harmfulCount: 7, exposedCount: 28, label: 'Collective collapse', shortLabel: 'Collapse', reach: 'System-wide', stress: 'Severe', state: 'collapse' },
+  { harmfulCount: 1, exposedCount: 0, routeCount: 2, label: 'A harmful minority appears', shortLabel: 'Few', reach: 'Local', stress: 'Low', state: 'stable' },
+  { harmfulCount: 3, exposedCount: 6, routeCount: 8, label: 'Social signals begin to spread', shortLabel: 'Spreading', reach: 'Growing', stress: 'Low', state: 'stable' },
+  { harmfulCount: 5, exposedCount: 16, routeCount: 18, label: 'The society nears a tipping point', shortLabel: 'Near tipping', reach: 'Broad', stress: 'Rising', state: 'warning' },
+  { harmfulCount: 7, exposedCount: 28, routeCount: 26, label: 'Collective collapse', shortLabel: 'Collapse', reach: 'System-wide', stress: 'Severe', state: 'collapse' },
 ] as const
 
 const harmfulOrder = [6, 34, 18, 42, 25, 11, 38]
 const harmfulPositions = new Set(harmfulOrder)
 const exposedOrder = [5, 7, 15, 16, 17, 24, 26, 33, 35, 43, 41, 19, 28, 27, 12, 10, 3, 4, 8, 9, 20, 21, 29, 30, 31, 39, 40, 44]
+const communicationRoutes = [
+  [6, 5], [6, 7], [6, 16], [34, 33], [34, 35], [34, 24], [18, 17], [18, 28],
+  [18, 19], [18, 27], [42, 41], [42, 43], [42, 32], [25, 24], [25, 26], [25, 15],
+  [34, 44], [6, 15], [11, 10], [11, 12], [38, 37], [38, 39], [38, 48], [25, 35],
+  [42, 31], [18, 9],
+] as const
 const agents = Array.from({ length: 50 }, (_, index) => index)
+
+function communicationRouteStyle(from: number, to: number, index: number) {
+  const fromColumn = from % 10
+  const fromRow = Math.floor(from / 10)
+  const toColumn = to % 10
+  const toRow = Math.floor(to / 10)
+  const deltaX = (toColumn - fromColumn) * 10
+  const deltaY = (toRow - fromRow) * 20
+  const adjustedY = deltaY * 0.36
+
+  return {
+    '--route-x': `${(fromColumn + 0.5) * 10}%`,
+    '--route-y': `${(fromRow + 0.5) * 20}%`,
+    '--route-length': `${Math.sqrt(deltaX ** 2 + adjustedY ** 2)}%`,
+    '--route-angle': `${Math.atan2(adjustedY, deltaX) * 180 / Math.PI}deg`,
+    '--route-delay': `${(index % 7) * -0.19}s`,
+  } as CSSProperties
+}
 
 export function OpeningAnimation() {
   const [activeStage, setActiveStage] = useState(0)
@@ -43,8 +67,19 @@ export function OpeningAnimation() {
         <div
           className="agent-society"
           role="img"
-          aria-label="A conceptual society in which a small but growing number of harmful agents precedes sudden collective collapse"
+          aria-label="A conceptual society in which harmful messages travel between agents, widen their social reach, and precede sudden collective collapse"
         >
+          <div className="communication-network" aria-hidden="true">
+            {communicationRoutes.slice(0, stage.routeCount).map(([from, to], index) => (
+              <span
+                className="communication-route"
+                key={`${from}-${to}`}
+                style={communicationRouteStyle(from, to, index)}
+              >
+                <i />
+              </span>
+            ))}
+          </div>
           <div className="agent-grid" aria-hidden="true">
             {agents.map((index) => {
               const isHarmfulPosition = harmfulPositions.has(index)
@@ -121,7 +156,7 @@ export function OpeningAnimation() {
           </button>
         </div>
       </div>
-      <p>A small harmful minority grows while the society appears stable—until the collective state suddenly gives way.</p>
+      <p>Harmful messages move from agent to agent, widening their social reach and raising system pressure until the collective state gives way.</p>
     </section>
   )
 }
