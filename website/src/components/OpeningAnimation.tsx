@@ -1,26 +1,28 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 
 const stages = [
-  { harmfulCount: 1, label: 'A harmful minority appears', shortLabel: 'Few', state: 'stable' },
-  { harmfulCount: 3, label: 'Harmful agents spread', shortLabel: 'More', state: 'stable' },
-  { harmfulCount: 5, label: 'The society nears a tipping point', shortLabel: 'Near tipping', state: 'warning' },
-  { harmfulCount: 7, label: 'Collective collapse', shortLabel: 'Collapse', state: 'collapse' },
+  { harmfulCount: 1, exposedCount: 0, label: 'A harmful minority appears', shortLabel: 'Few', reach: 'Local', stress: 'Low', state: 'stable' },
+  { harmfulCount: 3, exposedCount: 6, label: 'Social signals begin to spread', shortLabel: 'Spreading', reach: 'Growing', stress: 'Low', state: 'stable' },
+  { harmfulCount: 5, exposedCount: 16, label: 'The society nears a tipping point', shortLabel: 'Near tipping', reach: 'Broad', stress: 'Rising', state: 'warning' },
+  { harmfulCount: 7, exposedCount: 28, label: 'Collective collapse', shortLabel: 'Collapse', reach: 'System-wide', stress: 'Severe', state: 'collapse' },
 ] as const
 
 const harmfulOrder = [6, 34, 18, 42, 25, 11, 38]
 const harmfulPositions = new Set(harmfulOrder)
+const exposedOrder = [5, 7, 15, 16, 17, 24, 26, 33, 35, 43, 41, 19, 28, 27, 12, 10, 3, 4, 8, 9, 20, 21, 29, 30, 31, 39, 40, 44]
 const agents = Array.from({ length: 50 }, (_, index) => index)
 
 export function OpeningAnimation() {
   const [activeStage, setActiveStage] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(true)
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!isPlaying || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const timer = window.setInterval(() => {
       setActiveStage((current) => (current + 1) % stages.length)
-    }, 1750)
+    }, 2200)
     return () => window.clearInterval(timer)
-  }, [])
+  }, [isPlaying])
 
   const stage = stages[activeStage]
 
@@ -32,7 +34,10 @@ export function OpeningAnimation() {
             <span className="opening-kicker">Conceptual illustration—not measured data</span>
             <h2 id="opening-animation-title">A society near its tipping point</h2>
           </div>
-          <output aria-live="polite">{stage.label}</output>
+          <output aria-live="polite">
+            <span>{stage.label}</span>
+            <small>{stage.harmfulCount} harmful · {stage.reach.toLowerCase()} reach</small>
+          </output>
         </div>
 
         <div
@@ -45,10 +50,13 @@ export function OpeningAnimation() {
               const isHarmfulPosition = harmfulPositions.has(index)
               const harmfulRank = harmfulOrder.indexOf(index)
               const isHarmful = isHarmfulPosition && harmfulRank < stage.harmfulCount
+              const exposedRank = exposedOrder.indexOf(index)
+              const isExposed = !isHarmful && exposedRank >= 0 && exposedRank < stage.exposedCount
               const pose = index % 4
               const style = {
                 '--agent-index': index,
                 '--agent-delay': `${(index % 10) * -0.11}s`,
+                '--exposure-delay': `${(Math.max(exposedRank, 0) % 8) * -0.16}s`,
                 '--scatter-x': `${((index * 17) % 47) - 23}px`,
                 '--scatter-y': `${28 + ((index * 13) % 34)}px`,
                 '--scatter-angle': `${((index * 29) % 80) - 40}deg`,
@@ -57,7 +65,7 @@ export function OpeningAnimation() {
               return (
                 <span
                   key={index}
-                  className={`society-agent society-agent--pose-${pose}${isHarmful ? ' society-agent--harmful' : ''}`}
+                  className={`society-agent society-agent--pose-${pose}${isExposed ? ' society-agent--exposed' : ''}${isHarmful ? ' society-agent--harmful' : ''}`}
                   style={style}
                 >
                   <svg viewBox="0 0 24 38" focusable="false">
@@ -78,6 +86,10 @@ export function OpeningAnimation() {
               )
             })}
           </div>
+          <div className="society-readout" key={`${stage.reach}-${stage.stress}`} aria-hidden="true">
+            <span>Social reach <b>{stage.reach}</b></span>
+            <span>Market stress <b>{stage.stress}</b></span>
+          </div>
           <div className="society-ground" aria-hidden="true"><i /><i /><i /></div>
           <strong className="collapse-signal" aria-hidden="true">COLLAPSE</strong>
         </div>
@@ -89,12 +101,24 @@ export function OpeningAnimation() {
               type="button"
               className={activeStage === index ? 'is-active' : ''}
               aria-pressed={activeStage === index}
-              onClick={() => setActiveStage(index)}
+              onClick={() => {
+                setActiveStage(index)
+                setIsPlaying(false)
+              }}
             >
               <i aria-hidden="true" />
               {item.shortLabel}
             </button>
           ))}
+          <button
+            type="button"
+            className="opening-playback"
+            aria-label={isPlaying ? 'Pause conceptual animation' : 'Play conceptual animation'}
+            onClick={() => setIsPlaying((current) => !current)}
+          >
+            <span aria-hidden="true">{isPlaying ? 'Ⅱ' : '▶'}</span>
+            {isPlaying ? 'Pause' : 'Play'}
+          </button>
         </div>
       </div>
       <p>A small harmful minority grows while the society appears stable—until the collective state suddenly gives way.</p>

@@ -1,6 +1,6 @@
 export const site = {
   title: 'WolfSociety',
-  subtitle: 'How Harmful-Agent Scaling Drives Collective Collapse in Financial Agent Societies?',
+  subtitle: 'How Harmful-Agent Scaling Drives Collective Collapse in Financial Agent Societies',
   description:
     'This work studies how harmful-agent composition, society size, and interaction structure shape collective collapse in a controlled financial agent society.',
   abstract: [

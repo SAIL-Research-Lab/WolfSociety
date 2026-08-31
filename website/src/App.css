@@ -167,7 +167,8 @@
 
 .opening-kicker { color: #8b818d; font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .opening-scene__header h2 { margin: 5px 0 0; color: #302c31; font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
-.opening-scene__header output { color: #6f6571; font-size: 12px; font-weight: 700; text-align: right; transition: color .3s ease; }
+.opening-scene__header output { display: grid; gap: 3px; color: #6f6571; font-size: 12px; font-weight: 700; text-align: right; transition: color .3s ease; }
+.opening-scene__header output small { color: #9a929c; font-size: 9px; font-weight: 650; letter-spacing: .035em; text-transform: uppercase; }
 .opening-scene--warning .opening-scene__header output { color: #a35568; }
 .opening-scene--collapse .opening-scene__header output { color: #bd3155; }
 
@@ -183,17 +184,32 @@
 .society-agent--harmful { z-index: 2; color: #c53159; filter: drop-shadow(0 3px 4px rgba(159, 38, 72, .2)); animation: harmful-agent-pulse 1.15s ease-in-out var(--agent-delay) infinite; }
 .society-agent--harmful::before { position: absolute; top: -5px; width: 30px; height: 30px; background: radial-gradient(circle, rgba(197, 49, 89, .18), rgba(197, 49, 89, 0) 70%); border-radius: 50%; content: ''; animation: harmful-aura 1.15s ease-in-out var(--agent-delay) infinite; }
 .society-agent--harmful::after { background: rgba(177, 40, 77, .28); transform: scaleX(1); }
+.society-agent--exposed { color: #9b7897; animation: exposed-agent-response 1.7s ease-in-out var(--exposure-delay) infinite; }
+.society-agent--exposed::before { position: absolute; top: -4px; width: 27px; height: 27px; border: 1px solid rgba(155, 120, 151, .42); border-radius: 50%; content: ''; animation: exposed-signal 1.7s ease-out var(--exposure-delay) infinite; }
+.society-agent--exposed::after { background: rgba(137, 102, 134, .24); }
 .agent-horns { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 @keyframes society-agent-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
 @keyframes harmful-agent-pulse { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-2px) scale(1.08); } }
 @keyframes harmful-aura { 0%, 100% { opacity: .45; transform: scale(.82); } 50% { opacity: 1; transform: scale(1.16); } }
+@keyframes exposed-agent-response { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-2px); } }
+@keyframes exposed-signal { 0% { opacity: .75; transform: scale(.55); } 75%, 100% { opacity: 0; transform: scale(1.45); } }
 
-.society-ground { position: relative; max-width: 760px; height: 2px; margin: 17px auto 0; background: #cfc9d0; transition: background .35s ease, transform .65s ease; }
+.society-readout { display: flex; justify-content: center; gap: 14px; margin: 14px auto 0; color: #766f78; font-size: 9px; animation: opening-readout-enter .42s ease-out; }
+.society-readout span { display: inline-flex; align-items: center; gap: 6px; }
+.society-readout b { min-width: 58px; padding: 3px 7px; color: #5f5762; background: #f0edf1; border-radius: 999px; font-weight: 700; text-align: center; transition: color .3s ease, background .3s ease; }
+.opening-scene--warning .society-readout b { color: #91475b; background: #f8e9ee; }
+.opening-scene--collapse .society-readout b { color: #fff; background: #bd3155; }
+@keyframes opening-readout-enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.society-ground { position: relative; max-width: 760px; height: 2px; margin: 11px auto 0; background: #cfc9d0; transition: background .35s ease, transform .65s ease; }
 .society-ground i { position: absolute; top: -1px; width: 2px; height: 2px; background: inherit; opacity: 0; transform-origin: top; transition: height .35s ease, opacity .2s ease, transform .35s ease; }
 .society-ground i:nth-child(1) { left: 31%; transform: rotate(31deg); }
 .society-ground i:nth-child(2) { left: 54%; transform: rotate(-38deg); }
 .society-ground i:nth-child(3) { left: 73%; transform: rotate(24deg); }
 .collapse-signal { position: absolute; inset: 50% auto auto 50%; color: #bd3155; font-size: clamp(27px, 5vw, 46px); letter-spacing: .16em; opacity: 0; transform: translate(-50%, -40%) scale(.72); transition: opacity .35s ease, transform .5s cubic-bezier(.2, .8, .2, 1); }
+
+.opening-scene--warning .society-ground { background: #c58093; animation: ground-strain .72s ease-in-out infinite alternate; }
+@keyframes ground-strain { from { box-shadow: 0 0 0 rgba(189, 49, 85, 0); transform: translateY(0); } to { box-shadow: 0 4px 12px rgba(189, 49, 85, .18); transform: translateY(2px); } }
 
 .opening-scene--collapse .society-agent { opacity: .3; transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-angle)); animation: none; }
 .opening-scene--collapse .society-agent::before { animation: none; opacity: 0; }
@@ -208,6 +224,8 @@
 .opening-controls button i { width: 7px; height: 7px; background: #d5d0d6; border-radius: 50%; transition: background .2s ease, box-shadow .2s ease, transform .2s ease; }
 .opening-controls button.is-active { color: #4d454f; }
 .opening-controls button.is-active i { background: #b14a67; box-shadow: 0 0 0 3px rgba(177, 74, 103, .13); transform: scale(1.08); }
+.opening-controls .opening-playback { margin-left: 4px; padding-left: 14px; border-left: 1px solid #e5e1e6; color: #655d68; }
+.opening-playback span { width: 10px; color: #a33e5b; font-size: 9px; text-align: center; }
 .opening-animation > p { max-width: 680px; margin: 13px auto 0; color: #5d565f; font-size: 15px; line-height: 1.55; text-align: center; }
 
 .teaser-section {
@@ -591,6 +609,7 @@
   .agent-society { min-height: 249px; padding: 24px 17px 30px; }
   .agent-grid { gap: 15px 8px; }
   .society-agent svg { width: 20px; height: 32px; }
+  .society-readout { flex-wrap: wrap; gap: 7px 12px; }
   .opening-controls { gap: 13px; overflow-x: auto; justify-content: flex-start; padding-inline: 17px; }
   .opening-controls button { flex: 0 0 auto; }
   .opening-animation > p { font-size: 14px; text-align: left; }
@@ -631,6 +650,8 @@
 @media (prefers-reduced-motion: reduce) {
   .society-agent,
   .society-agent::before,
+  .society-readout,
+  .opening-scene--warning .society-ground,
   .collapse-signal,
   .harm-devil,
   .count-devil,
