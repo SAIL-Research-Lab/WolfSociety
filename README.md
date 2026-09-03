@@ -1,3 +1,5 @@
+**Disclaimer** This research is intended solely to study and mitigate the systemic risks posed by harmful agents in multi-agent societies. All experiments are conducted in controlled simulated environments. We do not endorse or encourage real-world harmful or manipulative behavior, and the financial scenarios presented here do not constitute financial or investment advice.
+
 <p align="center">
   <a href="https://zhanglejun02.github.io/when-harm-scales/">
     <img src="website/public/teaser.png" width="820" alt="WolfSociety project overview">
