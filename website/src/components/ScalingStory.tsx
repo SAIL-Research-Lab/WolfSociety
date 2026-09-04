@@ -9,10 +9,10 @@ export function ScalingStory() {
         <div className="academic-content">
           <h2>Scaling of Collective Collapse</h2>
           <p>
-            Across six measured society sizes, collapse remains rare at low harmful fractions and rises sharply near a size-dependent boundary. Increasing the population from 100 to 2,000 moves the measured midpoint from 4.7% to 2.2%.
+            Across six society sizes, collapse remains rare at low harmful fractions and rises sharply near a size-dependent boundary. We define this boundary as the harmful fraction at which collapse probability reaches 50%. Increasing the population from 100 to 2,000 moves it from 4.7% to 2.2%.
           </p>
           <p>
-            The corresponding critical harmful count nevertheless grows from 4.7 to 44. Over the tested size range, this combination—a decreasing fraction and an increasing count—indicates sublinear growth in the harmful count and is inconsistent with both constant-fraction and constant-count boundaries.
+            The corresponding harmful count nevertheless grows from 4.7 to 44. The harmful count is therefore neither constant nor proportional to society size: it grows, but more slowly than the society itself.
           </p>
         </div>
 
@@ -22,7 +22,7 @@ export function ScalingStory() {
             alt="Measured critical fraction decreases with society size while the harmful count grows sublinearly."
           />
           <figcaption>
-            <strong>Figure 3.</strong> The critical fraction follows α<sub>c</sub>(N) ∝ N<sup>−0.222</sup>, while the harmful count follows K<sub>c</sub>(N) ∝ N<sup>0.778</sup>. The conditional 95% bootstrap confidence interval for the boundary exponent is [{exponent.confidenceInterval[0].toFixed(3)}, {exponent.confidenceInterval[1].toFixed(3)}].
+            <strong>Figure 3.</strong> The six-size fit gives α<sub>c</sub>(N) ∝ N<sup>−{exponent.estimate.toFixed(3)}</sup>. The corresponding harmful count follows K<sub>c</sub>(N) ∝ N<sup>{(1 - exponent.estimate).toFixed(3)}</sup>: the fraction falls while the count grows.
           </figcaption>
         </figure>
       </section>
@@ -34,7 +34,7 @@ export function ScalingStory() {
             The largest boundary shifts occur when several interaction parameters change together and when network reach increases. Jointly decreasing response precision, conformity, attention capacity, and graph degree moves the boundary toward a larger harmful fraction; jointly increasing them and separately increasing network reach move it toward a smaller fraction.
           </p>
           <p>
-            At a fixed harmful count, the maximum joint severity of harmful diffusion and market disruption decreases with population size under fixed, square-root, and per-capita liquidity scaling. High conformity alone changes the collapse boundary little, whereas increased network reach produces a clear leftward shift.
+            When the harmful count is fixed, episode severity decreases as the society grows. We rerun this experiment under three market designs—holding total liquidity fixed, growing it with the square root of society size, or growing it in direct proportion to society size—and observe the same decline in all three. High conformity alone changes the collapse boundary little, whereas increased network reach produces a clear shift toward lower harmful fractions.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export function ScalingStory() {
             alt="Jointly decreasing four interaction parameters shifts the critical harmful fraction rightward, while jointly increasing them and increasing network reach shift it leftward."
           />
           <figcaption>
-            <strong>Figure 4.</strong> Mean paired changes in the critical fraction under matched interventions. Joint decrease increases α<sub>c</sub> by {interventions.jointDecrease.toFixed(3)}; joint increase and increased reach decrease it by {Math.abs(interventions.jointIncrease).toFixed(3)} and {Math.abs(interventions.increasedReach).toFixed(3)}, respectively. The two joint conditions change response precision, conformity, attention capacity, and graph degree together. Error bars show paired-bootstrap 95% confidence intervals; positive values indicate greater robustness.
+            <strong>Figure 4.</strong> Mean paired changes in the collapse boundary under matched interventions. Joint decrease raises α<sub>c</sub> by {interventions.jointDecrease.toFixed(3)}; joint increase and increased reach lower it by {Math.abs(interventions.jointIncrease).toFixed(3)} and {Math.abs(interventions.increasedReach).toFixed(3)}, respectively. The joint conditions change response precision, conformity, attention capacity, and graph degree together. Error bars show paired-bootstrap 95% confidence intervals; positive values mean that a higher harmful fraction is required for collapse.
           </figcaption>
         </figure>
       </section>

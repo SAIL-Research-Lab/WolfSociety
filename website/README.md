@@ -1,6 +1,6 @@
 # WolfSociety project website
 
-Interactive academic project page for **WolfSociety: Harmful-Agent Scaling and Collective Collapse in Financial Agent Societies**.
+Interactive academic project page for **WolfSociety: Understanding Collective Risk from Harmful-Agent Scaling in Financial Agent Societies**.
 
 The page follows a classic paper-first project-page structure: title and authors, Paper/Code resources, the paper teaser, three compact animations, abstract, Agent Society Dynamics, scaling and intervention figures, the WolfBench release scope, and BibTeX. The research figures carry most of the visual identity; the surrounding interface stays quiet and academic.
 

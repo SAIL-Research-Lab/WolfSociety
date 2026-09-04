@@ -4,10 +4,10 @@ export function FutureWork() {
       <div className="academic-content">
         <h2>WolfBench</h2>
         <p>
-          We package the simulator, manipulation scenarios, and evaluation interfaces as WolfBench, a controlled research environment for studying collective failure across harmful-agent composition and society size. The installable Python package and command-line interface retain the name <code>wolfbench</code>.
+          WolfBench packages the simulator, four manipulation scenarios, and evaluation tools into a controlled environment for studying collective failure. S1 is the primary scaling scenario. In smaller transfer tests, S2 and S3 also show nonlinear transitions, while S4 does not reach the collapse criterion within the tested range. Because the scenarios measure different forms of disruption, their boundary locations should not be compared directly.
         </p>
         <p>
-          Future work will expand the environment across scenarios, agent roles, interaction structures, and fully LLM-controlled populations; strengthen calibration and controller audits; and develop common interfaces for comparing defenses against harmful propagation and society-level collapse.
+          The current evidence comes from 30-day episodes, static social graphs, and archetypal agent roles. The controller audits cover rule-based and quota-limited hybrid societies, not fully LLM-controlled populations. Future work can study fully LLM-controlled societies, adaptive networks, longer time horizons, and domains beyond finance.
         </p>
       </div>
     </section>

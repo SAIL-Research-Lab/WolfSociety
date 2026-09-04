@@ -6,10 +6,10 @@ export function SocialDynamics() {
       <div className="academic-content">
         <h2>Agent Society Dynamics</h2>
         <p>
-          We model collective failure as a closed-loop process. A harmful minority contributes pressure through communication and action; heterogeneous agents combine that pressure with private and social evidence; their responses then alter the shared social and market state observed by the rest of the population.
+          The financial society forms a closed loop: agents communicate and trade, their actions change the shared social and market conditions, and later agents respond to those changes. Agent Society Dynamics describes how collective failure varies with harmful-agent fraction, society size, and these repeated interactions.
         </p>
         <p>
-          The framework connects the collapse boundary to two size-dependent components: initial harmful input, represented by αN<sup>δ</sup>, and the response that develops through subsequent interactions, represented by N<sup>ζ</sup>. Under a comparable collapse criterion across society sizes, their combined scaling gives ν = δ + ζ. We use this relation as a conceptual description; the experiments estimate the overall boundary exponent rather than identify δ and ζ as separate causal effects.
+          In the framework, initial harmful input scales as αN<sup>δ</sup>, while the response that develops through later interactions scales as N<sup>ζ</sup>. Their combination gives α<sub>c</sub>(N) ∝ N<sup>−ν</sup>, with ν = δ + ζ. This is a compact description of the measured size dependence: the experiments estimate ν, but do not identify δ and ζ as separate causal effects.
         </p>
       </div>
 
@@ -19,7 +19,7 @@ export function SocialDynamics() {
           alt="Collapse probability and episode severity rise with the harmful-agent fraction at size-dependent boundaries."
         />
         <figcaption>
-          <strong>Figure 2.</strong> Nonlinear collapse transition in the primary scenario. Collapse probability rises sharply around a size-dependent boundary, while episode severity <em>R</em><sub>S1</sub> provides a continuous view of the same transition.
+          <strong>Figure 2.</strong> Nonlinear collapse transition in the primary S1 scenario. Collapse probability rises sharply around a size-dependent boundary, while episode severity <em>R</em><sub>S1</sub> shows the same transition on a continuous scale.
         </figcaption>
       </figure>
     </section>

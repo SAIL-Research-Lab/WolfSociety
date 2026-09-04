@@ -2,7 +2,7 @@
   <img src="website/public/images/wolfsociety-logo.png" width="360" alt="WolfSociety logo">
 </p>
 
-<h1 align="center"><em>WolfSociety:</em> How Harmful-Agent Scaling Drives Collective Collapse in Financial Agent Societies</h1>
+<h1 align="center"><em>WolfSociety:</em> Understanding Collective Risk from Harmful-Agent Scaling in Financial Agent Societies</h1>
 
 <p align="center">
   <a href="https://zhanglejun02.github.io/when-harm-scales/">Project Page</a> ·
@@ -23,21 +23,21 @@
 
 <p align="center"><sub>A conceptual illustration of harmful information spreading through the society—not measured experimental data.</sub></p>
 
-> **Disclaimer** This research is intended solely to study and mitigate the systemic risks posed by harmful agents in multi-agent societies. All experiments are conducted in controlled simulated environments. We do not endorse or encourage real-world harmful or manipulative behavior, and the financial scenarios presented here do not constitute financial or investment advice.
+> **Disclaimer** This study is conducted solely for AI safety research. All harmful-agent behaviors are simulated to understand and mitigate collective risks, not to enable real-world financial harm. The controlled scenarios do not constitute financial or investment advice.
 
 ## Overview
 
-WolfSociety studies a simple but underexplored safety question: **as an agent
-society grows, how does the amount of harmful participation required for
-collective failure change?** We investigate this question in a controlled
-financial society where agents exchange information over a social network and
-trade in a shared market.
+WolfSociety asks a simple but underexplored safety question: **as an agent
+society grows, how does the harmful population required for collective failure
+change?** We study this question in a controlled financial society where
+agents communicate over a social network, trade in a shared market, and observe
+the social and market conditions produced by earlier actions.
 
 The repository provides **WolfBench**, the simulator and command-line toolkit
-used in the study. It includes controlled market scenarios, population-scaling
-experiments, intervention studies, analysis code, and a defense-evaluation
-interface. The deterministic simulator runs locally without an API key; LLM
-leaders are an optional extension.
+used in the study. It includes four manipulation scenarios, a clean control,
+population-scaling experiments, controlled interventions, and analysis tools.
+S1, the social pump-and-dump scenario, is the primary setting for the scaling
+results.
 
 <p align="center">
   <a href="https://zhanglejun02.github.io/when-harm-scales/">
@@ -49,23 +49,27 @@ leaders are an optional extension.
 
 ## Main findings
 
-- **The critical harmful fraction falls as society size grows.** The harmful
-  fraction associated with a 50% collapse probability decreases from 4.7% at
-  100 agents to 2.2% at 2,000 agents.
-- **The corresponding harmful count still grows.** Over the same range, the
-  estimated count rises from about 5 to 44 agents, but grows more slowly than
-  the society itself.
-- **Market design and interaction structure matter.** At a fixed harmful
-  count, disruption becomes less severe in larger societies across three
-  liquidity designs. Broader network reach can also shift the collapse
-  boundary, whereas stronger conformity alone has little effect.
+- **Collapse appears abruptly.** In S1, collapse requires harmful information
+  to spread broadly together with severe price dislocation or liquidity stress.
+  Across all tested sizes, it changes from rare to frequent over a narrow range
+  of harmful fractions.
+- **The collapse boundary falls as society size grows.** The harmful fraction
+  associated with a 50% collapse probability decreases from 4.7% at 100 agents
+  to 2.2% at 2,000 agents. The corresponding harmful count rises from about 5
+  to 44, but grows more slowly than the society itself.
+- **The same harmful count has less impact in a larger society.** This result
+  remains when total market depth is held fixed, grows with the square root of
+  society size, or grows in direct proportion to it.
+- **Reach matters more than conformity alone.** Allowing information to travel
+  farther moves collapse toward lower harmful fractions. Making agents follow
+  received social information more strongly has little effect on the boundary.
 
 ## What is included
 
 | Component | What it provides |
 | --- | --- |
 | Simulator | Reproducible agent societies, social communication, trading, and episode-level metrics |
-| Scenarios | Clean control, social pump-and-dump, finfluencer scalping, spoofing/layering, and wash-trading settings |
+| Scenarios | Four manipulation settings—pump-and-dump, scalping, spoofing/layering, and wash trading—plus a clean control |
 | CLI | Single episodes, scaling sweeps, and matched defense evaluation |
 | Paper experiments | Scaling, size decomposition, interventions, cascade analysis, and robustness runners |
 | Website | The academic project page and publication-ready figures |
@@ -77,7 +81,7 @@ leaders are an optional extension.
 Python 3.10 or newer is required.
 
 ```bash
-git clone https://github.com/SafeRL-Lab/WolfSociety.git
+git clone https://github.com/SAIL-Research-Lab/WolfSociety.git
 cd WolfSociety
 
 python3 -m venv .venv
@@ -154,11 +158,13 @@ wolfbench evaluate \
   --seeds 1,2
 ```
 
-### Optional: enable LLM leaders
+### Optional: enable LLM-controlled agents
 
-The core simulator and all `--mock` experiment runs are deterministic and need
-no external model. For experiments that call an OpenAI-compatible or
-OpenRouter model, install the optional dependencies and configure a key:
+In the paper, most agents use role-based controllers, while a small,
+prespecified quota uses LLM controllers. The primary experiments use DeepSeek
+V3.2 for these agents. Local `--mock` runs need no external model. To run an
+experiment through an OpenAI-compatible or OpenRouter model, install the
+optional dependencies and configure a key:
 
 ```bash
 python -m pip install -e ".[dev,plot,llm]"
@@ -245,9 +251,9 @@ If WolfSociety is useful in your research, please cite:
 
 ```bibtex
 @unpublished{zhang2027wolfsociety,
-  title  = {{WolfSociety}: How Harmful-Agent Scaling Drives Collective Collapse in Financial Agent Societies},
+  title  = {{WolfSociety}: Understanding Collective Risk from Harmful-Agent Scaling in Financial Agent Societies},
   author = {Zhang, Lejun and Lu-Liang, Sarah and Jiang, Xin and Wen, Muning and Zhang, Weinan and Gu, Shangding},
-  journal   = {github},
+  note   = {Manuscript under review},
   year   = {2027}
 }
 ```

@@ -105,7 +105,7 @@ function SizeScene() {
           <span>Harmful-agent count <strong>↑ about 9×</strong></span>
         </div>
       </div>
-      <p className="motion-explanation"><strong>Finding 2.</strong> Larger societies reach the 50% collapse boundary at a smaller harmful-agent fraction, even though the corresponding effective harmful count is larger.</p>
+      <p className="motion-explanation"><strong>Finding 2.</strong> Larger societies reach the 50% collapse boundary at a smaller harmful-agent fraction, even though the corresponding harmful count is larger.</p>
     </article>
   )
 }
