@@ -247,7 +247,7 @@ If WolfSociety is useful in your research, please cite:
 @unpublished{zhang2027wolfsociety,
   title  = {{WolfSociety}: How Harmful-Agent Scaling Drives Collective Collapse in Financial Agent Societies},
   author = {Zhang, Lejun and Lu-Liang, Sarah and Jiang, Xin and Wen, Muning and Zhang, Weinan and Gu, Shangding},
-  note   = {Manuscript under review},
+  journal   = {github},
   year   = {2027}
 }
 ```
