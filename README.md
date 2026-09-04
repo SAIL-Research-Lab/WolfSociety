@@ -1,20 +1,8 @@
-> **Disclaimer** This research is intended solely to study and mitigate the systemic risks posed by harmful agents in multi-agent societies. All experiments are conducted in controlled simulated environments. We do not endorse or encourage real-world harmful or manipulative behavior, and the financial scenarios presented here do not constitute financial or investment advice.
-
 <p align="center">
-  <a href="https://zhanglejun02.github.io/when-harm-scales/">
-    <img src="website/public/teaser.png" width="860" alt="WolfSociety project overview">
-  </a>
+  <img src="website/public/images/wolfsociety-logo.png" width="360" alt="WolfSociety logo">
 </p>
 
-<p align="center">
-  <img src="website/public/images/wolfsociety-logo.png" width="270" alt="WolfSociety logo">
-</p>
-
-<h1 align="center">WolfSociety</h1>
-
-<p align="center">
-  <strong>How Harmful-Agent Scaling Drives Collective Collapse in Financial Agent Societies</strong>
-</p>
+<h1 align="center"><em>WolfSociety:</em> How Harmful-Agent Scaling Drives Collective Collapse in Financial Agent Societies</h1>
 
 <p align="center">
   <a href="https://zhanglejun02.github.io/when-harm-scales/">Project Page</a> ·
@@ -28,6 +16,14 @@
   <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python 3.10 or newer">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-6B4EFF" alt="Apache 2.0 license"></a>
 </p>
+
+<p align="center">
+  <img src="website/public/readme-opening-animation.gif" width="900" alt="Conceptual animation of harmful information spreading through an agent society until collective collapse">
+</p>
+
+<p align="center"><sub>A conceptual illustration of harmful information spreading through the society—not measured experimental data.</sub></p>
+
+> **Disclaimer** This research is intended solely to study and mitigate the systemic risks posed by harmful agents in multi-agent societies. All experiments are conducted in controlled simulated environments. We do not endorse or encourage real-world harmful or manipulative behavior, and the financial scenarios presented here do not constitute financial or investment advice.
 
 ## Overview
 
@@ -44,10 +40,12 @@ interface. The deterministic simulator runs locally without an API key; LLM
 leaders are an optional extension.
 
 <p align="center">
-  <img src="website/public/readme-opening-animation.gif" width="840" alt="Conceptual animation of harmful information spreading through an agent society until collective collapse">
+  <a href="https://zhanglejun02.github.io/when-harm-scales/">
+    <img src="website/public/teaser.png" width="860" alt="WolfSociety paper overview">
+  </a>
 </p>
 
-<p align="center"><sub>A conceptual illustration of harmful information spreading through the society—not measured experimental data.</sub></p>
+<p align="center"><sub>An overview of the setting, scaling results, and controlled interventions.</sub></p>
 
 ## Main findings
 
