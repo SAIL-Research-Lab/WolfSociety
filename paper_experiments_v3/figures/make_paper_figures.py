@@ -1,8 +1,8 @@
 """Build the four main-paper figures and the scaling result table.
 
-FROZEN PUBLICATION BASELINE: these figures consume original rule-based or
-quota-limited hybrid results. They are not evidence for the active full-LLM
-suite under paper_experiments/. Never combine the two benchmark versions.
+The original publication plotting functions are shared with the full-LLM
+exporter, which passes verified new rows explicitly. The CLI's historical
+reader remains opt-in; the current exporter never calls it.
 
 The script is deliberately conservative:
 
@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch, Rectangle
-from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import FuncFormatter, LogLocator, NullFormatter
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -121,6 +121,8 @@ VARIANT_ORDER = [
     "qre_high_reach",
     "qre_high_conformity",
     "qre_strong_coupling",
+    "weak_feedback", "strong_feedback", "high_reach", "high_attention",
+    "high_conformity", "high_deliberation", "no_feedback", "no_multihop",
 ]
 VARIANT_LABELS = {
     "qre_baseline": "Baseline",
@@ -150,6 +152,15 @@ FIG4_LABELS = {
     "qre_high_conformity": "High conformity",
     "qre_high_precision": "High precision",
 }
+VARIANT_LABELS.update({
+    "baseline": "Baseline", "weak_feedback": "Joint decrease",
+    "strong_feedback": "Joint increase", "high_reach": "Increased reach",
+    "high_attention": "High attention", "high_conformity": "High conformity",
+    "high_deliberation": "High deliberation", "no_feedback": "Frozen market obs.",
+    "no_multihop": "Source-only messages",
+})
+INTERVENTION_GROUPS[0][1].extend(["weak_feedback", "strong_feedback", "high_reach", "no_feedback"])
+INTERVENTION_GROUPS[1][1].extend(["high_attention", "high_conformity", "high_deliberation", "no_multihop"])
 
 
 def setup_style() -> None:
@@ -436,13 +447,10 @@ def aggregate_mean_ci(
 
 
 def crossing(curve: list[tuple[float, float]], target: float = 0.5) -> float | None:
-    points = sorted(curve)
-    for (a0, p0), (a1, p1) in zip(points, points[1:]):
-        if p0 == target:
-            return a0
-        if (p0 - target) * (p1 - target) <= 0 and p1 != p0:
-            return a0 + (target - p0) * (a1 - a0) / (p1 - p0)
-    return None
+    # Use the same censoring rule as the active analysis; never invent a
+    # midpoint for clean-baseline failure or multiple crossings.
+    from paper_experiments.analysis import crossing as current_crossing
+    return current_crossing([(a, p, 1) for a, p in sorted(curve)], target)["alpha_c"]
 
 
 def fit_logistic(xs: np.ndarray, ys: np.ndarray, grid: np.ndarray) -> np.ndarray:
@@ -614,11 +622,8 @@ def p01_display_xmax(rows: list[dict[str, str]]) -> float:
     alphas = [f(row, "alpha") for row in rows if math.isfinite(f(row, "alpha"))]
     if not alphas:
         return 0.08
-    summaries = [row for row in p01_summaries(rows) if row["alpha_c"] != ""]
-    if summaries:
-        max_midpoint = max(float(row["alpha_c"]) for row in summaries)
-        return min(max(alphas), max(0.06, min(0.08, 1.65 * max_midpoint)))
-    return min(max(alphas), 0.08)
+    # New LLM transitions may lie well outside the historical 0.08 window.
+    return max(alphas)
 
 
 def bootstrap_alpha_c_ci(
@@ -735,7 +740,7 @@ def bootstrap_nu_stats(
         partial_lo = partial_hi = partial_mean = partial_prob_gt0 = partial_prob_lt1 = None
 
     return {
-        "nu_hat": point,
+        "nu_hat": point if math.isfinite(point) else None,
         "nu_boot_mean": mean_boot,
         "nu_ci_lo": None if lo is None else float(lo),
         "nu_ci_hi": None if hi is None else float(hi),
@@ -767,14 +772,14 @@ def figure2_p01_nonlinear_response(
     out_dir: Path,
     p01_rows: list[dict[str, str]],
     p01_display_rows: list[dict[str, str]] | None = None,
-) -> None:
+) -> plt.Figure:
     display_rows = p01_display_rows or p01_rows
     fig, axes = plt.subplots(1, 2, figsize=(6.75, 2.42), gridspec_kw={"wspace": 0.25}, facecolor="white")
     if not display_rows:
         for ax, title in zip(axes, ["Collapse probability", "Continuous risk"]):
             missing(ax, title)
         save_figure(fig, out_dir, "fig2_nonlinear_response")
-        return
+        return fig
 
     ns = sorted({int(f(row, "n_society")) for row in display_rows})
     chosen = representative_sizes(ns)
@@ -850,7 +855,7 @@ def figure2_p01_nonlinear_response(
         ax.text(
             0.155,
             0.835,
-            r"$\alpha_c:\ 0.022 \to 0.047$",
+            rf"$\alpha_c:\ {midpoint_lookup[2000]:.3f}\ \mathrm{{to}}\ {midpoint_lookup[100]:.3f}$",
             transform=ax.transAxes,
             ha="center",
             va="bottom",
@@ -926,6 +931,7 @@ def figure2_p01_nonlinear_response(
     )
     fig.subplots_adjust(left=0.075, right=0.985, bottom=0.20, top=0.80, wspace=0.25)
     save_figure(fig, out_dir, "fig2_nonlinear_response")
+    return fig
 
 
 def figure3_p01_finite_size_scaling(
@@ -935,10 +941,11 @@ def figure3_p01_finite_size_scaling(
     *,
     horizontal: bool = False,
     render_intervention: bool = True,
-) -> None:
+    nu_stats: dict[str, object] | None = None,
+) -> plt.Figure:
     summaries = p01_summaries(p01_rows)
     write_csv(summaries, out_dir / "table2_scaling_results.csv")
-    nu_stats = bootstrap_nu_stats(p01_rows)
+    nu_stats = bootstrap_nu_stats(p01_rows) if nu_stats is None else nu_stats
     with (out_dir / "scaling_exponent_bootstrap.json").open("w") as handle:
         json.dump(nu_stats, handle, indent=2, sort_keys=True)
         handle.write("\n")
@@ -958,13 +965,13 @@ def figure3_p01_finite_size_scaling(
         gs = fig.add_gridspec(2, 1, hspace=0.58)
         axes = [fig.add_subplot(gs[idx, 0]) for idx in range(2)]
     resolved = [row for row in summaries if row["alpha_c"] != ""]
-    if not resolved:
-        for ax, title in zip(axes, ["Boundary decreases", "Harmful count grows sublinearly"]):
-            missing(ax, title)
+    if len(resolved) < 2:
+        for ax, title in zip(axes, ["Boundary fraction", "Critical harmful count"]):
+            missing(ax, title, "Fewer than two resolved boundaries.\nNo scaling fit estimated.")
         save_figure(fig, out_dir, output_name)
         if render_intervention:
             figure4_intervention_effects(out_dir, p04_rows)
-        return
+        return fig
 
     nvals = np.asarray([float(row["N"]) for row in resolved], dtype=float)
     avals = np.asarray([float(row["alpha_c"]) for row in resolved], dtype=float)
@@ -983,14 +990,14 @@ def figure3_p01_finite_size_scaling(
     ci_hi = nu_stats.get("nu_ci_hi")
 
     ax = axes[0]
-    science_panel_title(ax, "(A)", "Boundary fraction decreases", size_scale=0.94)
+    science_panel_title(ax, "(A)", "Boundary fraction", size_scale=0.94)
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.errorbar(
         nvals,
-        avals,
-        yerr=np.vstack([avals - alpha_lo, alpha_hi - avals]),
-        fmt="o",
+        (alpha_lo + alpha_hi) / 2,
+        yerr=(alpha_hi - alpha_lo) / 2,
+        fmt="none",
         color=FIGURE_SCIENCE["point"],
         ecolor=FIGURE_SCIENCE["error"],
         elinewidth=0.82,
@@ -1000,6 +1007,8 @@ def figure3_p01_finite_size_scaling(
         markeredgewidth=MARKER_EDGE,
         zorder=3,
     )
+    ax.plot(nvals, avals, "o", color=FIGURE_SCIENCE["point"], markersize=5.3,
+            markeredgecolor="white", markeredgewidth=MARKER_EDGE, zorder=3)
     ax.plot(grid, fit_alpha, color=FIGURE_SCIENCE["fit"], linewidth=2.10)
     alpha_constant = np.full_like(grid, avals[0])
     alpha_fixed_count = avals[0] * nvals[0] / grid
@@ -1022,16 +1031,16 @@ def figure3_p01_finite_size_scaling(
     ax.set_xlabel(r"society size $N$" if horizontal else "", fontsize=7.1, labelpad=4.0)
     ax.set_ylabel(r"$\alpha_c(N)$", fontsize=7.2, labelpad=5.0)
     ax.set_xlim(x_min, x_max)
-    ax.set_ylim(max(0.012, float(np.nanmin(alpha_lo)) * 0.78), float(np.nanmax(alpha_hi)) * 1.35)
-    alpha_ticks = [0.02, 0.03, 0.04, 0.05, 0.06]
-    ax.set_yticks(alpha_ticks)
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:.2f}"))
-    ax.set_xticks([100, 200, 500, 1000, 2000])
+    ax.set_ylim(float(np.nanmin(alpha_lo)) * 0.78, float(np.nanmax(alpha_hi)) * 1.35)
+    ax.yaxis.set_major_locator(LogLocator(base=10, subs=(1, 2, 5), numticks=5))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:g}"))
+    ax.yaxis.set_minor_formatter(NullFormatter())
+    ax.set_xticks(nvals)
     if horizontal:
         ax.xaxis.set_major_formatter(
             FuncFormatter(
                 lambda value, _: f"{int(value)}"
-                if value in {100, 200, 500, 1000, 2000}
+                if value in nvals
                 else ""
             )
         )
@@ -1042,7 +1051,7 @@ def figure3_p01_finite_size_scaling(
     ax.text(
         0.035,
         0.06,
-        rf"$\alpha_c\propto N^{{-{nu:.3f}}}$",
+        rf"$\alpha_c\propto N^{{{-nu:.3f}}}$",
         transform=ax.transAxes,
         ha="left",
         va="bottom",
@@ -1056,14 +1065,14 @@ def figure3_p01_finite_size_scaling(
     ax.annotate(f"{avals[-1]:.3f}", (nvals[-1], avals[-1]), xytext=(-4, -7), textcoords="offset points", ha="right", va="top", fontsize=6.0, color=FIGURE_SCIENCE["axis"], bbox=number_bbox)
 
     ax = axes[1]
-    science_panel_title(ax, "(B)", "Harmful count grows sublinearly", size_scale=0.94)
+    science_panel_title(ax, "(B)", "Critical harmful count", size_scale=0.94)
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.errorbar(
         nvals,
-        kvals,
-        yerr=np.vstack([nvals * (avals - alpha_lo), nvals * (alpha_hi - avals)]),
-        fmt="o",
+        nvals * (alpha_lo + alpha_hi) / 2,
+        yerr=nvals * (alpha_hi - alpha_lo) / 2,
+        fmt="none",
         color=FIGURE_SCIENCE["point"],
         ecolor=FIGURE_SCIENCE["error"],
         elinewidth=0.82,
@@ -1073,6 +1082,8 @@ def figure3_p01_finite_size_scaling(
         markeredgewidth=MARKER_EDGE,
         zorder=3,
     )
+    ax.plot(nvals, kvals, "o", color=FIGURE_SCIENCE["point"], markersize=5.3,
+            markeredgecolor="white", markeredgewidth=MARKER_EDGE, zorder=3)
     empirical_k = np.exp(intercept) * grid ** (1.0 + slope)
     ax.plot(grid, empirical_k, color=FIGURE_SCIENCE["fit"], linewidth=2.10)
     constant = np.full_like(grid, kvals[0])
@@ -1094,11 +1105,13 @@ def figure3_p01_finite_size_scaling(
     ax.set_xlabel(r"society size $N$", fontsize=7.1, labelpad=4.0)
     ax.set_ylabel(r"$K_c(N)$", fontsize=7.2, labelpad=5.0)
     ax.set_xlim(x_min, x_max)
-    ax.set_ylim(max(2.8, float(np.nanmin(kvals)) * 0.72), float(np.nanmax(proportional)) * 1.18)
-    ax.set_xticks([100, 200, 500, 1000, 2000])
-    ax.xaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(value)}" if value in {100, 200, 500, 1000, 2000} else ""))
-    ax.set_yticks([5, 10, 20, 50, 100])
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(value)}" if value in {5, 10, 20, 50, 100} else ""))
+    ax.set_ylim(float(np.nanmin(nvals * alpha_lo)) * 0.72,
+                max(float(np.nanmax(proportional)), float(np.nanmax(nvals * alpha_hi))) * 1.18)
+    ax.set_xticks(nvals)
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{int(value)}" if value in nvals else ""))
+    ax.yaxis.set_major_locator(LogLocator(base=10, subs=(1, 2, 5), numticks=5))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda value, _: f"{value:g}"))
+    ax.yaxis.set_minor_formatter(NullFormatter())
     polish_science_axis(ax)
     ax.tick_params(labelsize=6.75)
     number_bbox_k = dict(facecolor="white", edgecolor="none", pad=0.4, alpha=0.85)
@@ -1130,13 +1143,19 @@ def figure3_p01_finite_size_scaling(
         fig.subplots_adjust(left=0.085, right=0.985, top=0.88, bottom=0.29)
     else:
         fig.subplots_adjust(left=0.245, right=0.985, top=0.93, bottom=0.15)
+    unresolved = [str(row["N"]) for row in summaries if row["alpha_c"] == ""]
+    if unresolved:
+        fig.text(.5, -.015, "Unresolved N: " + ", ".join(unresolved), ha="center",
+                 fontsize=5.5, color=FIGURE_SCIENCE["comparison"])
     save_figure(fig, out_dir, output_name)
     if render_intervention:
         figure4_intervention_effects(out_dir, p04_rows)
+    return fig
 
 
 def figure4_intervention_effects(out_dir: Path, p04_rows: list[dict[str, str]]) -> None:
-    fig, ax = plt.subplots(figsize=(3.35, 2.56), facecolor="white")
+    n_conditions = len({row["variant"] for row in p04_rows} - {"baseline", "qre_baseline"})
+    fig, ax = plt.subplots(figsize=(3.35, 2.56 + .24 * max(0, n_conditions - 6)), facecolor="white")
     if p04_rows:
         if not draw_p04_grouped_effect_forest(ax, p04_rows, show_values=True):
             missing(ax, "Collapse-boundary shift", "No resolved P04 contrasts.")
@@ -1288,13 +1307,15 @@ def alpha_c_by_group(rows: list[dict[str, str]], group_keys: tuple[str, ...]) ->
 
 def p04_effect_items(p04_rows: list[dict[str, str]]) -> list[tuple[str, list[float]]]:
     ac = alpha_c_by_group(p04_rows, ("variant", "n_society"))
-    baseline = {(r["n_society"]): r["alpha_c"] for r in ac if r["variant"] == "qre_baseline"}
+    baseline = {(r["n_society"]): r["alpha_c"] for r in ac if r["variant"] in {"qre_baseline", "baseline"}}
     effects: dict[str, list[float]] = defaultdict(list)
     for r in ac:
         b = baseline.get(r["n_society"])
-        if r["variant"] != "qre_baseline" and r["alpha_c"] is not None and b is not None:
+        if r["variant"] not in {"qre_baseline", "baseline"} and r["alpha_c"] is not None and b is not None:
             effects[str(r["variant"])].append(float(r["alpha_c"]) - float(b))
-    return [(variant, effects[variant]) for variant in VARIANT_ORDER if effects.get(variant)]
+    # Average over the complete matched-size set, never a resolved subset.
+    return [(variant, effects[variant]) for variant in VARIANT_ORDER
+            if len(effects[variant]) == len(baseline) and effects[variant]]
 
 
 def p04_effect_statistics(
@@ -1327,7 +1348,7 @@ def p04_effect_statistics(
         if len(arr) >= max(30, n_boot // 10):
             lo, hi = np.quantile(arr, [0.025, 0.975])
         else:
-            lo = hi = center
+            lo = hi = float("nan")  # Keep the point; no invented zero-width CI.
         out.append((variant, center, float(lo), float(hi)))
     return sorted(out, key=lambda item: item[1])
 
@@ -1342,7 +1363,7 @@ def draw_p04_effect_forest(
     items = p04_effect_statistics(p04_rows)
     if not items:
         return False
-    all_values = [value for _, center, lo, hi in items for value in (center, lo, hi)]
+    all_values = [value for _, center, lo, hi in items for value in (center, lo, hi) if math.isfinite(value)]
     data_lo, data_hi = min(all_values), max(all_values)
     span = max(data_hi - data_lo, 0.04)
     x_lo = min(-0.01, data_lo - 0.11 * span)
@@ -1381,8 +1402,9 @@ def draw_p04_grouped_effect_forest(
     show_values: bool = True,
 ) -> bool:
     stats = {variant: (center, lo, hi) for variant, center, lo, hi in p04_effect_statistics(p04_rows)}
+    observed = {row["variant"] for row in p04_rows}
     grouped_items = [
-        (group_name, [variant for variant in variants if variant in stats])
+        (group_name, [variant for variant in variants if variant in observed])
         for group_name, variants in INTERVENTION_GROUPS
     ]
     grouped_items = [(name, variants) for name, variants in grouped_items if variants]
@@ -1395,10 +1417,11 @@ def draw_p04_grouped_effect_forest(
         for variant in variants
     }
 
-    all_values = [value for center, lo, hi in stats.values() for value in (center, lo, hi)]
-    data_lo, data_hi = min(all_values), max(all_values)
+    all_values = [value for center, lo, hi in stats.values() for value in (center, lo, hi) if math.isfinite(value)]
+    data_lo, data_hi = (min(all_values), max(all_values)) if all_values else (0., 0.)
     x_lo = min(-0.04, data_lo - 0.006)
-    x_hi = max(0.058, data_hi + 0.012)
+    # Leave room for the original right-aligned value column as effects change.
+    x_hi = max(0.058, data_hi + .25 * max(data_hi - data_lo, .04) + .012)
 
     ax.axvline(0, color=FIGURE_SCIENCE["zero"], linestyle="--", linewidth=0.82, alpha=0.88, zorder=2)
 
@@ -1428,6 +1451,10 @@ def draw_p04_grouped_effect_forest(
             ax.axhline(max(group_rows) + 1.02, color=FIGURE_SCIENCE["grid"], linewidth=0.65, zorder=1)
 
     for y, variant in rows:
+        if variant not in stats:
+            ax.text(0.02, y, "unresolved", transform=ax.get_yaxis_transform(),
+                    fontsize=6.0, va="center", color=FIGURE_SCIENCE["comparison"])
+            continue
         center, lo, hi = stats[variant]
         # Sign carries the scientific meaning: right shifts are more robust,
         # left shifts are more fragile. Use one shape throughout.
@@ -1485,7 +1512,8 @@ def draw_p04_grouped_effect_forest(
     # Direction cue lives in the empty band between the two groups, keeping the
     # bottom axis for the Delta-alpha_c title only.
     first_count = len(grouped_items[0][1])
-    gap_y = (max(y for y, _ in rows[:first_count]) + min(y for y, _ in rows[first_count:])) / 2.0
+    gap_y = ((max(y for y, _ in rows[:first_count]) + min(y for y, _ in rows[first_count:])) / 2.0
+             if len(grouped_items) > 1 else max(y_positions for y_positions, _ in rows) + .35)
     cue_bbox = dict(facecolor="white", edgecolor="none", pad=0.8)
     ax.text(0.012, gap_y, r"$\leftarrow$ Fragility", transform=ax.get_yaxis_transform(), ha="left", va="center", fontsize=6.0, color="#8A8A8A", bbox=cue_bbox, zorder=5)
     ax.text(0.988, gap_y, r"Robustness $\rightarrow$", transform=ax.get_yaxis_transform(), ha="right", va="center", fontsize=6.0, color="#8A8A8A", bbox=cue_bbox, zorder=5)

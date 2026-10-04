@@ -1,62 +1,51 @@
-# Paper figure builders
+# Original paper figure code
 
-**Historical publication baseline.** These builders read rule-based / limited
-LLM-quota v3 evidence. New full-LLM runs use `paper_experiments/`; do not
-combine or relabel their outputs. Exact publication dependencies are listed
-in `legacy_experiments/final_paper_experiment_catalog.json`.
+The current full-LLM exporter **reuses the plotting functions in
+`make_paper_figures.py`**, including their publication layout, colors, markers
+and figure types. `paper_experiments/figure_rendering.py` only adapts verified
+new episode fields, exports source data and composes the original teaser.
 
-This directory builds the original main-paper figures for the v3 rewrite.
+## Current results
 
-Run after the relevant paper-profile experiments and analyses finish:
+Follow `SERVER_RUNBOOK.md`, section 6:
 
 ```bash
-cd Harm-Scale
+scripts/build_paper_figures.sh MODEL IMMUTABLE_REVISION OUTPUT_DIR RUN_DIR [RUN_DIR ...]
+```
+
+This entry point rejects old/mock/pilot/incomplete data before calling the
+original plot functions. It never calls `read_rows` or `read_csv` here. The old
+hard-coded threshold annotation and axis windows now follow the supplied data.
+Scaling captions no longer assume that the new result must decrease/subscale.
+The active P04 names use the same grouped forest; high deliberation is labeled
+as such instead of pretending it is numerical QRE precision.
+
+| Current output | Original plotting function | New input |
+|---|---|---|
+| `teaser` | Original artwork + the same Fig. 2/3 artists | P01 |
+| `fig2_nonlinear_response` | `figure2_p01_nonlinear_response` | P01 failure probability and severity |
+| `fig3_finite_size_scaling` | `figure3_p01_finite_size_scaling` | P01 boundaries, counts, power fits and seed bootstrap |
+| `fig4_intervention_effects` | `figure4_intervention_effects` | P04 matched-size shifts and paired-seed bootstrap |
+
+`assets/teaser_layout.pdf` preserves the final manuscript's original vector
+artwork. All old empirical paths/text in its A/B plot regions were removed by
+PDF redaction. `assets/teaser_layout.json` records that preparation. Current
+curves are inserted on every build; the original result PDF is never an input.
+The static mechanism panel is a conceptual illustration, not a new estimate of
+its decomposition exponents. New captions must distinguish that illustration
+from the empirical panels.
+
+## Explicit historical reproduction
+
+```bash
 ./paper_experiments_v3/scripts/run_figures_venv.sh --allow-historical-data
 ```
 
-The wrapper intentionally uses the project virtual environment at `.venv`,
-instead of the active conda/base Python.
+Only this opt-in CLI reads v3 CSVs under `paper_experiments_v3/outputs` and writes
+historical diagnostics to `paper_experiments_v3/figures/generated`. It is not the
+current paper release path. The wrapper uses the project's `.venv`.
 
-The explicit historical-data flag is mandatory. New formal paper figures use
-`python -m paper_experiments.figure_bundle build`; no command falls back from
-missing new data to this directory. See `SERVER_RUNBOOK.md` for the guarded
-generation and manuscript-image installation workflow.
-
-Outputs are written to:
-
-```text
-paper_experiments_v3/figures/generated/
-```
-
-The script writes both `.pdf` and `.png` versions.
-
-It uses seaborn if the local Python environment can import it. If seaborn is
-broken or unavailable, it falls back to Matplotlib's bundled `seaborn-v0_8`
-style with the same colorblind-safe palette and paper rcParams.
-
-## Figure mapping
-
-| Output | Paper figure | Inputs |
-|---|---|---|
-| `fig1_overview` | Figure 1: overview schematic | no experiment data |
-| `fig2_p01_main_results` | Figure 2: nonlinear collapse and scaling | P01 shards |
-| `fig3_p02_decomposition` | Figure 3: scaling decomposition | P02 shards + P01 scaling |
-| `fig4_mechanism` | Figure 4: feedback-information mechanism | P04 and P05 shards |
-| `fig_p04_feedback_available` | Current polished P04-only mechanism figure | P04 shards |
-| `table2_scaling_results.csv` | main scaling result table | P01 shards |
-
-## Important interpretation rule
-
-Figure 3 currently uses proxy quantities:
-
-- `attack_magnitude_proxy = K / N^liquidity_exponent`
-- `failure_gain_proxy = primary_failure_score_max / attack_magnitude_proxy`
-
-Do not label these as exact \(h_N\) or exact \(\chi_{T,N}\) unless the simulator
-writes direct perturbation-response measurements. The paper text should keep the
-word "proxy" for these panels.
-
-## Completeness
-
-The script filters to rows with `status == ok`. If P03/P04/P05 still contain
-error rows, generated figures are diagnostics, not final paper figures.
+The non-primary P02/feedback plotting functions remain available for historical
+inspection. Their proxy quantities are not exact causal response measurements.
+See `legacy_experiments/final_paper_experiment_catalog.json` for those historical
+experiment dependencies.

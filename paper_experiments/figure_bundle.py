@@ -29,7 +29,7 @@ EXPECTED_HORIZON = 30
 REQUIRED_TRACES = {"daily_log", "decision_log", "exposure_log", "message_log", "information_events",
                    "request_log", "backend_audit", "round_snapshots", "execution_audit", "trade_log"}
 FIGURES = {
-    "teaser": ("teaser.pdf", "schematic", []),
+    "teaser": ("teaser.pdf", "result", ["p01"]),
     "fig2_nonlinear_response": ("fig2_nonlinear_response.pdf", "result", ["p01"]),
     "fig3_finite_size_scaling": ("fig3_finite_size_scaling.pdf", "result", ["p01"]),
     "fig4_intervention_effects": ("fig4_intervention_effects.pdf", "result", ["p04"]),
@@ -40,8 +40,11 @@ POLICY_FIELDS = ("model", "model_revision", "temperature", "max_tokens", "chat_t
 def figure_code_fingerprint():
     root = Path(__file__).parent
     names = ("figure_bundle.py", "figure_rendering.py", "manuscript_figures.py", "paper_figure_catalog.json")
+    original = root.parent / "paper_experiments_v3" / "figures"
     return digest({"experiment_source_hash": code_fingerprint(),
-                   "presentation": {name: sha256_file(root / name) for name in names}})
+                   "presentation": {name: sha256_file(root / name) for name in names},
+                   "original_plot_code": sha256_file(original / "make_paper_figures.py"),
+                   "teaser_layout": sha256_file(original / "assets" / "teaser_layout.pdf")})
 
 
 def sha256_file(path):

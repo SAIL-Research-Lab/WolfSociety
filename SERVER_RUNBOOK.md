@@ -179,6 +179,12 @@ python -m paper_experiments.analysis runs/main-p01/real/RUN_HASH \
 当前论文包含 teaser 与三张结果图；附录没有额外图片。对应关系固定在
 `paper_experiments/paper_figure_catalog.json`。
 
+**沿用原来的画图代码和样式。** 新入口只校验数据并适配字段，然后直接调用
+`paper_experiments_v3/figures/make_paper_figures.py` 的原绘图函数：Fig. 2 双面板
+（崩溃概率、episode severity）、Fig. 3 缩放拟合、Fig. 4 分组森林图。旧 CSV
+读取函数不被调用。Teaser 保留原有静态美术和布局；其 A/B 曲线区域使用新数据
+重新绘制。仓库中的 `teaser_layout.pdf` 已移除原曲线，并非旧结果 PDF。
+
 ```bash
 python -m pip install -e '.[plot]'
 scripts/build_paper_figures.sh wolf-policy WEIGHTS_REVISION runs/figures-release-01 \
@@ -197,8 +203,9 @@ scripts/build_paper_figures.sh wolf-policy WEIGHTS_REVISION runs/figures-release
   失败记录相互一致；不会只选成功子集或把 mock／pilot 当正式数据。
 
 任一条件不满足就报错，**不生成正式图包，也不复制旧图补位**。没有临界转变是允许
-的实测结果，会明确显示未解析／删失；缺失实验数据则不允许出图。新的 teaser 是纯
-结构示意，没有旧论文阈值或指数。其余图的点、区间和效应方向全部重新计算。
+的实测结果，会明确显示未解析／删失；缺失实验数据则不允许出图。图中原来写死的
+阈值数字、坐标范围及结果方向已改为由新数据决定；点、拟合和区间全部重新计算。
+Teaser 的静态机制示意保留，A/B 结果面板与 Fig. 2/3 使用同一组新数据图形。
 
 图包包含四张 PDF、四张 PNG、逐图源 CSV，以及 `figure_manifest.json`。manifest
 保存具体实验 run、job IDs、模型 revision、数据和图片哈希。输出目录必须是新的，
@@ -228,8 +235,9 @@ python -m paper_experiments.manuscript_figures check \
 会明确报这个缺失输入；正式安装前需修正该引用或提供实际 fragment，不能静默跳过。
 本次没有改写旧稿，也没有把测试图片装进论文。
 
-旧 v3 出图器现默认拒绝执行；仅显式 `--allow-historical-data` 才能复现历史图片，
-这些图片不被新版论文检查器接受。复现历史与生成新版正式图使用不同入口。
+旧 v3 的历史数据 CLI 默认拒绝执行；仅显式 `--allow-historical-data` 才会读取历史
+结果。这些图片不被新版论文检查器接受。两个入口复用同一套原绘图函数，但使用
+各自显式指定的数据来源；正式入口不会回退到旧数据目录。
 
 ## 7. 断点续跑、多进程与错误处理
 

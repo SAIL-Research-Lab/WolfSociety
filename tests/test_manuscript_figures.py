@@ -182,11 +182,11 @@ def test_bundle_catalog_metadata_and_bundle_pdf_tampering(tmp_path, monkeypatch)
     directory = paper(tmp_path)
     manifest_path, _ = bundle(tmp_path, directory, monkeypatch)
     manifest = json.loads(manifest_path.read_text())
-    manifest["figures"][0]["kind"] = "result"
+    manifest["figures"][0]["kind"] = "schematic"
     manifest_path.write_text(json.dumps(manifest))
     with pytest.raises(FigureVerificationError, match="incorrect kind"):
         check_manuscript(directory, manifest_path)
-    manifest["figures"][0]["kind"] = "schematic"
+    manifest["figures"][0]["kind"] = "result"
     manifest_path.write_text(json.dumps(manifest))
     (manifest_path.parent / "teaser.pdf").write_bytes(b"changed source PDF")
     with pytest.raises(FigureVerificationError, match="modified source bundle"):

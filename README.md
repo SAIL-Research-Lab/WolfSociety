@@ -140,7 +140,9 @@ real-model pilots and independent main seeds. No old numeric result is reused.
 Formal paper images are built with `scripts/build_paper_figures.sh` from explicit
 completed real main runs. This rejects old/mock/pilot/incomplete evidence,
 records per-image data/file hashes, and supports verifying the actual manuscript
-PDF references. It never falls back to the historical figure builder.
+PDF references. It calls the original publication plotting functions with the
+new rows, preserving their layouts and style. It never calls the historical
+data reader or fills missing results from old files.
 
 The previous `wolfbench run/scaling/evaluate` CLI and
 [`paper_experiments_v3/`](paper_experiments_v3/README.md) remain as deprecated

@@ -1,0 +1,20 @@
+{
+  "source": "Final manuscript Figures/teaser.pdf",
+  "source_sha256": "301f5f04afed475157d7a0f51e1007725d269d87ff2a4978765309098104849f",
+  "template_sha256": "71400ca99d6a35b33926a0ab92a7f0eaa847ad1ddde432f28c62cecdb59c838c",
+  "removed_plot_rectangles": [
+    [
+      237,
+      30,
+      523,
+      95
+    ],
+    [
+      237,
+      115,
+      523,
+      154
+    ]
+  ],
+  "operation": "PyMuPDF redaction: images=0, graphics=1, text=0; old empirical paths and labels removed, static artwork retained. New curves are inserted from the original plotting functions."
+}

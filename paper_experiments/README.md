@@ -172,6 +172,11 @@ This stricter release gate requires complete real main P01/P04 coverage and
 cross-checks population/model evidence, source hashes and the four figure files.
 It never imports legacy CSVs or images, and has no mock/partial-data override.
 Each release includes per-figure source tables and immutable provenance.
+Rendering reuses the original functions in `paper_experiments_v3/figures/`:
+the two-panel response/severity plot, scaling fits, and grouped intervention
+forest. The adapter changes the data schema, not the figure design. Old numeric
+annotations and axis limits are computed afresh. The original teaser artwork
+is retained with its empirical panels replaced by the same new P01 curves.
 Use `paper_experiments.manuscript_figures install/check` to ensure the actual
 LaTeX references resolve to those exact PDFs. See the server runbook's formal
 figure-release section. Ordinary analysis CSVs may still be exploratory or

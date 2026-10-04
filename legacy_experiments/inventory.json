@@ -1873,8 +1873,8 @@
       "publication_bundle_used": true,
       "controller": "rule_based_or_quota_limited_hybrid_or_mock",
       "is_full_llm_evidence": false,
-      "size_bytes": 2448,
-      "sha256": "5b03e505c0a875391aae47d53e9bcf20f68a81a1597712aef0dd7fad1d7574d6",
+      "size_bytes": 2547,
+      "sha256": "f9456c17b423105796b7ba4ebf82c5a87d2da4a2dc70a3c704a468ba7bc0058a",
       "baseline_git_sha256": "8285dac2d414513f1dfa9003cbd79e84dce989019b20c6abc083dc482d0dd418"
     },
     {
@@ -1928,8 +1928,8 @@
       "publication_bundle_used": true,
       "controller": "rule_based_or_quota_limited_hybrid_or_mock",
       "is_full_llm_evidence": false,
-      "size_bytes": 72126,
-      "sha256": "e96dc0081574d0de3ea5458f5d2449232892de5cf91554c9aaa64d4dd6b9bc45",
+      "size_bytes": 74473,
+      "sha256": "629ab6fb83022d9d28e126df6e8f9830668cb20b1849fd697894df765a3f27a6",
       "baseline_git_sha256": "40228da890eeba801aff9976b752ca515bc3be5a95cf64418f1ffaa186f8be12"
     },
     {

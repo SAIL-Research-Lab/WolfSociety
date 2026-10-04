@@ -3,7 +3,8 @@ import csv
 
 import pytest
 
-from paper_experiments.figure_rendering import _boundary_statistics, render
+import fitz
+from paper_experiments.figure_rendering import TEMPLATE, adapt_rows, original, render
 
 
 def figure_fixture():
@@ -27,39 +28,88 @@ def figure_fixture():
                                      "config": {"scenario": "s1", "n_society": n, "alpha": alpha, "seed": seed},
                                      "backend": {"model": "SYNTHETIC-FIXTURE", "model_revision": "fixture-v1"},
                                      "stage": "fixture", "simulated": True,
-                                     "result": {"primary_failure_rate": failure, "alpha_realized": round(alpha * n) / n}})
+                                     "result": {"primary_failure_rate": failure, "primary_failure_score_max": alpha / max(cutoff, .001), "alpha_realized": round(alpha * n) / n}})
     return rows
 
 
-def test_renderer_outputs_all_four_figures_and_records_censoring(tmp_path):
+@pytest.fixture
+def quick_bootstrap(monkeypatch):
+    # CPU visual fixtures only; production retains the original bootstrap budgets.
+    for name in ("bootstrap_nu_stats", "bootstrap_alpha_c_ci", "p04_effect_statistics"):
+        function = getattr(original, name)
+        def limited(*args, _function=function, **kwargs):
+            return _function(*args, **{**kwargs, "n_boot": 40})
+        monkeypatch.setattr(original, name, limited)
+
+
+def test_original_plot_functions_receive_only_new_rows(tmp_path, monkeypatch, quick_bootstrap):
+    calls = []
+    for name in ("figure2_p01_nonlinear_response", "figure3_p01_finite_size_scaling", "figure4_intervention_effects"):
+        function = getattr(original, name)
+        def record(*args, _name=name, _function=function, **kwargs):
+            calls.append((_name, args[1]))
+            return _function(*args, **kwargs)
+        monkeypatch.setattr(original, name, record)
+    def no_historical_reads(*args, **kwargs):
+        raise AssertionError("Historical data reader must never be called")
+    monkeypatch.setattr(original, "read_csv", no_historical_reads)
+    monkeypatch.setattr(original, "read_rows", no_historical_reads)
     metadata = render(figure_fixture(), tmp_path, "SYNTHETIC-FIXTURE", "fixture-v1")
+    assert len(calls) == 3
+    assert all(row["job_id"].startswith("fixture:") for _, rows in calls for row in rows)
     assert {item["figure_id"] for item in metadata} == {
         "teaser", "fig2_nonlinear_response", "fig3_finite_size_scaling", "fig4_intervention_effects"}
     for item in metadata:
-        assert len(item["files"]) == 3
-        assert all((tmp_path / filename).is_file() for filename in item["files"])
-        assert all((tmp_path / filename).stat().st_size > 0 for filename in item["files"])
+        assert all((tmp_path / name).stat().st_size for name in item["files"])
+        with fitz.open(tmp_path / (item["figure_id"] + ".pdf")) as document:
+            assert "SYNTHETIC FIXTURE" in document[0].get_text()
+    with (tmp_path / "fig2_nonlinear_response.source.csv").open() as handle:
+        sources = list(csv.DictReader(handle))
+    assert max(float(row["alpha"]) for row in sources) == .4
+    assert all("primary_failure_score_max" in row for row in sources)
     with (tmp_path / "fig3_finite_size_scaling.source.csv").open() as handle:
         scaling = list(csv.DictReader(handle))
-    censored = next(row for row in scaling if row["n_society"] == "2000")
-    assert censored["status"] == "right_censored"
-    assert censored["alpha_c"] == "" and censored["k_c"] == ""
-    with (tmp_path / "fig4_intervention_effects.source.csv").open() as handle:
-        effects = list(csv.DictReader(handle))
-    unresolved = next(row for row in effects if row["n_society"] == "1000" and row["variant"] == "no_feedback")
-    assert unresolved["status"] == "unresolved" and unresolved["delta_alpha_c"] == ""
-    values = [float(row["delta_alpha_c"]) for row in effects if row["delta_alpha_c"]]
-    assert min(values) < 0 < max(values)
-    paired_zero = [row for row in effects if row["variant"] == "high_deliberation"]
-    assert all(float(row["delta_ci_low"]) == float(row["delta_ci_high"]) == 0 for row in paired_zero)
+    censored = next(row for row in scaling if row["N"] == "2000")
+    assert censored["status"] == "censored" and censored["alpha_c"] == ""
+    with fitz.open(tmp_path / "fig2_nonlinear_response.pdf") as document:
+        text = document[0].get_text()
+        assert "Episode severity" in text and "Collapse probability" in text
+    with fitz.open(tmp_path / "teaser.pdf") as document:
+        text = document[0].get_text()
+        assert "Closed-loop society" in text and "Core signatures" in text
 
 
-def test_paired_bootstrap_shares_seed_draws_between_identical_conditions():
-    rows = [row for row in figure_fixture() if row["family"] == "p04" and row["variant"] in {"baseline", "high_deliberation"}]
-    records, samples = _boundary_statistics(rows)
-    for n in (300, 1000):
-        assert (samples[("baseline", n)] == samples[("high_deliberation", n)]).all()
-        assert records[("baseline", n)]["bootstrap_paired_seeds"] == 12
+def test_missing_new_severity_cannot_be_filled_from_old_values():
+    rows = figure_fixture()[:1]
+    rows[0]["result"].pop("primary_failure_score_max")
+    with pytest.raises(KeyError):
+        adapt_rows(rows)
+
+
+def test_old_threshold_annotation_and_display_window_are_data_driven(tmp_path, quick_bootstrap):
+    rows = adapt_rows([r for r in figure_fixture() if r["family"] == "p01"])
+    # Move the full transition away from the historical range.
+    for row in rows:
+        row["primary_failure_rate"] = str(float(float(row["alpha"]) >= .2))
+    assert original.p01_display_xmax(rows) == .4
+    fig = original.figure2_p01_nonlinear_response(tmp_path, rows, rows)
+    annotation = " ".join(text.get_text() for text in fig.axes[0].texts)
+    assert "0.022" not in annotation and "0.047" not in annotation
+    assert "0.150" in annotation
+    assert len(fig.axes) == 2 and fig.axes[0].get_xlim()[1] == .4
+
+
+def test_template_contains_no_historical_chart_text():
+    with fitz.open(TEMPLATE) as document:
+        for rect in [(237, 30, 523, 95), (237, 115, 523, 154)]:
+            assert not document[0].get_text(clip=fitz.Rect(rect)).strip()
+
+
+def test_unresolved_p04_contrast_is_not_averaged_over_subset():
+    rows = adapt_rows([r for r in figure_fixture() if r["family"] == "p04"])
+    effects = dict(original.p04_effect_items(rows))
+    assert "no_feedback" not in effects  # N=1000 has clean-baseline failure.
+    assert "high_deliberation" in effects and effects["high_deliberation"] == [0., 0.]
 
 
 def test_renderer_requires_explicit_matching_model(tmp_path):
