@@ -1697,12 +1697,18 @@ def figure4_mechanism(out_dir: Path, p04_rows: list[dict[str, str]], p05_rows: l
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", default=str(DEFAULT_OUT))
+    parser.add_argument("--allow-historical-data", action="store_true",
+                        help="Explicitly reproduce historical hybrid figures, never full-LLM paper figures")
     parser.add_argument(
         "--figures",
         default="all",
         help="Comma list: fig1,fig2,fig3,fig3h,fig4,p04,all",
     )
     args = parser.parse_args()
+    if not args.allow_historical_data:
+        parser.error("This deprecated builder reads historical hybrid data. For current paper figures use "
+                     "python -m paper_experiments.figure_bundle build. Historical reproduction requires "
+                     "--allow-historical-data and must remain labeled historical.")
     setup_style()
     out_dir = ensure_dir(Path(args.out_dir))
 

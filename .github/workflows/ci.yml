@@ -36,11 +36,14 @@ jobs:
           python-version: '3.11'
           cache: pip
       - name: Install WolfBench
-        run: python -m pip install -e ".[dev,llm]"
+        run: python -m pip install -e ".[dev,llm,plot]"
       - name: Run Python tests
         run: pytest -q
       - name: Validate server script syntax
-        run: bash -n scripts/serve_vllm.sh scripts/benchmark_vllm.sh scripts/run_pilot.sh scripts/run_full_llm_paper.sh
+        run: |
+          for script in scripts/serve_vllm.sh scripts/benchmark_vllm.sh scripts/run_pilot.sh scripts/run_full_llm_paper.sh scripts/build_paper_figures.sh; do
+            bash -n "$script"
+          done
       - name: Plan full-LLM mock integration
         run: >-
           python -m paper_experiments.runner plan --mock --stage smoke

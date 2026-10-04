@@ -11,11 +11,16 @@ Run after the relevant paper-profile experiments and analyses finish:
 
 ```bash
 cd Harm-Scale
-./paper_experiments_v3/scripts/run_figures_venv.sh
+./paper_experiments_v3/scripts/run_figures_venv.sh --allow-historical-data
 ```
 
 The wrapper intentionally uses the project virtual environment at `.venv`,
 instead of the active conda/base Python.
+
+The explicit historical-data flag is mandatory. New formal paper figures use
+`python -m paper_experiments.figure_bundle build`; no command falls back from
+missing new data to this directory. See `SERVER_RUNBOOK.md` for the guarded
+generation and manuscript-image installation workflow.
 
 Outputs are written to:
 

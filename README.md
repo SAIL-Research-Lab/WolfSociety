@@ -137,6 +137,11 @@ map all main/appendix families, numerical controls and analysis tables.
 New thresholds, exponents and intervention effects must be estimated from fresh
 real-model pilots and independent main seeds. No old numeric result is reused.
 
+Formal paper images are built with `scripts/build_paper_figures.sh` from explicit
+completed real main runs. This rejects old/mock/pilot/incomplete evidence,
+records per-image data/file hashes, and supports verifying the actual manuscript
+PDF references. It never falls back to the historical figure builder.
+
 The previous `wolfbench run/scaling/evaluate` CLI and
 [`paper_experiments_v3/`](paper_experiments_v3/README.md) remain as deprecated
 publication compatibility interfaces. They do **not** invoke the new

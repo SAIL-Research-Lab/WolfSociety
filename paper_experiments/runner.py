@@ -32,9 +32,15 @@ def digest(value):
 
 def code_fingerprint(root=ROOT):
     """Content hash includes dirty working files and configs, not just Git HEAD."""
+    # Presentation-only changes must not require rerunning expensive inference.
+    # Figure releases fingerprint these modules separately and still pin this
+    # complete experiment/runtime hash.
+    presentation_files = {"figure_bundle.py", "figure_rendering.py", "manuscript_figures.py", "paper_figure_catalog.json"}
     files = set()
     for directory in ("src", "paper_experiments"):
         for path in (root / directory).rglob("*"):
+            if directory == "paper_experiments" and path.name in presentation_files:
+                continue
             if path.is_file() and path.suffix in {".py", ".yaml", ".yml", ".json"} and "__pycache__" not in path.parts and not any(part in {"outputs", "runs", "results"} for part in path.relative_to(root).parts):
                 files.add(path)
     for name in ("pyproject.toml", "scripts/run_pilot.sh", "scripts/run_full_llm_paper.sh"):

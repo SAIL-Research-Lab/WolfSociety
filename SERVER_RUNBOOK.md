@@ -172,7 +172,66 @@ python -m paper_experiments.analysis runs/main-p01/real/RUN_HASH \
   --output runs/main-tables --bootstrap-draws 5000
 ```
 
-## 6. 断点续跑、多进程与错误处理
+## 6. 正式论文出图：拒绝旧数据与自动回退
+
+**新实验结束后只使用下面的新出图入口。** 它直接读取指定 run 的 manifest、完成记录
+和模型轨迹，不读取旧 CSV、旧图片、v3 outputs，也不会按文件修改时间猜哪个结果最新。
+当前论文包含 teaser 与三张结果图；附录没有额外图片。对应关系固定在
+`paper_experiments/paper_figure_catalog.json`。
+
+```bash
+python -m pip install -e '.[plot]'
+scripts/build_paper_figures.sh wolf-policy WEIGHTS_REVISION runs/figures-release-01 \
+  runs/main-p01/real/P01_RUN_HASH runs/main-p04/real/P04_RUN_HASH
+```
+
+如果一个完整主实验 run 同时包含 P01/P04，只传该目录即可。替换示例路径和 revision。
+正式图要求：
+
+- 真实 `vllm`、`main` 阶段、当前实验代码、冻结网格、同一模型及采样协议。
+- revision 必须为 40 位权重 commit，或 64 位 SHA256（允许 `sha256:` 前缀）。
+  这是记录格式约束，实际服务权重仍需与你保存的 server manifest 对照核实。
+- P01 六个论文规模、P04 两个论文规模及全部已注册干预，完整 30 轮、至少 12 个配对
+  主实验 seeds；每个 α 都有相同 seeds，包含 α=0。
+- 传入的 manifest 全部 episodes 完成；每个图源 episode 的请求、输出、动作和日级
+  失败记录相互一致；不会只选成功子集或把 mock／pilot 当正式数据。
+
+任一条件不满足就报错，**不生成正式图包，也不复制旧图补位**。没有临界转变是允许
+的实测结果，会明确显示未解析／删失；缺失实验数据则不允许出图。新的 teaser 是纯
+结构示意，没有旧论文阈值或指数。其余图的点、区间和效应方向全部重新计算。
+
+图包包含四张 PDF、四张 PNG、逐图源 CSV，以及 `figure_manifest.json`。manifest
+保存具体实验 run、job IDs、模型 revision、数据和图片哈希。输出目录必须是新的，
+不能覆盖一个已有图包。改变图样式只需重新生成图包；改变实验／prompt 后则必须使用
+相应新实验数据，不能借旧结果生成新版本正式图。
+
+安装到论文前先验证图包：
+
+```bash
+python -m paper_experiments.figure_bundle verify \
+  --manifest runs/figures-release-01/figure_manifest.json
+python -m paper_experiments.manuscript_figures install \
+  --paper-dir /ABS/PAPER_SOURCE \
+  --manifest runs/figures-release-01/figure_manifest.json
+python -m paper_experiments.manuscript_figures check \
+  --paper-dir /ABS/PAPER_SOURCE \
+  --manifest runs/figures-release-01/figure_manifest.json
+```
+
+`install` 才会替换论文的四个 PDF；默认 `check` 只读。安装前检查实际 TeX 引用，
+安装后逐文件核对哈希。旧 PDF、未知图、引用绕到其他目录、图文件或源 CSV 被手改
+都会导致失败。脚本不改 captions、正文数值或表格；这些需要按新结果另行更新。
+审查需要访问原实验记录，建议在 GPU 服务器上带着论文源码目录完成安装和验证，
+再传送生成的论文材料。不要删除被图包引用的原 run 或改其路径。
+
+现有旧稿还引用了缺失的 `AnonymousSubmission2027_v3_arxiv_supplement.tex`。检查器
+会明确报这个缺失输入；正式安装前需修正该引用或提供实际 fragment，不能静默跳过。
+本次没有改写旧稿，也没有把测试图片装进论文。
+
+旧 v3 出图器现默认拒绝执行；仅显式 `--allow-historical-data` 才能复现历史图片，
+这些图片不被新版论文检查器接受。复现历史与生成新版正式图使用不同入口。
+
+## 7. 断点续跑、多进程与错误处理
 
 继续同一 manifest 时直接执行 `run`，不重新 plan：
 
@@ -201,7 +260,7 @@ python -m paper_experiments.runner run --manifest runs/main-p01/main.manifest.js
 先用单 worker 测试。跨多台服务器时，分别建立与各 endpoint 对应的 manifest，
 保留模型及环境记录；不要篡改已冻结 manifest 的 endpoint。
 
-## 7. 本次实现的研究边界
+## 8. 本次实现的研究边界
 
 - 规则控制器只出现在显式 rule/mixed/factorial 对照中；新的数值对照使用相同可见输入，
   不宣称重现 v3 的原策略。Watts null 是单独标识的解析参照。

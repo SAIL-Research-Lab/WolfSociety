@@ -166,6 +166,17 @@ requires `--allow-mock` to inspect mock output.
 
 ## Tables and interpretation
 
+Formal manuscript figures use `python -m paper_experiments.figure_bundle build`,
+or `scripts/build_paper_figures.sh MODEL REVISION OUTPUT_DIR RUN_DIR...`.
+This stricter release gate requires complete real main P01/P04 coverage and
+cross-checks population/model evidence, source hashes and the four figure files.
+It never imports legacy CSVs or images, and has no mock/partial-data override.
+Each release includes per-figure source tables and immutable provenance.
+Use `paper_experiments.manuscript_figures install/check` to ensure the actual
+LaTeX references resolve to those exact PDFs. See the server runbook's formal
+figure-release section. Ordinary analysis CSVs may still be exploratory or
+partial; they are not inputs to this formal figure renderer.
+
 Analysis emits episode/condition means, target and realized α midpoints,
 harmful counts, 10–90% widths, logistic sensitivity, paired seed bootstrap
 (all requested sizes versus each draw's resolved sizes), omitted-size fits,
