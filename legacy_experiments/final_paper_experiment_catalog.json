@@ -1,0 +1,1209 @@
+{
+  "schema_version": 1,
+  "catalog_date": "2026-10-04",
+  "baseline_git_commit": "7be61904cb5cd9dc383bc1b843fc32106267ef14",
+  "publication_sources": [
+    {
+      "path": "output/overleaf_source/aaai2027_overleaf_source/AnonymousSubmission2027_v3_polished.tex",
+      "sha256": "a68acb1a31a22f013f9376b7c86a700894d773a386443194fc80b4d794c9e69d"
+    },
+    {
+      "path": "output/overleaf_source/aaai2027_overleaf_source/AnonymousSubmission2027_v3_supplement.tex",
+      "sha256": "23462093ed9a705673a84864b28c1c2ee754c31a94c2fbb1a0c2b8a625a59f11"
+    }
+  ],
+  "historical_evidence": "rule_based_or_quota_limited_hybrid_or_mock_NOT_full_llm",
+  "families": [
+    {
+      "id": "P00",
+      "name": "Integration and alpha=0 sanity",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "Experimental Setup reproducibility"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p00_validate.py"
+      ],
+      "original_dimensions": {
+        "scenario": [
+          "s1",
+          "s2",
+          "s3",
+          "s4"
+        ],
+        "include_clean_alpha": true
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p00_validate/"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "Required protocol validation, not a scientific result."
+      ]
+    },
+    {
+      "id": "P01",
+      "name": "S1 nonlinear transition and finite-size boundaries",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "main:Nonlinear Collapse and Finite-Size Scaling",
+        "supp:tab:supp-frozen-grids",
+        "supp:tab:supp-scaling-results",
+        "supp:tab:supp-nu-bootstrap",
+        "main:fig2/fig3"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p01_nonlinear_scaling.py",
+        "paper_experiments_v3/analysis/scaling.py",
+        "paper_experiments_v3/figures/make_paper_figures.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          100,
+          200,
+          300,
+          500,
+          1000,
+          2000
+        ],
+        "seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "alpha_by_n": {
+          "100": [
+            0,
+            0.03,
+            0.04,
+            0.05,
+            0.06,
+            0.07,
+            0.075,
+            0.1
+          ],
+          "200": [
+            0,
+            0.02,
+            0.03,
+            0.04,
+            0.05,
+            0.06
+          ],
+          "300": [
+            0,
+            0.015,
+            0.025,
+            0.03,
+            0.035,
+            0.04,
+            0.05
+          ],
+          "500": [
+            0,
+            0.01,
+            0.015,
+            0.02,
+            0.025,
+            0.03,
+            0.04
+          ],
+          "1000": [
+            0,
+            0.006,
+            0.01,
+            0.014,
+            0.018,
+            0.022,
+            0.03
+          ],
+          "2000": [
+            0,
+            0.004,
+            0.007,
+            0.01,
+            0.013,
+            0.016,
+            0.022
+          ]
+        }
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p01_nonlinear_scaling_paper_s*/data.csv",
+        "paper_experiments_v3/outputs/p01_nonlinear_scaling_pilot_s*/data.csv",
+        "paper_experiments_v3/figures/generated/scaling_exponent_bootstrap.json",
+        "paper_experiments_v3/figures/generated/table2_scaling_results.csv"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "Original grid has 42 (N,alpha) conditions, 504 seed episodes. New controller requires new bracketing pilots; preserve censored cells, never import old midpoint numbers."
+      ]
+    },
+    {
+      "id": "P02",
+      "name": "Fixed harmful-count response surfaces and liquidity/social controls",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "main:Fixed-Count Response Scaling",
+        "supp:Fixed-count subcritical signal",
+        "supp:tab:supp-response-surface-validity"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p02_size_decomposition.py",
+        "paper_experiments_v3/analysis/p02_decomposition.py",
+        "legacy_experiments/closure_validity_audit/closure_validity_audit.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          100,
+          200,
+          300,
+          500,
+          1000,
+          2000
+        ],
+        "K": [
+          1,
+          3,
+          5,
+          8,
+          12
+        ],
+        "seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "variants": [
+          "baseline_q05",
+          "no_social_q05",
+          "fixed_depth_q0",
+          "per_capita_depth_q1",
+          "per_capita_no_social_q1"
+        ]
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p02_size_decomposition_paper_s*/data.csv",
+        "legacy_experiments/closure_validity_audit/results/"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "Final headline uses baseline_q05. Other q variants are native simulator interventions; analyst-selected ell normalization is separate and must not be called an independent rerun."
+      ]
+    },
+    {
+      "id": "P02B",
+      "name": "Boundary-supported fixed-K comparison",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "supp:Boundary-supported calibrated comparison"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p02_boundary_support_decomposition.py",
+        "legacy_experiments/reinforcement_experiments/scripts/generate_reinforcement_tables.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          100,
+          200,
+          300,
+          500,
+          1000,
+          2000
+        ],
+        "K": [
+          2,
+          4,
+          8,
+          16,
+          32,
+          64
+        ],
+        "filter": "0 < K <= N and K/N <= 0.32",
+        "seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p02_boundary_support_decomposition*/data.csv"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "35 distinct (N,K) conditions x 12 seeds = 420 episodes. Final supplement says 420-cell grid; retain this historical terminology mismatch in audit. Training-boundary calibration is not a no-midpoint prediction."
+      ]
+    },
+    {
+      "id": "P03",
+      "name": "Transfer across S2-S4 manipulation scenarios",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "main:Transfer Across Manipulation Mechanisms",
+        "supp:Complete Scenario Descriptions"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p03_cross_scenario.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          300,
+          1000
+        ],
+        "seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "scenario": [
+          "s2",
+          "s3",
+          "s4"
+        ],
+        "alpha_by_scenario": {
+          "s2": [
+            0,
+            0.001,
+            0.003,
+            0.01,
+            0.03,
+            0.08
+          ],
+          "s3": [
+            0,
+            0.03,
+            0.05,
+            0.075,
+            0.1,
+            0.15
+          ],
+          "s4": [
+            0,
+            0.015,
+            0.03,
+            0.05,
+            0.08,
+            0.12
+          ]
+        }
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p03_cross_scenario_paper_s*/data.csv"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "Separate scenario severity definitions; compare transition presence, not absolute cross-scenario alpha_c. S4 original grid was unresolved."
+      ]
+    },
+    {
+      "id": "P04",
+      "name": "Paired comparative-statical interventions",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "main:Feedback and Reach Shift the Boundary",
+        "supp:tab:supp-mechanism-diagnostics",
+        "main:fig4"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p04_game_phase.py",
+        "paper_experiments_v3/analysis/game_phase.py",
+        "paper_experiments_v3/figures/make_paper_figures.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          300,
+          1000
+        ],
+        "seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "alpha": [
+          0,
+          0.03,
+          0.04,
+          0.05,
+          0.06,
+          0.07,
+          0.075,
+          0.1
+        ],
+        "variants": [
+          "qre_weak_coupling",
+          "qre_baseline",
+          "qre_high_precision",
+          "qre_high_conformity",
+          "qre_high_reach",
+          "qre_high_attention",
+          "qre_strong_coupling",
+          "mixed_roles_reference"
+        ]
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p04_game_phase_paper_s*/data.csv"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "Final weak/strong feedback labels correspond to composite precision/conformity/attention/reach bundles, not an isolated removal of market feedback. Full-LLM must give these settings operational input/action effects; dead rule-policy knobs do not create a treatment."
+      ]
+    },
+    {
+      "id": "P05",
+      "name": "Social-information diagnostics and information interventions",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "main:Social Response and Feedback Amplification",
+        "supp:Information estimator and finite-sample correction",
+        "supp:Intervention diagnostics"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p05_information_cascade.py",
+        "paper_experiments_v3/analysis/information.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          300,
+          1000
+        ],
+        "seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "alpha": [
+          0,
+          0.03,
+          0.04,
+          0.05,
+          0.06,
+          0.07,
+          0.075,
+          0.1
+        ],
+        "variants": [
+          "private_only",
+          "content_only",
+          "proof_only",
+          "full_game",
+          "low_attention",
+          "high_attention",
+          "precise_private_signal",
+          "noisy_private_signal",
+          "static_trust",
+          "shuffled_sender",
+          "delayed_messages",
+          "hub_placement"
+        ]
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p05_information_cascade_paper_s*/data.csv",
+        "paper_experiments_v3/outputs/p05_information_cascade_paper_s*/agent_decisions.jsonl",
+        "paper_experiments_v3/outputs/p05_information_cascade_paper_s*/messages.jsonl",
+        "paper_experiments_v3/outputs/p05_information_cascade_paper_s*/exposures.jsonl"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "Seed is the resampling unit; record actual observed/attended signals for both old and new policies."
+      ]
+    },
+    {
+      "id": "P06",
+      "name": "Role diversity and homogeneous role robustness",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "supp:Role robustness",
+        "supp:tab:supp-role-diversity",
+        "supp:tab:supp-role-robustness"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p06_role_robustness.py",
+        "paper_experiments_v3/analysis/roles.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          300,
+          1000
+        ],
+        "seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "alpha": [
+          0,
+          0.03,
+          0.04,
+          0.05,
+          0.06,
+          0.07,
+          0.075,
+          0.1
+        ],
+        "variants": [
+          "legacy_score",
+          "mixed_roles",
+          "all_risk_averse",
+          "all_value",
+          "all_trend",
+          "all_social",
+          "all_aggressive"
+        ],
+        "additional_clean_diversity_N": [
+          100,
+          200,
+          300,
+          500,
+          1000,
+          2000
+        ]
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p06_role_robustness_paper_s*/data.csv"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "legacy_score is an explicitly rule-based comparator. Preserve controlled role/persona treatment in new LLM population; record behavioral rather than label-only diversity."
+      ]
+    },
+    {
+      "id": "BACKBONES",
+      "name": "Reduced five-backbone S1 sweep",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "main:tab:backbone-robustness",
+        "supp:Cross-backbone robustness"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p01_nonlinear_scaling.py",
+        "paper_experiments_v3/figures/make_crossmodel_robustness.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          100,
+          1000
+        ],
+        "original_expected_rows_per_model": 45,
+        "original_seeds": [
+          1,
+          2,
+          3
+        ],
+        "model_tags": [
+          "qwen235b",
+          "gpt41",
+          "llama33_70b",
+          "glm45",
+          "kimik26"
+        ],
+        "alpha_by_n": {
+          "100": [
+            0,
+            0.03,
+            0.04,
+            0.05,
+            0.06,
+            0.07,
+            0.075,
+            0.1
+          ],
+          "1000": [
+            0,
+            0.006,
+            0.01,
+            0.014,
+            0.018,
+            0.022,
+            0.03
+          ]
+        }
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p01_crossmodel_*/rows.jsonl",
+        "paper_experiments_v3/figures/generated/crossmodel_robustness_audit.md"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "These are P01 model reruns, not P07 quota experiments. Opus/Gemini entries in the historical generator are audit-only excluded/incomplete, absent from the final five-backbone table."
+      ]
+    },
+    {
+      "id": "P07",
+      "name": "Earlier sparse quota-allocation robustness",
+      "used_by_final_paper": false,
+      "manuscript_anchors": [],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p07_llm_robustness.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          300,
+          1000
+        ],
+        "quota": [
+          "behavioral_only",
+          "low",
+          "standard",
+          "high"
+        ]
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p07_llm_robustness*/data.csv"
+      ],
+      "new_full_llm_results_required": false,
+      "notes": [
+        "Retained compatibility/supporting runner. The final quota table is P10; P07 mock smoke is explicitly excluded as main evidence by reinforcement generator."
+      ]
+    },
+    {
+      "id": "P09",
+      "name": "Native depth-specific dense boundary audits",
+      "used_by_final_paper": false,
+      "manuscript_anchors": [],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p09_depth_scaling.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          100,
+          200,
+          300,
+          500,
+          1000,
+          2000
+        ],
+        "seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "q": [
+          0,
+          0.5,
+          1
+        ],
+        "alpha_by_n": {
+          "100": [
+            0,
+            0.03,
+            0.04,
+            0.05,
+            0.06,
+            0.07,
+            0.075,
+            0.1
+          ],
+          "200": [
+            0,
+            0.02,
+            0.03,
+            0.04,
+            0.05,
+            0.06
+          ],
+          "300": [
+            0,
+            0.015,
+            0.025,
+            0.03,
+            0.035,
+            0.04,
+            0.05
+          ],
+          "500": [
+            0,
+            0.01,
+            0.015,
+            0.02,
+            0.025,
+            0.03,
+            0.04
+          ],
+          "1000": [
+            0,
+            0.006,
+            0.01,
+            0.014,
+            0.018,
+            0.022,
+            0.03
+          ],
+          "2000": [
+            0,
+            0.004,
+            0.007,
+            0.01,
+            0.013,
+            0.016,
+            0.022
+          ]
+        }
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p09_depth_scaling*/data.csv",
+        "paper_experiments_v3/outputs/reviewer_scaling_audit/p09_depth_*.csv"
+      ],
+      "new_full_llm_results_required": false,
+      "notes": [
+        "Supporting native liquidity causal audit exists in reinforcement outputs; no explicit P09 numerical table in the final main/supplement. Preserve in new suite as supporting validation."
+      ]
+    },
+    {
+      "id": "P10",
+      "name": "Controller realization dense scaling audit",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "main:tab:controller-robustness",
+        "supp:tab:supp-controller-audit-v3"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p10_llm_fraction_scaling.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          100,
+          200,
+          300,
+          500,
+          1000,
+          2000
+        ],
+        "reported_common_support_N": [
+          100,
+          200,
+          300,
+          500,
+          1000
+        ],
+        "reported_seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "quota": [
+          "behavioral_only",
+          "standard",
+          "double"
+        ],
+        "alpha_by_n": {
+          "100": [
+            0,
+            0.03,
+            0.04,
+            0.05,
+            0.06,
+            0.07,
+            0.075,
+            0.1
+          ],
+          "200": [
+            0,
+            0.02,
+            0.03,
+            0.04,
+            0.05,
+            0.06
+          ],
+          "300": [
+            0,
+            0.015,
+            0.025,
+            0.03,
+            0.035,
+            0.04,
+            0.05
+          ],
+          "500": [
+            0,
+            0.01,
+            0.015,
+            0.02,
+            0.025,
+            0.03,
+            0.04
+          ],
+          "1000": [
+            0,
+            0.006,
+            0.01,
+            0.014,
+            0.018,
+            0.022,
+            0.03
+          ],
+          "2000": [
+            0,
+            0.004,
+            0.007,
+            0.01,
+            0.013,
+            0.016,
+            0.022
+          ]
+        }
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p10_llm_fraction_scaling*/data.csv",
+        "paper_experiments_v3/outputs/reviewer_scaling_audit/p10_llm_quota_*.csv"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "Old quota caps describe a partial hybrid, never full-LLM. A new fully controlled primary requires distinct controller/version flags; retain all-rule/partial hybrid only as labeled comparators."
+      ]
+    },
+    {
+      "id": "P11",
+      "name": "Watts threshold null",
+      "used_by_final_paper": true,
+      "manuscript_anchors": [
+        "supp:tab:supp-watts-null"
+      ],
+      "source_scripts": [
+        "paper_experiments_v3/experiments/p11_watts_null.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py"
+      ],
+      "original_dimensions": {
+        "N": [
+          100,
+          200,
+          300,
+          500,
+          1000,
+          2000
+        ],
+        "seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "alpha_by_n": {
+          "100": [
+            0,
+            0.03,
+            0.04,
+            0.05,
+            0.06,
+            0.07,
+            0.075,
+            0.1
+          ],
+          "200": [
+            0,
+            0.02,
+            0.03,
+            0.04,
+            0.05,
+            0.06
+          ],
+          "300": [
+            0,
+            0.015,
+            0.025,
+            0.03,
+            0.035,
+            0.04,
+            0.05
+          ],
+          "500": [
+            0,
+            0.01,
+            0.015,
+            0.02,
+            0.025,
+            0.03,
+            0.04
+          ],
+          "1000": [
+            0,
+            0.006,
+            0.01,
+            0.014,
+            0.018,
+            0.022,
+            0.03
+          ],
+          "2000": [
+            0,
+            0.004,
+            0.007,
+            0.01,
+            0.013,
+            0.016,
+            0.022
+          ]
+        },
+        "graph": "Barabasi-Albert mean_degree=8",
+        "threshold_distribution": "Beta(2,8)",
+        "horizon": 30,
+        "collapse": "final active fraction >= 0.5"
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p11_watts_null*/data.csv",
+        "paper_experiments_v3/outputs/reviewer_scaling_audit/p11_watts_null_*.csv"
+      ],
+      "new_full_llm_results_required": true,
+      "notes": [
+        "Intentional non-LLM mathematical null. Null may need extra lower-alpha pilot grid to bracket midpoint; report the actual frozen grid."
+      ]
+    },
+    {
+      "id": "P08",
+      "name": "Defense utility demonstration",
+      "used_by_final_paper": false,
+      "manuscript_anchors": [],
+      "source_scripts": [
+        "legacy_experiments/nonpaper/p08_defense_utility.py"
+      ],
+      "original_dimensions": {
+        "defenses": [
+          "noguard",
+          "zscore_guard",
+          "topology_aware",
+          "deepseek_v3_risk",
+          "oracle"
+        ]
+      },
+      "local_data_dependencies": [
+        "paper_experiments_v3/outputs/p08_defense_utility*/"
+      ],
+      "new_full_llm_results_required": false,
+      "notes": [
+        "Moved source because absent from final main and supplement."
+      ]
+    },
+    {
+      "id": "P0_CAUSAL",
+      "name": "Corrective causal reruns (post-publication baseline)",
+      "used_by_final_paper": false,
+      "manuscript_anchors": [],
+      "source_scripts": [
+        "legacy_experiments/p0_causal_reruns_20260821/run_experiments.py",
+        "legacy_experiments/p0_causal_reruns_20260821/analyze_results.py",
+        "legacy_experiments/p0_causal_reruns_20260821/validate_results.py"
+      ],
+      "original_dimensions": {
+        "episodes": 1776,
+        "seeds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "controller": "behavioral_only",
+        "population_llm_calls": 0,
+        "source_hash": "8e24fbe7b8ac3597",
+        "families": [
+          "native liquidity fixed-K",
+          "native liquidity boundary",
+          "feedback ablation",
+          "response-regime diagnostics"
+        ]
+      },
+      "local_data_dependencies": [
+        "legacy_experiments/p0_causal_reruns_20260821/results/"
+      ],
+      "new_full_llm_results_required": false,
+      "notes": [
+        "Not in final main/supplement. No-environment-feedback barely shifted joint boundary; multihop propagation mattered. Keep corrective finding, not a fabricated closed-loop mechanism claim."
+      ]
+    }
+  ],
+  "required_posthoc_analyses": [
+    {
+      "id": "A01",
+      "name": "Midpoint estimator and leverage",
+      "depends_on": [
+        "P01"
+      ],
+      "required_checks": [
+        "linear first-crossing",
+        "finite logistic midpoint",
+        "drop-one-N",
+        "drop-small-N"
+      ],
+      "manuscript_anchors": [
+        "tab:supp-midpoint-sensitivity",
+        "tab:supp-drop-one-n"
+      ],
+      "source_scripts": [
+        "legacy_experiments/reinforcement_experiments/scripts/generate_reinforcement_tables.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py",
+        "paper_experiments_v3/figures/make_paper_figures.py",
+        "legacy_experiments/closure_validity_audit/closure_validity_audit.py"
+      ]
+    },
+    {
+      "id": "A02",
+      "name": "Integer-count and launch grid audit",
+      "depends_on": [
+        "P01"
+      ],
+      "required_checks": [
+        "target alpha vs realized round(alpha*N)/N",
+        "cell seed counts",
+        "integer K bracketing",
+        "pilot/main grids"
+      ],
+      "manuscript_anchors": [
+        "tab:supp-frozen-grids"
+      ],
+      "source_scripts": [
+        "legacy_experiments/reinforcement_experiments/scripts/generate_reinforcement_tables.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py",
+        "paper_experiments_v3/figures/make_paper_figures.py",
+        "legacy_experiments/closure_validity_audit/closure_validity_audit.py"
+      ]
+    },
+    {
+      "id": "A03",
+      "name": "Censoring and bootstrap",
+      "depends_on": [
+        "P01"
+      ],
+      "required_checks": [
+        "10000 paired-seed draws",
+        "all-six resolved vs >=2 resolved",
+        "resolved-size histogram",
+        "no midpoint imputation"
+      ],
+      "manuscript_anchors": [
+        "tab:supp-nu-bootstrap"
+      ],
+      "source_scripts": [
+        "legacy_experiments/reinforcement_experiments/scripts/generate_reinforcement_tables.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py",
+        "paper_experiments_v3/figures/make_paper_figures.py",
+        "legacy_experiments/closure_validity_audit/closure_validity_audit.py"
+      ]
+    },
+    {
+      "id": "A04",
+      "name": "Threshold/component sensitivity",
+      "depends_on": [
+        "P01"
+      ],
+      "required_checks": [
+        "threshold scales 0.8,0.9,1.0,1.1,1.2",
+        "social-only",
+        "price-only",
+        "liquidity-only",
+        "conjunctive score"
+      ],
+      "manuscript_anchors": [
+        "tab:supp-threshold-sensitivity"
+      ],
+      "source_scripts": [
+        "legacy_experiments/reinforcement_experiments/scripts/generate_reinforcement_tables.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py",
+        "paper_experiments_v3/figures/make_paper_figures.py",
+        "legacy_experiments/closure_validity_audit/closure_validity_audit.py"
+      ]
+    },
+    {
+      "id": "A05",
+      "name": "Normalization and subcritical response audit",
+      "depends_on": [
+        "P02"
+      ],
+      "required_checks": [
+        "ell=0,0.5,1 analyst reparameterization",
+        "full/subcritical/meanR<1/zero-failure surfaces",
+        "per-K slopes",
+        "5000 paired-seed bootstrap"
+      ],
+      "manuscript_anchors": [
+        "tab:supp-response-surface-validity"
+      ],
+      "source_scripts": [
+        "legacy_experiments/reinforcement_experiments/scripts/generate_reinforcement_tables.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py",
+        "paper_experiments_v3/figures/make_paper_figures.py",
+        "legacy_experiments/closure_validity_audit/closure_validity_audit.py"
+      ]
+    },
+    {
+      "id": "A06",
+      "name": "Strict leave-one-size-out prediction",
+      "depends_on": [
+        "P01",
+        "P02"
+      ],
+      "required_checks": [
+        "train subcritical fixedK without heldout N",
+        "fixed R=1 threshold",
+        "constant-boundary and direct-powerlaw baselines",
+        "error/rank/exponent report"
+      ],
+      "manuscript_anchors": [
+        "tab:supp-no-midpoint-predictions"
+      ],
+      "source_scripts": [
+        "legacy_experiments/reinforcement_experiments/scripts/generate_reinforcement_tables.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py",
+        "paper_experiments_v3/figures/make_paper_figures.py",
+        "legacy_experiments/closure_validity_audit/closure_validity_audit.py"
+      ]
+    },
+    {
+      "id": "A07",
+      "name": "Boundary-supported calibrated comparison",
+      "depends_on": [
+        "P01",
+        "P02B"
+      ],
+      "required_checks": [
+        "uncalibrated fixed threshold",
+        "one scalar calibrated only on training-size midpoints",
+        "separate from strict no-midpoint"
+      ],
+      "manuscript_anchors": [
+        "Boundary-supported calibrated comparison"
+      ],
+      "source_scripts": [
+        "legacy_experiments/reinforcement_experiments/scripts/generate_reinforcement_tables.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py",
+        "paper_experiments_v3/figures/make_paper_figures.py",
+        "legacy_experiments/closure_validity_audit/closure_validity_audit.py"
+      ]
+    },
+    {
+      "id": "A08",
+      "name": "Model invocation/provenance audit",
+      "depends_on": [
+        "P01",
+        "P03",
+        "BACKBONES",
+        "P10"
+      ],
+      "required_checks": [
+        "calls/cache hits/errors/token/cost",
+        "requested vs resolved model",
+        "real vs mock",
+        "full request/action provenance"
+      ],
+      "manuscript_anchors": [
+        "tab:supp-llm-audit"
+      ],
+      "source_scripts": [
+        "legacy_experiments/reinforcement_experiments/scripts/generate_reinforcement_tables.py",
+        "paper_experiments_v3/analysis/reviewer_scaling_audit.py",
+        "paper_experiments_v3/figures/make_paper_figures.py",
+        "legacy_experiments/closure_validity_audit/closure_validity_audit.py"
+      ]
+    }
+  ],
+  "shared_source_dependencies": [
+    "src/wolfbench/env/environment.py",
+    "src/wolfbench/env/market.py",
+    "src/wolfbench/env/social.py",
+    "src/wolfbench/agents/social_game.py",
+    "src/wolfbench/agents/attackers.py",
+    "src/wolfbench/scenarios/society.py",
+    "src/wolfbench/metrics/collapse.py",
+    "paper_experiments_v3/runtime/runner.py",
+    "paper_experiments_v3/runtime/hybrid_runtime.py",
+    "paper_experiments_v3/runtime/hybrid_agents.py",
+    "paper_experiments_v3/runtime/openrouter_backend.py",
+    "paper_experiments_v3/configs/protocol.yaml"
+  ],
+  "publication_inputs_are_read_only": true,
+  "notes": [
+    "No old historical result is promoted to full-LLM evidence.",
+    "Main and supplement are authoritative for required families; old P-series registry contains extra studies.",
+    "Historical used_by_final_paper tags describe original publication, not endorsement of old claims after causal audit."
+  ]
+}

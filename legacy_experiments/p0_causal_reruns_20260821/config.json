@@ -1,0 +1,29 @@
+{
+  "experiment_version": "p0_causal_reruns_v1",
+  "created_date": "2026-08-21",
+  "simulator_root": "../WolfBench-main",
+  "scenario": "s1",
+  "horizon_days": 30,
+  "quota_mode": "behavioral_only",
+  "backend": "deterministic_mock_unused_by_behavioral_only",
+  "seeds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  "liquidity_exponents": [0.0, 0.5, 1.0],
+  "fixed_k": {
+    "n_values": [100, 300, 1000, 2000],
+    "harmful_counts": [3, 5, 8]
+  },
+  "boundary": {
+    "alpha_by_n": {
+      "300": [0.0, 0.01, 0.02, 0.03, 0.04, 0.06, 0.08, 0.12],
+      "1000": [0.0, 0.005, 0.01, 0.015, 0.02, 0.03, 0.05, 0.08]
+    }
+  },
+  "feedback_ablation": {
+    "liquidity_exponent": 0.5,
+    "alpha_by_n": {
+      "300": [0.0, 0.01, 0.02, 0.03, 0.04, 0.06, 0.08, 0.12],
+      "1000": [0.0, 0.005, 0.01, 0.015, 0.02, 0.03, 0.05, 0.08]
+    },
+    "variants": ["closed_loop", "no_environment_feedback", "no_social_propagation"]
+  }
+}

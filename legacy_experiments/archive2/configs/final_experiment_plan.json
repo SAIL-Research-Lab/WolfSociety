@@ -1,0 +1,60 @@
+{
+  "title": "Final mixed-agent experiment plan for harmful agent scaling",
+  "paper_writing_location": "AuthorKit27",
+  "code_location": "final_hybrid_experiments",
+  "llm_provider": "OpenRouter API only",
+  "population_model_default": "deepseek/deepseek-v3.2",
+  "agent_mix_policy": {
+    "description": "LLM-controlled strategic population agents are embedded in scalable rule-based populations. The paper should describe this as an agent society with bounded strategic LLM participation, not as a separate title-level hybrid contribution.",
+    "quota_modes": {
+      "low": "half of standard quota, minimum one harmful LLM when harmful agents exist",
+      "standard": "sublinear bounded quota by N",
+      "high": "standard quota plus two benign and two harmful LLM agents"
+    },
+    "standard_quota": {
+      "N<=5": "all available harmful and benign population agents can be LLM",
+      "N<=20": {"benign": 5, "harmful": 5},
+      "N<=100": {"benign": 3, "harmful": 2},
+      "N<=500": {"benign": 4, "harmful": 3},
+      "N<=1000": {"benign": 5, "harmful": 4},
+      "N>1000": {"benign": 6, "harmful": 4}
+    }
+  },
+  "experiments": {
+    "E1_scaling": {
+      "script": "python -m final_hybrid_experiments.scripts.run_e1_scaling --preset paper",
+      "claim": "harmful-agent scaling has a nonlinear critical region in a mixed agent society",
+      "primary_figure": "collapse/primary-failure probability versus alpha and N for S1"
+    },
+    "E2_mechanisms": {
+      "script": "python -m final_hybrid_experiments.scripts.run_e2_mechanisms --preset paper",
+      "claim": "the scaling phenomenon appears across pump-and-dump, finfluencer, spoofing, and wash trading mechanisms",
+      "primary_figure": "cross-scenario critical-alpha or failure curves"
+    },
+    "E3_social_dynamics": {
+      "script": "python -m final_hybrid_experiments.scripts.run_e3_social_dynamics --preset paper",
+      "claim": "social exposure, hub placement, reach, and reflexive feedback shift the critical harmful-agent threshold",
+      "primary_figure": "variant-wise threshold shift table/curve for S1"
+    },
+    "E4_quota_robustness": {
+      "script": "python -m final_hybrid_experiments.scripts.run_e4_quota_robustness --preset paper",
+      "claim": "main scaling results are not artifacts of a single LLM quota schedule",
+      "primary_figure": "low/standard/high quota sensitivity"
+    },
+    "E5_wolfguard_benchmark": {
+      "script": "python -m final_hybrid_experiments.scripts.run_e5_wolfguard_benchmark --preset paper",
+      "claim": "the benchmark exposes different defense performance across rule, topology-aware, and mainstream LLM risk scorers",
+      "primary_figure": "defense leaderboard on mixed-agent episodes"
+    }
+  },
+  "openrouter_defense_models": {
+    "qwen235b_risk": "qwen/qwen3-235b-a22b",
+    "deepseek_v3_risk": "deepseek/deepseek-v3.2",
+    "glm45_risk": "z-ai/glm-4.5",
+    "llama33_70b_risk": "meta-llama/llama-3.3-70b-instruct",
+    "claude_opus_risk": "anthropic/claude-opus-4.8",
+    "gemini25_pro_risk": "google/gemini-2.5-pro",
+    "gpt41_risk": "openai/gpt-4.1"
+  },
+  "smoke_command": "PYTHONPATH=src:. python -m final_hybrid_experiments.scripts.run_smoke"
+}

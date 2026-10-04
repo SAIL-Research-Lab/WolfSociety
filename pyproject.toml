@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wolfbench"
-version = "0.1.0"
+version = "0.2.0"
 description = "A controlled financial agent society for harmful-agent scaling and collective-failure evaluation"
 readme = "README.md"
 license = "Apache-2.0"
@@ -17,6 +17,7 @@ dependencies = [
     "pandas>=2.0",
     "tqdm>=4.65",
     "click>=8.1",
+    "jsonschema>=4.23",
 ]
 
 [project.optional-dependencies]

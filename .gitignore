@@ -14,6 +14,7 @@ htmlcov/
 .tox/
 .nox/
 .venv/
+.venv-*/
 venv/
 /env/
 /ENV/
@@ -38,11 +39,11 @@ __MACOSX/
 !.vscode/extensions.json
 
 # Historical code, manuscript sources, and internal review material
-archive/
-archive2/
+/archive/
+/archive2/
 AuthorKit27/
 paperoutputs/
-reinforcement_experiments/
+/reinforcement_experiments/
 docs/
 
 # Paper-v3 generated artifacts; keep runners, analyses, theory, and configs
@@ -56,12 +57,23 @@ paper_experiments_v3/DELETION_CHECKLIST.md
 # Other generated output and scratch directories
 outputs/
 output/
+/runs/
 tmp/
 cache/
 generated/
 test-results/
 playwright-report/
 coverage/
+
+# Historical source is publishable; original generated evidence stays local.
+legacy_experiments/**/cache/
+legacy_experiments/**/outputs/
+legacy_experiments/**/manifests/
+legacy_experiments/**/generated/
+legacy_experiments/**/results/
+legacy_experiments/archive2/figures/
+legacy_experiments/archive2/tables/
+legacy_experiments/archive2/configs/*runtime*.json
 
 # Generated data, figures, papers, archives, and model artifacts
 *.csv
@@ -79,6 +91,7 @@ coverage/
 *.zip
 *.tar
 *.tar.gz
+*.jsonl.gz
 checkpoints/
 
 # Explicitly published project-page assets

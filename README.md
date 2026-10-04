@@ -25,6 +25,13 @@
 
 > **Disclaimer** This study is conducted solely for AI safety research. All harmful-agent behaviors are simulated to understand and mitigate collective risks, not to enable real-world financial harm. The controlled scenarios do not constitute financial or investment advice.
 
+> **Full-LLM revision (October 2026):** New experiments use
+> [`paper_experiments/`](paper_experiments/README.md) and the direct-decision
+> vLLM runtime. The published figures and findings below describe the **previous
+> hybrid implementation**. They have not been reproduced with the new policy.
+> GPU execution instructions: [服务器运行手册 / Server runbook](SERVER_RUNBOOK.md).
+> Historical experiments: [archive inventory](legacy_experiments/README.md).
+
 ## Overview
 
 WolfSociety asks a simple but underexplored safety question: **as an agent
@@ -47,7 +54,7 @@ results.
 
 <p align="center"><sub>An overview of the setting, scaling results, and controlled interventions.</sub></p>
 
-## Main findings
+## Findings of the previous hybrid manuscript
 
 - **Collapse appears abruptly.** In S1, collapse requires harmful information
   to spread broadly together with severe price dislocation or liquidity stress.
@@ -76,156 +83,66 @@ results.
 
 ## Tutorial
 
-### 1. Install WolfSociety
-
-Python 3.10 or newer is required.
+Python 3.10+ is required for the client. The GPU server uses a separate,
+pinned vLLM environment; the client computer needs no GPU.
 
 ```bash
 git clone https://github.com/SAIL-Research-Lab/WolfSociety.git
 cd WolfSociety
-
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -e ".[dev,plot]"
+python -m pip install -e '.[dev,plot]'
 ```
 
-Confirm the installation by listing the available controlled scenarios:
+Run every retained experiment family with a small explicit mock population:
 
 ```bash
-wolfbench scenarios
+python -m paper_experiments.runner plan --mock --stage smoke --families all \
+  --sizes 20 --seeds 9001 --horizon 3 --manifest runs/qa/manifest.json
+python -m paper_experiments.runner run \
+  --manifest runs/qa/manifest.json --output runs/qa
 ```
 
-### 2. Run one society
-
-Start with a deterministic 30-day episode containing 200 agents, 2% of which
-follow the harmful behavior defined by the S1 scenario:
-
-```bash
-wolfbench run --scenario s1 --alpha 0.02 --n-society 200 --seed 1
-```
-
-The command prints the episode summary as JSON. Here, `--alpha` is the harmful
-fraction, `--n-society` is the total population, and `--seed` makes matched
-comparisons reproducible.
-
-### 3. Compare a clean and a harmful condition
-
-Keep the society size and random seed fixed, then change only the harmful
-fraction:
-
-```bash
-wolfbench run --scenario s1 --alpha 0    --n-society 200 --seed 1
-wolfbench run --scenario s1 --alpha 0.05 --n-society 200 --seed 1
-```
-
-To save an episode summary, add an output path:
-
-```bash
-wolfbench run \
-  --scenario s1 \
-  --alpha 0.05 \
-  --n-society 500 \
-  --seed 1 \
-  --out run.json
-```
-
-### 4. Sweep society size and harmful fraction
-
-This small local sweep compares two society sizes at three harmful fractions:
-
-```bash
-wolfbench scaling \
-  --scenario s1 \
-  --alpha 0,0.02,0.05 \
-  --n-society 100,200 \
-  --seeds 2
-```
-
-Increase the grid and number of seeds only after checking the runtime of this
-small example.
-
-### 5. Evaluate a defense
-
-The defense interface runs matched conditions over the same operating points:
-
-```bash
-wolfbench evaluate \
-  --defense rule \
-  --scenario s1 \
-  --alphas 0,0.02,0.05 \
-  --n-society 200 \
-  --seeds 1,2
-```
-
-### Optional: enable LLM-controlled agents
-
-In the paper, most agents use role-based controllers, while a small,
-prespecified quota uses LLM controllers. The primary experiments use DeepSeek
-V3.2 for these agents. Local `--mock` runs need no external model. To run an
-experiment through an OpenAI-compatible or OpenRouter model, install the
-optional dependencies and configure a key:
-
-```bash
-python -m pip install -e ".[dev,plot,llm]"
-export OPENROUTER_API_KEY="your-api-key"
-```
-
-Mock runs validate the pipeline and artifact format; they do not reproduce the
-paper's LLM-derived numerical results.
+This checks integration and output formats. Mock outputs are marked and kept
+separate from real model experiments; they cannot establish scientific results.
 
 ## Reproducing the paper experiments
 
-Run commands from the repository root. Begin with the deterministic integration
-check:
+The active suite retains the final main/appendix research questions and adds
+language-content and benign/harmful controller contrasts. All population agents
+in its main conditions decide orders, posts, reshares and challenges through
+the LLM. Roles supply objectives/preferences, not precomputed actions. Matching,
+budget limits, seeded graph delivery and evaluation remain environment code.
+Pooled market liquidity is infrastructure outside the N population actors.
+
+One model service handles all agents. Each agent retains its own portfolio,
+inbox, observations and memory; all round decisions complete before settlement.
+1000 agents over 30 rounds require 30,000 generations per episode, and 2000
+require 60,000. Request failures stop the episode without a rule fallback.
 
 ```bash
-PYTHONPATH=src:. python -m paper_experiments_v3.experiments.p00_validate \
-  --profile smoke \
-  --mock \
-  --quota-mode standard
+# GPU server, in its vLLM environment; replace MODEL and revision for your setup.
+MODEL=/srv/models/your-model SERVER_MANIFEST=runs/server.json \
+  scripts/serve_vllm.sh
+
+# Client, with that endpoint running. Plan only by default; EXECUTE=1 runs it.
+EXECUTE=1 scripts/run_pilot.sh SERVED_MODEL WEIGHTS_REVISION runs/pilot-small \
+  --families p01 --sizes 20,50,100 --seeds 1001 --horizon 5
 ```
 
-Then run a smoke test of the main nonlinear-scaling experiment:
+Use the [server runbook](SERVER_RUNBOOK.md) for installation, real-prompt
+1000/2000-agent throughput measurement, multi-GPU settings, grid refinement,
+restart and full runs. The [experiment registry and analysis guide](paper_experiments/README.md)
+map all main/appendix families, numerical controls and analysis tables.
+New thresholds, exponents and intervention effects must be estimated from fresh
+real-model pilots and independent main seeds. No old numeric result is reused.
 
-```bash
-PYTHONPATH=src:. python -m paper_experiments_v3.experiments.p01_nonlinear_scaling \
-  --profile smoke \
-  --mock
-```
-
-The principal experiment runners are:
-
-| Runner | Purpose |
-| --- | --- |
-| `p00_validate` | Integration and clean-state sanity checks |
-| `p01_nonlinear_scaling` | Nonlinear response and finite-size scaling |
-| `p02_size_decomposition` | Fixed-count response and liquidity-scaling analysis |
-| `p03_cross_scenario` | Cross-scenario scope checks |
-| `p04_game_phase` | Interaction-condition and network-reach interventions |
-| `p05_information_cascade` | Private-to-social information balance |
-| `p06_role_robustness` | Role and behavioral-diversity robustness |
-
-Every runner supports three execution scales:
-
-- `--profile smoke` for a minimal end-to-end check;
-- `--profile pilot` for grid and protocol validation;
-- `--profile paper` for the full configured experiment.
-
-Use `--mock` for deterministic local runs. Omit it only after configuring the
-LLM dependencies and credentials. Generated rows and frozen run configurations
-are written under `paper_experiments_v3/outputs/` and are ignored by Git.
-
-Analyze a completed P01 run with:
-
-```bash
-PYTHONPATH=src:. python -m paper_experiments_v3.analysis.scaling \
-  --run p01_nonlinear_scaling
-```
-
-See [EXPERIMENTS.md](paper_experiments_v3/EXPERIMENTS.md) for the complete
-experiment registry and the [experiment guide](paper_experiments_v3/README.md)
-for runner and analysis details.
+The previous `wolfbench run/scaling/evaluate` CLI and
+[`paper_experiments_v3/`](paper_experiments_v3/README.md) remain as deprecated
+publication compatibility interfaces. They do **not** invoke the new
+full-population runtime. Exploration and non-paper experiments are archived in
+[`legacy_experiments/`](legacy_experiments/README.md), with original paths,
+reasons and source hashes. Old local outputs are retained and ignored by Git.
 
 ## Tests
 
@@ -233,17 +150,28 @@ for runner and analysis details.
 pytest -q
 ```
 
+Tests cover the round barrier, population coverage, direct decisions, textual
+inboxes, resource constraints, backend errors, transport/retry behavior,
+experiment manifests and analysis. CPU mock/fake-server tests exercise the
+protocol; real vLLM model behavior and GPU throughput require a server pilot.
+
 ## Repository structure
 
 ```text
-src/wolfbench/               simulator, scenarios, metrics, and CLI
-paper_experiments_v3/        experiment runners and analysis code
-tests/                       regression and integration tests
-website/                     academic project page
+src/wolfbench/llm_runtime/   active direct-decision policy, vLLM client, language routing
+src/wolfbench/env/           deterministic market/social mechanisms and evaluation
+paper_experiments/           active main/appendix registry, manifests, grids, analyses
+scripts/                    vLLM launch, throughput benchmark, pilot and main runners
+SERVER_RUNBOOK.md            GPU execution instructions (Chinese)
+legacy_experiments/          archived exploration and historical analyses
+paper_experiments_v3/        deprecated publication compatibility baseline
+tests/                      regression and integration tests
+website/                    project page for the previous manuscript
 ```
 
-Generated outputs, caches, figures, model weights, and manuscript sources are
-not versioned.
+Generated results, prompts/responses, caches, model weights and credentials are
+not versioned. Scientific run bundles should be archived separately with their
+manifests, compressed traces, model revision and GPU server configuration.
 
 ## Citation
 

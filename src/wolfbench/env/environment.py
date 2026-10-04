@@ -261,21 +261,13 @@ class WolfBenchEnv:
 
             # --- agent decisions ---
             observation = self._build_observation(day, prices, recent_ret)
-            orders: list[Order] = []
-            messages: list[Message] = []
-            for ag in self.society.all_agents:
-                if (getattr(ag, "is_harmful", False)
-                        and getattr(ag, "target_asset", None) in self._oracle_suppressed_assets):
-                    continue
-                if hasattr(ag, "decide"):
-                    o, m = ag.decide(day, observation)
-                    orders.extend(o)
-                    messages.extend(m)
+            orders, messages = self._collect_decisions(day, observation)
             orders, messages = self._apply_public_market_controls(orders, messages)
 
             # --- market clearing ---
             for step in range(self.intraday_steps):
                 step_orders = orders if self.intraday_steps == 1 else orders[step::self.intraday_steps]
+                step_orders = self._prepare_step_orders(day, step, step_orders)
                 if not step_orders:
                     continue
                 trades = self.market.submit_orders(day, step=step, orders=step_orders)
@@ -368,6 +360,7 @@ class WolfBenchEnv:
                 entry["observation"] = public_summary or self._system_summary(day, recent_ret, include_oracle=False)
                 entry["oracle_actions"] = oracle_actions
             daily_log.append(entry)
+            self._after_day(day, entry)
 
         # finalise metrics
         retail_wealth_now = sum(a.portfolio.mark_to_market(prices) for a in self.society.retail)
@@ -399,6 +392,31 @@ class WolfBenchEnv:
         )
 
     # ---------------------------------------------------------------- helpers
+
+    def _prepare_step_orders(self, day: int, step: int, orders: list[Order]) -> list[Order]:
+        """Execution-constraint hook; legacy behavior is unchanged."""
+        return orders
+
+    def _collect_decisions(self, day: int, observation: dict) -> tuple[list[Order], list[Message]]:
+        """Round barrier: collect all actions before any market/social update.
+
+        The language runtime overrides this to batch model requests. The
+        original controller ordering remains unchanged for v3 reproduction.
+        """
+        orders: list[Order] = []
+        messages: list[Message] = []
+        for agent in self.society.all_agents:
+            if (getattr(agent, "is_harmful", False)
+                    and getattr(agent, "target_asset", None) in self._oracle_suppressed_assets):
+                continue
+            if hasattr(agent, "decide"):
+                new_orders, new_messages = agent.decide(day, observation)
+                orders.extend(new_orders)
+                messages.extend(new_messages)
+        return orders, messages
+
+    def _after_day(self, day: int, entry: dict) -> None:
+        """Optional audit hook after settlement; does not change legacy state."""
 
     def _primary_failure_eval_start_day(self) -> int:
         """First day counted for scenario primary-failure triggers.
@@ -711,6 +729,8 @@ class WolfBenchEnv:
                 root_sender_id=message.root_sender_id,
                 confidence=message.confidence,
                 social_proof=message.social_proof,
+                text=message.text,
+                parent_message_id=message.parent_message_id,
             ))
 
         filtered_orders: list[Order] = []

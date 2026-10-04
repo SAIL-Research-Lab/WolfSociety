@@ -24,6 +24,9 @@ class Message:
     root_sender_id: str = ""
     confidence: float = 0.5
     social_proof: float = 0.0
+    # Language-runtime payload. Legacy numerical controllers ignore these.
+    text: str = ""
+    parent_message_id: str = ""
 
 
 @dataclass

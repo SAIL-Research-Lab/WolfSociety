@@ -1,6 +1,11 @@
 # Paper figure builders
 
-This directory builds the main-paper figures for the v3 rewrite.
+**Historical publication baseline.** These builders read rule-based / limited
+LLM-quota v3 evidence. New full-LLM runs use `paper_experiments/`; do not
+combine or relabel their outputs. Exact publication dependencies are listed
+in `legacy_experiments/final_paper_experiment_catalog.json`.
+
+This directory builds the original main-paper figures for the v3 rewrite.
 
 Run after the relevant paper-profile experiments and analyses finish:
 

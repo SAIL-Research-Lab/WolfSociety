@@ -1,5 +1,10 @@
 # Formal experiment registry
 
+This is the frozen original publication registry, not the active full-LLM
+suite. New runs use `paper_experiments/`; v3 outputs remain historical
+rule-based / quota-limited hybrid evidence. The final main/supplement mapping
+is in `legacy_experiments/final_paper_experiment_catalog.json`.
+
 | ID | Paper purpose | Central claim | Main output |
 |---|---|---|---|
 | P00 | integration and alpha=0 sanity | none | validation rows |
@@ -10,7 +15,6 @@
 | P05 | private-to-social information cascade | C3 | CMI, social dominance, transfer entropy |
 | P06 | role robustness and behavioral diversity audit | reviewer validity | role/action MI, behavior separation, diversity-vs-size controls |
 | P07 | LLM allocation robustness | implementation validity | matched quota response curves |
-| P08 | compact defense utility demonstration | benchmark utility | risk reduction, cost, false positives |
 | P09 | depth-specific dense scaling audit | reviewer W1 | observed \(\widehat\nu\) under q=0, 0.5, 1 |
 | P10 | LLM-fraction dense scaling audit | reviewer W3 | observed \(\widehat\nu\) under 0x, 1x, 2x quotas |
 | P11 | Watts threshold null | reviewer W5 | null-model \(\alpha_c(N)\) and \(\widehat\nu\) |
@@ -25,9 +29,10 @@
 
 ## Paper order
 
-The main text should present P01, P02, and P04/P05 in that order. P03 defines
-scope. P06/P07 belong in robustness or the appendix. P08 is not a fourth
-scientific contribution.
+The original main text presents P01, P02, and P04/P05. P03 defines scope;
+P06/P07 are robustness/appendix material. P08 is absent from the final main
+paper and supplement and is preserved under
+`legacy_experiments/nonpaper/p08_defense_utility.py`.
 
 ## Freeze rules
 
@@ -44,7 +49,7 @@ scientific contribution.
 
 ## Status
 
-- Runners rewritten: P00--P08.
+- Original runners preserved: P00--P07 and P09--P11; P08 archived separately.
 - Analyses rewritten: P01, P04, P05, P06.
 - v3 protocol: exploratory until new pilot runs finish.
 - Old v1/v2 real outputs: historical only; not valid evidence for the rewritten

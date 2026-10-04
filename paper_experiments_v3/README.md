@@ -1,6 +1,15 @@
 # WolfBench paper experiments v3
 
-This package contains the current experiment runners, shared runtime,
+**Frozen publication baseline / 历史论文兼容层.** New experiments use
+`paper_experiments/`. These v3 controllers are rule-based or quota-limited
+hybrids; their outputs are not full-LLM evidence. This directory stays in
+place for existing theory imports and original paper reproduction. Its
+publication dependency map is in
+`legacy_experiments/final_paper_experiment_catalog.json`. For the exact
+original simulator, use baseline Git commit
+`7be61904cb5cd9dc383bc1b843fc32106267ef14`; the current simulator may evolve.
+
+This package contains the original experiment runners, shared runtime,
 post-processing analyses, and theory utilities for the WolfBench study. It
 imports the simulator from `src/wolfbench/` and does not depend on archived
 code or manuscript sources.
@@ -70,8 +79,10 @@ PYTHONPATH=src:. python -m paper_experiments_v3.experiments.p05_information_casc
 PYTHONPATH=src:. python -m paper_experiments_v3.experiments.p06_role_robustness --profile smoke --mock
 ```
 
-P07 and P08 are optional robustness/utility studies. P09--P11 are targeted
-audit runners. See `EXPERIMENTS.md` for their scientific roles and reporting
+P07 is an original allocation audit; P09--P11 are targeted audit runners.
+P08 is absent from the final main paper and supplement and has moved to
+`legacy_experiments/nonpaper/p08_defense_utility.py`. See `EXPERIMENTS.md`
+for the original scientific roles and reporting
 constraints.
 
 ## Analyses

@@ -1,5 +1,9 @@
 """Build the four main-paper figures and the scaling result table.
 
+FROZEN PUBLICATION BASELINE: these figures consume original rule-based or
+quota-limited hybrid results. They are not evidence for the active full-LLM
+suite under paper_experiments/. Never combine the two benchmark versions.
+
 The script is deliberately conservative:
 
 - it reads only v3 paper-profile outputs under ``paper_experiments_v3/outputs``;

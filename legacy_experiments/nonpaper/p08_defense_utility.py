@@ -1,9 +1,12 @@
-"""P08: compact defense-utility demonstration near recalibrated boundaries."""
+"""Archived P08 defense utility; absent from the final main paper/supplement.
+
+This uses the original quota-limited v3 runtime, not full-LLM controllers.
+"""
 from __future__ import annotations
 
 import argparse
 
-from ..runtime.runner import (
+from paper_experiments_v3.runtime.runner import (
     add_run_args,
     alpha_values,
     as_run_args,
