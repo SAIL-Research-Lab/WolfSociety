@@ -59,7 +59,7 @@ export function Hero() {
           {site.authors.map((author, index) => (
             <a
               key={author}
-              href={`https://scholar.google.com/scholar?q=${encodeURIComponent(author)}`}
+              href={site.authorHomepages[author] ?? `https://scholar.google.com/scholar?q=${encodeURIComponent(author)}`}
               target="_blank"
               rel="noreferrer"
             >

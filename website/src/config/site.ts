@@ -22,6 +22,9 @@ export const site = {
     'University of Toronto',
   ],
   authorAffiliations: ['1', '2,3', '2', '1', '1', '1,2'],
+  authorHomepages: {
+    'Lejun Zhang': 'https://zhanglejun02.github.io/',
+  } as Record<string, string>,
   links: {
     paper: 'https://arxiv.org/html/2609.05591v1',
     code: 'https://github.com/SAIL-Research-Lab/WolfSociety',
