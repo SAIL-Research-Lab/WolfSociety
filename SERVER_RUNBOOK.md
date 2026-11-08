@@ -32,6 +32,20 @@ vLLM 官方资料：[OpenAI-compatible 服务](https://docs.vllm.ai/en/stable/se
 vLLM 的 CUDA／PyTorch 依赖与分析依赖冲突。GPU 环境的 Python、CUDA、驱动需
 符合所选 vLLM 版本的[安装要求](https://docs.vllm.ai/en/stable/getting_started/installation/gpu/)。
 
+新服务器先克隆完整仓库，再进入根目录：
+
+```bash
+git clone https://github.com/SAIL-Research-Lab/WolfSociety.git
+cd WolfSociety
+git rev-parse HEAD
+```
+
+模型权重、虚拟环境、凭据、旧实验结果和 `AuthorKit27/` 论文源码不随 Git 提供。
+新版实验、分析和图包生成所需代码、scenario YAML 与静态绘图模板已在仓库中；
+这三个步骤不依赖旧数据或论文源码。保留完整 checkout 并从根目录执行模块命令，
+仅安装 wheel 不包含根目录的 `paper_experiments`。CPU 验收不能替代所选 GPU／模型
+组合的真实启动验收；首次验证成功后固定该 vLLM 精确版本并归档环境清单。
+
 ```bash
 python3 -m venv .venv-server
 source .venv-server/bin/activate
@@ -106,6 +120,8 @@ MODEL=wolf-policy NUM_AGENTS=2000 CONCURRENCY=32 ROUNDS=3 \
 
 benchmark **会真正调用模型**，保存每轮时长、请求／token 吞吐、延迟分位数、
 请求和失败记录。这里重放初始观测，收件箱与记忆尚为空，适合启动与容量检查。
+benchmark 与 pilot/main 共用 `VLLM_BASE_URL`；如同时设置旧变量 `BASE_URL`，
+benchmark 优先使用 `BASE_URL`，显式 `--base-url` 参数再覆盖环境变量。
 不能把这个速度直接外推到完整实验。随后从真实 pilot 的 `*.backend_audit.jsonl.gz`
 解压并选取后期完整一轮，再运行 benchmark 测长上下文吞吐；不要把多个轮次的同一
 agent 冒充为同一轮的不同 agent。每次 benchmark 使用新的输出目录。
@@ -231,9 +247,9 @@ python -m paper_experiments.manuscript_figures check \
 审查需要访问原实验记录，建议在 GPU 服务器上带着论文源码目录完成安装和验证，
 再传送生成的论文材料。不要删除被图包引用的原 run 或改其路径。
 
-现有旧稿还引用了缺失的 `AnonymousSubmission2027_v3_arxiv_supplement.tex`。检查器
-会明确报这个缺失输入；正式安装前需修正该引用或提供实际 fragment，不能静默跳过。
-本次没有改写旧稿，也没有把测试图片装进论文。
+`AuthorKit27/` 未纳入 Git，若要在服务器安装图片或编译整篇论文，需要另行复制完整
+论文源码及所有 TeX 输入文件（包括所引用的 `AnonymousSubmission2027_v3_arxiv_supplement.tex`）。
+检查器会报告缺失输入，不能静默跳过。仅运行实验、分析和生成图包不需要这一步。
 
 旧 v3 的历史数据 CLI 默认拒绝执行；仅显式 `--allow-historical-data` 才会读取历史
 结果。这些图片不被新版论文检查器接受。两个入口复用同一套原绘图函数，但使用

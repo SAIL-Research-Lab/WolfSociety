@@ -51,6 +51,17 @@ jobs:
           --manifest runs/ci/manifest.json
       - name: Run full-LLM mock integration
         run: python -m paper_experiments.runner run --manifest runs/ci/manifest.json --output runs/ci
+      - name: Export independent requests for GPU benchmark
+        run: |
+          python scripts/export_initial_requests.py --n-agents 1000 --output runs/ci/initial-1000.jsonl
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          rows = [json.loads(line) for line in Path("runs/ci/initial-1000.jsonl").read_text().splitlines()]
+          assert len(rows) == 1000
+          assert len({row["request_id"] for row in rows}) == 1000
+          assert all(row["system"] and row["user"] and row["schema"] for row in rows)
+          PY
       - name: Check CLI scenario package data
         run: wolfbench scenarios
       - name: Run a deterministic smoke episode

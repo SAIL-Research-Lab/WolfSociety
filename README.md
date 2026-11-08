@@ -94,6 +94,14 @@ source .venv/bin/activate
 python -m pip install -e '.[dev,plot]'
 ```
 
+Keep the full checkout and run the Python module commands from its root:
+`paper_experiments` and the publication plotting assets live in the repository.
+Model weights, GPU/vLLM dependencies, credentials, previous results and the
+optional `AuthorKit27/` manuscript sources are not included in a clone.
+The experiment, analysis and figure-bundle workflows do not need those old
+results or manuscript sources. Follow the server runbook to install the GPU
+service and validate the selected model before launching real experiments.
+
 Run every retained experiment family with a small explicit mock population:
 
 ```bash

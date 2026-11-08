@@ -13,7 +13,8 @@ The LLM runtime audit JSONL is accepted directly. Each unique agent prompt is
 replayed separately; fewer than NUM_AGENTS source requests is an error.
 Export one full round with 1000 or 2000 agents from a dry run first.
 
-Environment: BASE_URL=http://127.0.0.1:8000/v1 NUM_AGENTS=1000 ROUNDS=3
+Environment: VLLM_BASE_URL=http://127.0.0.1:8000/v1 NUM_AGENTS=1000 ROUNDS=3
+  BASE_URL                  Optional override of VLLM_BASE_URL (legacy alias)
   CONCURRENCY=64 REQUEST_TIMEOUT=120 RETRIES=2 MAX_TOKENS=512 TEMPERATURE=.7
   SCHEMA_JSON=path.json       Optional if every input audit row embeds schema
   BENCH_OUTPUT=output/vllm_benchmark
@@ -38,7 +39,7 @@ PROJECT_DIR=$(cd -- "$SCRIPT_DIR/.." && pwd)
 export PYTHONPATH="$PROJECT_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
 
 args=(--requests-jsonl "$REQUESTS_JSONL" --model "$MODEL"
-  --base-url "${BASE_URL:-http://127.0.0.1:8000/v1}"
+  --base-url "${BASE_URL:-${VLLM_BASE_URL:-http://127.0.0.1:8000/v1}}"
   --num-requests "${NUM_AGENTS:-1000}" --rounds "${ROUNDS:-3}"
   --concurrency "${CONCURRENCY:-64}"
   --request-timeout "${REQUEST_TIMEOUT:-120}" --retries "${RETRIES:-2}"
