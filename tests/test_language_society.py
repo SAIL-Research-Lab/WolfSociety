@@ -13,6 +13,7 @@ import pytest
 from jsonschema import ValidationError
 
 from wolfbench.agents import attackers, market_maker, retail, social_game
+from wolfbench.env.market import TradeRecord
 from wolfbench.env.social import Message
 from wolfbench.llm_runtime import simulation
 from wolfbench.llm_runtime.backend import MockBackend
@@ -261,6 +262,98 @@ def test_feasible_model_order_is_executed_without_a_rule_changing_its_choice():
     assert env.social.decision_events[0]["action"] in {-1, 0, 1}
     assert next(e for e in env.social.decision_events if e["agent_id"] == first.public_id
                 and e["asset"] == env.target_asset)["action"] == 1
+
+
+@pytest.mark.parametrize("size", [50, 1000])
+def test_many_counterparties_have_bounded_economically_exact_execution_history(size, monkeypatch):
+    backend = MockBackend()
+    env = LanguageSocietyEnv(config(n_society=size, alpha=0, horizon_days=5,
+                                   memory_rounds=3, max_trade_fraction=1), backend)
+    seller = env.population[0]
+    seller.portfolio.holdings[env.target_asset] = size * 5
+
+    def responder(request, schema):
+        observation = json.loads(request.user)
+        answer = hold()
+        is_seller = observation["participant"] == seller.public_id
+        # Half the sale crosses all other participants; half crosses the MM
+        # at its distinct quote. Both prices must survive the aggregation.
+        answer["orders"] = [order(env.target_asset, "sell" if is_seller else "buy",
+                                  (size - 1) * .5 if is_seller else .25)]
+        return answer
+
+    backend._responder = responder
+    after_day = env._after_day
+
+    def check_feedback(day, entry):
+        trades_before = copy.deepcopy(env.market.trades)
+        portfolios_before = [asdict(agent.portfolio) for agent in env.population]
+        metrics_before = copy.deepcopy(entry)
+        after_day(day, entry)
+        assert env.market.trades == trades_before
+        assert [asdict(agent.portfolio) for agent in env.population] == portfolios_before
+        assert entry == metrics_before
+
+        participant_trades = {agent.agent_id: [] for agent in env.population}
+        for trade in env.market.trades:
+            if trade.day == day:
+                for aid in (trade.buyer_id, trade.seller_id):
+                    if aid in participant_trades:
+                        participant_trades[aid].append(trade)
+        for agent in env.population:
+            raw = participant_trades[agent.agent_id]
+            fills = agent.history[-1]["fills"]
+            assert len(fills) <= 2
+            assert sum(fill["fill_count"] for fill in fills) == len(raw)
+            assert sum(fill["quantity"] for fill in fills) == pytest.approx(sum(t.quantity for t in raw))
+            assert sum(fill["quantity"] * fill["price"] for fill in fills) == pytest.approx(
+                sum(t.quantity * t.price for t in raw))
+
+        raw_sales = participant_trades[seller.agent_id]
+        assert len(raw_sales) == size
+        assert len({trade.buyer_id for trade in raw_sales}) == size
+        fills = seller.history[-1]["fills"]
+        assert len(fills) == 2
+        assert sorted(fill["fill_count"] for fill in fills) == [1, size - 1]
+
+    monkeypatch.setattr(env, "_after_day", check_feedback)
+    env.run()
+    observed = payloads(env)[4, seller.public_id]["recent_history"]
+    assert [row["day"] for row in observed] == [1, 2, 3]
+    assert sum(len(row["fills"]) for row in observed) == 6
+    assert [row["day"] for row in seller.history] == [2, 3, 4]
+    assert len(env.market.trades) == 5 * size
+
+
+def test_execution_history_preserves_exact_prices_sides_assets_and_wash_kind():
+    env = LanguageSocietyEnv(config(), MockBackend())
+    first, peer = env.population[:2]
+    asset, other_asset = list(env.market.assets)[:2]
+    first.history = [{"day": 1, "orders": []}]
+
+    def trade(quantity, *, day=1, step=0, target=asset, price=10.0, sell=False, wash=False):
+        return TradeRecord(day=day, step=step, asset=target,
+                           buyer_id=peer.agent_id if sell else first.agent_id,
+                           seller_id=first.agent_id if sell else peer.agent_id,
+                           quantity=quantity, price=price, is_wash=wash)
+
+    env.market.trades = [trade(99, day=0), trade(1), trade(2, step=1),
+                         trade(.5, price=10.000000000000002), trade(4, sell=True),
+                         trade(5, wash=True), trade(6, target=other_asset)]
+    raw_before = copy.deepcopy(env.market.trades)
+    env._after_day(1, {})
+
+    assert first.history[-1]["fills"] == [
+        {"asset": asset, "side": "buy", "quantity": 3, "price": 10.0, "kind": "real", "fill_count": 2},
+        {"asset": asset, "side": "buy", "quantity": .5, "price": 10.000000000000002,
+         "kind": "real", "fill_count": 1},
+        {"asset": asset, "side": "sell", "quantity": 4, "price": 10.0, "kind": "real", "fill_count": 1},
+        {"asset": asset, "side": "buy", "quantity": 5, "price": 10.0,
+         "kind": "wash_round_trip", "fill_count": 1},
+        {"asset": other_asset, "side": "buy", "quantity": 6, "price": 10.0,
+         "kind": "real", "fill_count": 1},
+    ]
+    assert env.market.trades == raw_before
 
 
 def test_cash_inventory_and_budget_survive_price_change_between_intraday_steps(monkeypatch):

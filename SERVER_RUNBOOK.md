@@ -1,8 +1,10 @@
 # 全 LLM 实验：GPU 服务器运行手册
 
-本版本在 CPU 上验证接口、轮次同步、1000／2000 个独立请求和实验流水线。
-**尚未在 GPU 上测量真实模型行为、吞吐量或新的标度结果。** 论文旧数值不能直接
-用于本版本。先完成模型行为与容量 pilot，再冻结配置、运行主实验。
+本版本已完成 CPU 流水线验收，以及 RTX 6000D 上 vLLM 服务与真实模型调用的预检。
+**小规模 pilot 尚未完整通过，正式实验结果与新的标度结论尚未验证。** 旧版 c32
+pilot 完成 10／21 个 episode（1,450 次已完成 episode 的模型决策）后，因成交反馈
+展开导致输入超过 8,192 token，在第 11 个 episode 中止；处理方式见第 4 节。
+论文旧数值不能直接用于本版本。先完成模型行为与容量 pilot，再冻结配置、运行主实验。
 
 ## 1. 架构与计算量
 
@@ -81,6 +83,59 @@ SHA256 清单，后续把它的哈希传给客户端的 `WEIGHTS_REVISION` 参�
 多卡例子：`CUDA_VISIBLE_DEVICES=0,1,2,3 TP=2 DP=2 ... scripts/serve_vllm.sh`。
 先让单副本稳定运行，再比较吞吐。无需把 `MAX_NUM_SEQS` 设为 agent 总数。
 
+### 2.1 已验证的 RTX 6000D 服务环境
+
+以下是本次服务器的已验证环境组合，不是适用于所有 GPU 的通用安装承诺：
+
+| 项目 | 本次配置 |
+|---|---|
+| 操作系统／Python | Ubuntu 22.04／Python 3.12.3 |
+| GPU／驱动 | RTX 6000D／595.71.05 |
+| 推理服务 | vLLM 0.33.0 |
+| PyTorch／CUDA 构建 | PyTorch 2.14.0／cu130 |
+| CUDA 编译工具 | `cuda-toolkit==13.0.3.0`；nvcc、crt、nvvm 均为 13.0.88 |
+
+完整的 199 项固定依赖保存在
+[`requirements/vllm-rtx6000d-py312-cu130.txt`](requirements/vllm-rtx6000d-py312-cu130.txt)。
+复现相同平台时，优先在独立的 Python 3.12 服务环境中安装该文件，替代上面的
+不固定版本安装；实验客户端与统计环境仍独立管理。
+
+```bash
+python3.12 -m venv .venv-server
+source .venv-server/bin/activate
+python -m pip install -r requirements/vllm-rtx6000d-py312-cu130.txt
+```
+
+本次遇到过 nvcc 13.5 与 CUDA runtime 13.0 混装。对应修复是显式安装
+`nvcc` extra 的固定 toolkit 版本；不要仅看到 `torch.cuda.is_available()` 为真就
+认为 vLLM 的运行时编译环境完整：
+
+```bash
+python -m pip install 'cuda-toolkit[nvcc]==13.0.3.0'
+```
+
+此外，pip 安装的 CUDA 13 工具链需要以下布局供编译与链接使用。这里的
+`VIRTUAL_ENV` 必须指向已激活的 **服务** 环境；不能指向客户端环境或系统 Python。
+已有非预期文件／链接时先检查，不覆盖它们。
+
+```bash
+export WOLF_SERVER_VENV="${VIRTUAL_ENV:?Activate the vLLM server venv first}"
+export CUDA_HOME="$WOLF_SERVER_VENV/lib/python3.12/site-packages/nvidia/cu13"
+if [ ! -e "$CUDA_HOME/lib64" ] && [ ! -L "$CUDA_HOME/lib64" ]; then
+  ln -s lib "$CUDA_HOME/lib64"
+fi
+if [ ! -e "$CUDA_HOME/lib/libcudart.so" ] && [ ! -L "$CUDA_HOME/lib/libcudart.so" ]; then
+  ln -s libcudart.so.13 "$CUDA_HOME/lib/libcudart.so"
+fi
+"$CUDA_HOME/bin/nvcc" --version
+readlink -f "$CUDA_HOME/lib64"
+readlink -f "$CUDA_HOME/lib/libcudart.so"
+```
+
+所需关系为 `lib64 -> lib`、`lib/libcudart.so -> libcudart.so.13`。
+`CUDA_HOME` 必须在每次启动服务时设置。本服务器的部署脚本已保存布局修复，启动脚本固定了 `CUDA_HOME`，
+环境清单与启动 provenance 一并归档；重建环境后仍要重新检查服务健康和真实请求。
+
 ## 3. 安装客户端并做 CPU 验收
 
 另开终端，仍在仓库根目录：
@@ -143,6 +198,26 @@ benchmark 对应设置 `CHAT_TEMPLATE_KWARGS_JSON='{"enable_thinking":false}'`�
 是否经常撞预算上限、是否出现拒绝／截断。检查干净 α=0 条件是否本身就普遍失效。
 单纯“JSON 能解析”不足以确认实验有效。模型策略可能不发动攻击或不响应消息，
 这需要如实记录，不得在代码中偷偷补回规则攻击。
+
+### 4.1 本次 pilot 暴露的上下文长度问题
+
+本服务器使用 `wolf-qwen3-8b`，c32 小规模 pilot 为 P01、N=20／50／100、7 个 α、
+seed 1001、5 轮，共 21 个 episode、计划 5,950 次决策。旧输出根目录是
+`runs/qwen3-8b-pilot-small-c32`。它完成 10 个 episode 后，在第 11 组
+N=50、α=0.06 的第 4 轮（day=3）收到 HTTP 400：输入超过服务的 8,192 token 上限。
+这不是完整 pilot 通过，也不能把计划的 5,950 次调用写成已经完成。
+
+原因是 `recent_history` 把逐条成交对手的 fills 展开到模型观测，成交碎片数随
+交易活跃度增长。成交反馈必须有界：按等价成交信息聚合，使数量、价格和现金流等
+必要反馈得到保留，并检查后期轮次的实际 prompt 长度及预留输出预算。不能静默
+截断 prompt、删除记忆后继续冒用原协议，也不能把 HTTP 400 视为暂时错误无限重试。
+
+成交反馈修复会改变模型观测和 source hash，因此必须创建新的 manifest 与输出
+目录，重新运行这 21 组验证。本次重跑目标目录为
+`runs/qwen3-8b-pilot-small-compact-fills`；保持旧 N／α／seed／horizon／max_tokens，
+以新的 source hash 标识实现变更。旧目录保留用于故障审计；不得把旧版完成的
+10 组与新版结果混合统计，或用旧 manifest 续跑修改后的代码。修复后的完整行为
+与长度验证仍需实际执行；不能仅凭代码修改就宣称问题已在完整实验中解决。
 
 ## 5. Pilot、冻结网格、正文及附录
 
@@ -256,6 +331,60 @@ python -m paper_experiments.manuscript_figures check \
 各自显式指定的数据来源；正式入口不会回退到旧数据目录。
 
 ## 7. 断点续跑、多进程与错误处理
+
+### 7.1 用 tmux 分开管理服务、实验和统计
+
+服务、实验 runner 与统计分别占用会话，避免关闭 SSH 时任务中止，也避免统计
+操作误占正在运行的实验终端。以下绝对路径仅是**本次 AutoDL 服务器的具体示例**，
+其他服务器需改成自己的目录：
+
+| 用途 | 本服务器配置 |
+|---|---|
+| 仓库 | `/root/autodl-tmp/when-harm-scales` |
+| 部署脚本 | `/root/autodl-tmp/wolfbench-setup` |
+| 服务环境 | `/root/autodl-tmp/envs/wolfbench-server` |
+| 客户端／分析环境 | `/root/autodl-tmp/when-harm-scales/.venv` |
+| 服务会话／脚本 | `wolf-vllm`／`start-vllm.sh` |
+| 实验会话 | `wolf-pilot` |
+| 验收／统计会话与脚本 | `wolf-report`／`complete-pilot.sh OUTPUT_ROOT` |
+| API／served model | `http://127.0.0.1:8000/v1`／`wolf-qwen3-8b` |
+
+先查看现有会话；已有服务或 runner 时只连接查看，不再启动第二份：
+
+```bash
+tmux ls
+tmux attach -t wolf-vllm
+# 离开当前会话后，再连接另一个：
+tmux attach -t wolf-pilot
+tmux attach -t wolf-report
+```
+
+离开会话时按 **Ctrl+B，松开，再按 D**。随后可以断开 SSH；重连服务器后再次
+`tmux attach` 即可查看。不要用 Ctrl+C 代替 detach，因为它会向当前进程发送中断。
+tmux 仅保持进程会话，不能防止服务器关机、服务崩溃或租赁实例停止。
+
+在独立统计终端激活客户端／分析环境，单独运行第 5 节的分析命令。使用实际的新
+`run_dir` 和新的统计输出路径；未完成 pilot 的统计只能标为阶段性诊断，不是
+正式结果。本服务器的 `wolf-report` 使用 `complete-pilot.sh OUTPUT_ROOT` 等待
+对应输出根目录的 `last-run.exit`：失败时保留验收／归档信息，不重新发起实验；
+成功后进行验收及 analysis。更换实验输出目录时，统计脚本参数也必须相应更换。
+不要在已有统计任务的同一 shell 中启动第二个监控。服务健康与最近的实验输出
+可以在另一个终端只读查看：
+
+```bash
+curl --fail http://127.0.0.1:8000/v1/models
+tmux capture-pane -p -t wolf-pilot -S -80
+```
+
+服务启动脚本为 `bash /root/autodl-tmp/wolfbench-setup/start-vllm.sh`。
+旧 c32 实验脚本 `run-pilot-c32.sh` 对应旧失败目录。成交反馈修复后的部署使用
+`plan-pilot-compact.sh` 创建新 manifest、`run-pilot-compact.sh` 执行或续跑新
+manifest；使用前确认服务器上的这两个脚本已经部署，并核对其输出目录为
+`runs/qwen3-8b-pilot-small-compact-fills`。在对应 tmux 会话中、确认原进程已退出
+且服务可用后再执行；同一新 manifest 续跑不重新 plan。不能直接对旧失败目录
+继续执行修改后的代码，也不要设置自动无限重跑失败任务的循环。
+
+### 7.2 固定 manifest 续跑与分片
 
 继续同一 manifest 时直接执行 `run`，不重新 plan：
 

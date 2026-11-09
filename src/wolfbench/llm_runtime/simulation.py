@@ -548,7 +548,7 @@ class LanguageSocietyEnv(WolfBenchEnv):
         return prepared
 
     def _after_day(self, day, entry):
-        fills = {a.agent_id: [] for a in self.population}
+        fills = {a.agent_id: {} for a in self.population}
         net = {}
         for trade in self.market.trades:
             if trade.day != day:
@@ -556,8 +556,18 @@ class LanguageSocietyEnv(WolfBenchEnv):
             for aid, side in ((trade.buyer_id, "buy"), (trade.seller_id, "sell")):
                 if aid not in fills:
                     continue
-                fills[aid].append({"asset": trade.asset, "side": side, "quantity": trade.quantity,
-                                   "price": trade.price, "kind": "wash_round_trip" if trade.is_wash else "real"})
+                kind = "wash_round_trip" if trade.is_wash else "real"
+                # Aggregate counterparty fragments, preserving total quantity
+                # and notional at each exact price and direction. Bound feedback
+                # by assets/clearing steps, not the number of counterparties.
+                # The original individual trades remain in market.trades.
+                fill_key = (trade.asset, side, kind, trade.price)
+                fill = fills[aid].setdefault(fill_key, {
+                    "asset": trade.asset, "side": side, "quantity": 0.0,
+                    "price": trade.price, "kind": kind, "fill_count": 0,
+                })
+                fill["quantity"] += trade.quantity
+                fill["fill_count"] += 1
                 if not trade.is_wash:
                     key = (aid, trade.asset)
                     net[key] = net.get(key, 0) + trade.quantity * (1 if side == "buy" else -1)
@@ -570,7 +580,7 @@ class LanguageSocietyEnv(WolfBenchEnv):
                 # No evaluator-only labels, true fundamental, or peer objectives.
                 agent.history[-1]["settled_portfolio"] = {"cash": agent.portfolio.cash,
                                                           "holdings": dict(agent.portfolio.holdings)}
-                agent.history[-1]["fills"] = fills[agent.agent_id]
+                agent.history[-1]["fills"] = list(fills[agent.agent_id].values())
                 for order in agent.history[-1]["orders"]:
                     order["agent_id"] = agent.public_id
                     if order.get("counterparty_id"):
