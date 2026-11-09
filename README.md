@@ -30,6 +30,7 @@
 > vLLM runtime. The published figures and findings below describe the **previous
 > hybrid implementation**. They have not been reproduced with the new policy.
 > GPU execution instructions: [服务器运行手册 / Server runbook](SERVER_RUNBOOK.md).
+> Latest GPU diagnostic: all 21 conditions attempted, 20 completed and one generation-length failure; pilot stability validation has not passed. See [diagnostic results](SERVER_RUNBOOK.md#43-compact-json-的字符串重复失败与最终诊断).
 > Historical experiments: [archive inventory](legacy_experiments/README.md).
 
 ## Overview

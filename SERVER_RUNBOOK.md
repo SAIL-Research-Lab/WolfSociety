@@ -1,10 +1,13 @@
 # 全 LLM 实验：GPU 服务器运行手册
 
 本版本已完成 CPU 流水线验收，以及 RTX 6000D 上 vLLM 服务与真实模型调用的预检。
-**小规模 pilot 尚未完整通过，正式实验结果与新的标度结论尚未验证。** 旧版 c32
-pilot 完成 10／21 个 episode（1,450 次已完成 episode 的模型决策）后，因成交反馈
-展开导致输入超过 8,192 token，在第 11 个 episode 中止；处理方式见第 4 节。
-论文旧数值不能直接用于本版本。先完成模型行为与容量 pilot，再冻结配置、运行主实验。
+**最新 GPU 诊断已结束：21 个条件全部尝试，20 个完整完成，1 个因生成截断失败；
+pilot 稳定性验收未通过。** 实际执行 5,800 次请求，其中 5,799 次成功、1 次
+`length` 失败；原计划 5,950 次决策中有 150 次因失败未执行。不能写成全部完成。
+前两版失败、单独校准及本次失败记录均留档，结果不得混合。具体经过见第 4 节。
+正式实验结果与新的标度结论尚未验证，**当前不建议直接启动正式全量实验**。
+先解决生成稳定性并重新验证模型行为与容量，再冻结配置、运行主实验；论文旧数值
+不能直接用于本版本。
 
 ## 1. 架构与计算量
 
@@ -17,7 +20,7 @@ N 个 agent 共享一个 vLLM 服务，每个 agent 有自己的资产、身份�
 连续批处理不意味着必须同时容纳 2000 条序列，也不需要 2000 份模型权重。
 
 - `CONCURRENCY`：客户端同时在途请求数，初始用 32。
-- `MAX_NUM_SEQS`：vLLM 同时调度序列数，初始用 256，按显存调整。
+- `MAX_NUM_SEQS`：vLLM 同时调度序列数，脚本默认 256，按显存调整；本次服务器用 64。
 - `TP`：一份模型的 tensor parallel GPU 数；模型单卡放不下时使用。
 - `DP`：模型副本数；有足够 GPU 时提高总吞吐。单机总 GPU 数为 `TP × DP`。
 - `MAX_MODEL_LEN`：输入和输出的总 token 上限。实际输入长度随消息、记忆增长。
@@ -94,6 +97,25 @@ SHA256 清单，后续把它的哈希传给客户端的 `WEIGHTS_REVISION` 参�
 | 推理服务 | vLLM 0.33.0 |
 | PyTorch／CUDA 构建 | PyTorch 2.14.0／cu130 |
 | CUDA 编译工具 | `cuda-toolkit==13.0.3.0`；nvcc、crt、nvvm 均为 13.0.88 |
+| 模型并行／精度 | TP=1、DP=1、BF16 |
+| 上下文／调度序列上限 | `MAX_MODEL_LEN=8192`、`MAX_NUM_SEQS=64` |
+| 显存比例／批次不变性 | `GPU_MEMORY_UTILIZATION=0.8`、`VLLM_BATCH_INVARIANT=1` |
+
+本次最新服务使用 xgrammar，并启用 vLLM 0.33.0 的
+`--structured-outputs-config.disable_any_whitespace true`。该选项限制 JSON
+结构位置的可变空白，不删除字符串值中的空格，也不保证所有输出都不会触及
+`max_tokens`。在前文已设置 `MODEL` 等必要变量的基础上，对应启动参数为：
+
+```bash
+SERVED_MODEL=wolf-qwen3-8b-json TP=1 DP=1 DTYPE=bfloat16 \
+  MAX_MODEL_LEN=8192 MAX_NUM_SEQS=64 GPU_MEMORY_UTILIZATION=0.8 \
+  VLLM_BATCH_INVARIANT=1 STRUCTURED_OUTPUT_BACKEND=xgrammar \
+  scripts/serve_vllm.sh --structured-outputs-config.disable_any_whitespace true
+```
+
+本次服务器使用第 7 节的专用启动脚本保存上述配置。更改结构化输出配置会改变
+生成约束，必须保留实际服务参数，并重新建立对应的实验 manifest；不能继续
+沿用旧服务配置的实验身份。
 
 完整的 199 项固定依赖保存在
 [`requirements/vllm-rtx6000d-py312-cu130.txt`](requirements/vllm-rtx6000d-py312-cu130.txt)。
@@ -199,27 +221,80 @@ benchmark 对应设置 `CHAT_TEMPLATE_KWARGS_JSON='{"enable_thinking":false}'`�
 单纯“JSON 能解析”不足以确认实验有效。模型策略可能不发动攻击或不响应消息，
 这需要如实记录，不得在代码中偷偷补回规则攻击。
 
-### 4.1 本次 pilot 暴露的上下文长度问题
+### 4.1 旧 c32 pilot 的上下文长度问题
 
 本服务器使用 `wolf-qwen3-8b`，c32 小规模 pilot 为 P01、N=20／50／100、7 个 α、
 seed 1001、5 轮，共 21 个 episode、计划 5,950 次决策。旧输出根目录是
 `runs/qwen3-8b-pilot-small-c32`。它完成 10 个 episode 后，在第 11 组
 N=50、α=0.06 的第 4 轮（day=3）收到 HTTP 400：输入超过服务的 8,192 token 上限。
-这不是完整 pilot 通过，也不能把计划的 5,950 次调用写成已经完成。
+10 个已完成 episode 共 1,450 次决策。这不是完整 pilot 通过，也不能把计划的
+5,950 次调用写成已经完成。
 
 原因是 `recent_history` 把逐条成交对手的 fills 展开到模型观测，成交碎片数随
 交易活跃度增长。成交反馈必须有界：按等价成交信息聚合，使数量、价格和现金流等
 必要反馈得到保留，并检查后期轮次的实际 prompt 长度及预留输出预算。不能静默
 截断 prompt、删除记忆后继续冒用原协议，也不能把 HTTP 400 视为暂时错误无限重试。
 
-成交反馈修复会改变模型观测和 source hash，因此必须创建新的 manifest 与输出
-目录，重新运行这 21 组验证。本次重跑目标目录为
+成交反馈修复改变了模型观测和 source hash，因此创建了新的 manifest 与输出
+目录，重新运行这 21 组验证。该次重跑目录为
 `runs/qwen3-8b-pilot-small-compact-fills`；保持旧 N／α／seed／horizon／max_tokens，
 以新的 source hash 标识实现变更。旧目录保留用于故障审计；不得把旧版完成的
-10 组与新版结果混合统计，或用旧 manifest 续跑修改后的代码。修复后的完整行为
-与长度验证仍需实际执行；不能仅凭代码修改就宣称问题已在完整实验中解决。
+10 组与新版结果混合统计，或用旧 manifest 续跑修改后的代码。
+
+### 4.2 compact-fills pilot 的结构化输出截断与新配置
+
+compact-fills 版本完成 14／21 个 episode，共 2,450 次已完成 episode 的模型
+决策。在第 15 组 N=100、α=0 的第 2 轮（day=1），一个 agent 在 JSON 的
+`quantity` 后重复生成换行，达到 1,024 个输出 token，返回 `finish_reason=length`。
+客户端按 fail-closed 规则中止，没有把截断 JSON 当作有效动作，也没有切换规则
+策略。该失败 episode 的归档包含 200 条调用记录，其中 1 条失败；这些记录不计入
+已完成 episode 的统计，也不能当作完成了整个 pilot。
+
+最新服务保留代码版本 `6adafb1`，使用第 2.1 节的结构化输出空白限制，将 served
+model alias 改为 `wolf-qwen3-8b-json`，以新 manifest 标识服务生成配置的变化。
+原失败请求在该配置下只做了一次单独校准：输入 1,337 token、输出 123 token，
+通过校验。**这一次校准不是 pilot 结果，也不证明其他请求必然不会截断。**
+
+新的 21 组 pilot 计划仍为 5,950 次决策，输出根目录为
+`runs/qwen3-8b-pilot-compact-json`，实际 run 目录为
+`runs/qwen3-8b-pilot-compact-json/real/9ae15943ec09a057`。该版本的最终诊断见
+第 4.3 节。前两个失败目录及单独校准记录保留用于审计，不与新目录合并或混合统计。
+
+### 4.3 compact-json 的字符串重复失败与最终诊断
+
+compact-json 顺序运行在完成 13／21 个 episode（2,200 次决策）后中止。
+第 14 组 N=50、α=0.4、第 2 轮（day=1）的 agent `p000042` 在 JSON 字符串内部
+重复生成 `:0`，达到 1,024 个输出 token，返回 `finish_reason=length`。
+该失败 episode 归档 100 条请求记录，其中 99 次成功、1 次失败。JSON 结构
+空白限制没有消除字符串内部的重复生成；不能因此宣称结构化输出已经稳定。
+
+为完成各条件的诊断覆盖，后续保持同一 manifest、source hash、backend 配置和
+seeds，不更换模型或代码。`run-remaining-diagnostic.sh` 调用
+`attempt-unseen-once.py`，以 `num_shards=94` 下唯一的 job 哈希分片逐个尝试
+剩余 7 个未尝试的 N=100 条件。原失败 job 没有重试或重新采样。21 个条件的
+attempt status 与验收报告保留，明确区分“已尝试”“完整完成”和“失败”。
+
+最终核对结果如下；计数仅对应最新 compact-json manifest，不包含前两版或校准：
+
+| 范围 | 最终结果 |
+|---|---|
+| 条件覆盖 | 21／21 已尝试；20 个完整完成，1 个失败 |
+| 20 个完整 episode | 5,700 次决策；rule fallback=0，retry=0 |
+| 完整 episode 的最大 token 数 | 单请求 input=3,065，output=376 |
+| 失败 episode | 100 条请求：99 次成功，1 次 `length` 失败 |
+| 全部已执行请求 | 5,800 条：5,799 次成功，1 次失败 |
+| 未执行的计划决策 | 150 次；不能把计划 5,950 写成实际完成量 |
+| 稳定性验收 | 未通过；诊断统计完成不代表 pilot 通过 |
+
+N=20／50／100 的三个 α=0 条件均未出现 collapse，但每个条件仅 5 轮、1 个 seed，
+不能据此推出正式规模或更长 horizon 的基线稳定性。成功的 20 个 episode 可用于
+明确缺失与失败的诊断统计，不能作为完整 pilot 或正式论文证据。当前生成稳定性
+仍不足以支持直接启动全量实验，后续协议变更需重新建立实验身份并验证。
 
 ## 5. Pilot、冻结网格、正文及附录
+
+以下是行为、长度及生成稳定性验收通过后的正式流程。第 4.3 节记录的当前诊断
+未达到这一前提，不应从本次不完整 pilot 直接冻结网格或启动 main。
 
 完整 family 与科学含义见 [实验注册表](paper_experiments/README.md)。最初优先 P01，
 覆盖最终所有 N；等行为与性能稳定后再分批覆盖附录。
@@ -344,12 +419,15 @@ python -m paper_experiments.manuscript_figures check \
 | 部署脚本 | `/root/autodl-tmp/wolfbench-setup` |
 | 服务环境 | `/root/autodl-tmp/envs/wolfbench-server` |
 | 客户端／分析环境 | `/root/autodl-tmp/when-harm-scales/.venv` |
-| 服务会话／脚本 | `wolf-vllm`／`start-vllm.sh` |
-| 实验会话 | `wolf-pilot` |
-| 验收／统计会话与脚本 | `wolf-report`／`complete-pilot.sh OUTPUT_ROOT` |
-| API／served model | `http://127.0.0.1:8000/v1`／`wolf-qwen3-8b` |
+| 服务会话／最新脚本 | `wolf-vllm`／`start-vllm-compact-json.sh` |
+| 诊断执行会话／最后使用脚本 | `wolf-pilot`／`run-remaining-diagnostic.sh`、`attempt-unseen-once.py` |
+| 诊断统计会话／最后使用脚本 | `wolf-report`／`finish-diagnostic.sh` |
+| API／served model | `http://127.0.0.1:8000/v1`／`wolf-qwen3-8b-json` |
+| 最新输出根目录 | `/root/autodl-tmp/when-harm-scales/runs/qwen3-8b-pilot-compact-json` |
+| 最新 run 子目录 | `real/9ae15943ec09a057` |
 
-先查看现有会话；已有服务或 runner 时只连接查看，不再启动第二份：
+本次诊断已经结束。先查看现有会话；已有服务或 runner 时只连接查看，不再启动
+第二份。已退出的会话可能不再显示，此时读取留存日志与报告即可：
 
 ```bash
 tmux ls
@@ -364,10 +442,12 @@ tmux attach -t wolf-report
 tmux 仅保持进程会话，不能防止服务器关机、服务崩溃或租赁实例停止。
 
 在独立统计终端激活客户端／分析环境，单独运行第 5 节的分析命令。使用实际的新
-`run_dir` 和新的统计输出路径；未完成 pilot 的统计只能标为阶段性诊断，不是
-正式结果。本服务器的 `wolf-report` 使用 `complete-pilot.sh OUTPUT_ROOT` 等待
-对应输出根目录的 `last-run.exit`：失败时保留验收／归档信息，不重新发起实验；
-成功后进行验收及 analysis。更换实验输出目录时，统计脚本参数也必须相应更换。
+`run_dir` 和新的统计输出路径；本次不完整 pilot 的统计只作为诊断，不是正式
+结果。最后使用的 `finish-diagnostic.sh` 在保留失败和缺失状态的前提下输出
+coverage 明确的诊断表与摘要，并保留验收报告及 21 个条件的尝试状态。
+`diagnostic-analysis.exit` 为 0 **只表示统计程序执行成功，不表示 pilot 验收
+通过**。本次验收仍是 20 个完整完成、1 个失败。更换实验输出目录时，统计脚本
+的目标也必须同步；不能把旧 `complete-pilot-json.sh` 的成功路径当作本次结果。
 不要在已有统计任务的同一 shell 中启动第二个监控。服务健康与最近的实验输出
 可以在另一个终端只读查看：
 
@@ -376,17 +456,23 @@ curl --fail http://127.0.0.1:8000/v1/models
 tmux capture-pane -p -t wolf-pilot -S -80
 ```
 
-服务启动脚本为 `bash /root/autodl-tmp/wolfbench-setup/start-vllm.sh`。
-旧 c32 实验脚本 `run-pilot-c32.sh` 对应旧失败目录。成交反馈修复后的部署使用
-`plan-pilot-compact.sh` 创建新 manifest、`run-pilot-compact.sh` 执行或续跑新
-manifest；使用前确认服务器上的这两个脚本已经部署，并核对其输出目录为
-`runs/qwen3-8b-pilot-small-compact-fills`。在对应 tmux 会话中、确认原进程已退出
-且服务可用后再执行；同一新 manifest 续跑不重新 plan。不能直接对旧失败目录
-继续执行修改后的代码，也不要设置自动无限重跑失败任务的循环。
+最新服务启动脚本为
+`bash /root/autodl-tmp/wolfbench-setup/start-vllm-compact-json.sh`。
+`plan-pilot-json.sh` 已经创建本次 manifest；`run-json-validation.sh` 只用于
+首次单次校准加 pilot 运行，校准禁止重复，不能用于续跑。`run-pilot-json.sh`
+是最初的顺序执行脚本，直接重跑会再次触及已失败 job，因此不作为本次诊断的
+后续入口。
+
+最后的诊断脚本 `run-remaining-diagnostic.sh`／`attempt-unseen-once.py` 仅尝试
+未尝试 job，现已完成全部 21 个条件的覆盖；不应再次启动，也不重试失败条件。
+统计脚本 `finish-diagnostic.sh` 与结果一并留档。旧 `run-pilot-c32.sh` 和
+`run-pilot-compact.sh` 保留用于前两次失败协议的审计。当前交接以查看诊断结果
+和定位生成稳定性问题为主，不自动续跑、更换配置或启动正式全量实验。
 
 ### 7.2 固定 manifest 续跑与分片
 
-继续同一 manifest 时直接执行 `run`，不重新 plan：
+以下是可恢复中断时的通用操作，不用于重试第 4.3 节已记录的模型生成失败。
+需要继续同一 manifest 时直接执行 `run`，不重新 plan：
 
 ```bash
 python -m paper_experiments.runner run \
